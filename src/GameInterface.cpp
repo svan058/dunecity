@@ -310,6 +310,21 @@ void GameInterface::drawCityStatsOverlay() {
 
     drawText(fmt::sprintf("Year: %d", citySim->getCityYear()), 12);
 
+    auto overlayMode = currentGame->getCityOverlayMode();
+    if (overlayMode != DuneCity::CityOverlayMode::None) {
+        const char* overlayName = "Unknown";
+        switch (overlayMode) {
+            case DuneCity::CityOverlayMode::PowerGrid:      overlayName = "Power Grid"; break;
+            case DuneCity::CityOverlayMode::TrafficDensity: overlayName = "Traffic"; break;
+            case DuneCity::CityOverlayMode::Pollution:      overlayName = "Pollution"; break;
+            case DuneCity::CityOverlayMode::LandValue:      overlayName = "Land Value"; break;
+            case DuneCity::CityOverlayMode::CrimeRate:      overlayName = "Crime"; break;
+            case DuneCity::CityOverlayMode::Population:     overlayName = "Population"; break;
+            default: break;
+        }
+        drawText(fmt::sprintf("Overlay: %s", overlayName), 12);
+    }
+
     textY += 4;
     drawText("Press C to toggle", 10);
 }
