@@ -58,14 +58,13 @@ dunecity/
 ## Getting the Code
 
 ```bash
-# The repo lives at:
+# Clone the repo
+git clone git@github.com:svan058/dunecity.git ~/development/dunecity
 cd ~/development/dunecity
 
-# It's a local git repo. Verify:
+# Verify
 git log --oneline -5
 ```
-
-There is no remote yet. The repo was initialized from a working copy of Dune Legacy (commit `a381010`) with all DuneCity modifications applied.
 
 ### Upstream Dune Legacy
 
