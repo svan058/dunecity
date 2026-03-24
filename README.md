@@ -6,6 +6,27 @@ A hybrid RTS + city-builder: the Dune Legacy engine with Micropolis (SimCity) ci
 
 ---
 
+## Development Workflow
+
+**Trunk-based development:**
+- `main` = trunk, always deployable
+- Feature branches: short-lived, PRs for multi-agent visibility
+- **Gate:** Must compile to merge back
+
+```bash
+# Create feature branch
+git checkout -b feature/your-feature
+
+# Work, commit, push
+git add . && git commit -m "feat: description" && git push -u origin feature/your-feature
+
+# Open PR at: https://github.com/svan058/dunecity/compare
+
+# After review + CI passes → squash merge to main
+```
+
+---
+
 ## Build
 
 ```bash
