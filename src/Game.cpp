@@ -1742,6 +1742,14 @@ void Game::doInput()
 
                                 } break;
 
+                                case CursorMode_CityZone: {
+
+                                    if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
+                                        handleCityZonePlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
+                                    }
+
+                                } break;
+
                                 case CursorMode_Normal:
                                 default: {
 
@@ -3593,18 +3601,24 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         case SDLK_1: {
             if (SDL_GetModState() & KMOD_SHIFT) {
                 currentCityOverlay_ = DuneCity::CityOverlayMode::None;
+            } else if (currentCursorMode == CursorMode_CityZone) {
+                selectedZoneType_ = DuneCity::ZoneType::Residential;
             }
         } break;
 
         case SDLK_2: {
             if (SDL_GetModState() & KMOD_SHIFT) {
                 currentCityOverlay_ = DuneCity::CityOverlayMode::PowerGrid;
+            } else if (currentCursorMode == CursorMode_CityZone) {
+                selectedZoneType_ = DuneCity::ZoneType::Commercial;
             }
         } break;
 
         case SDLK_3: {
             if (SDL_GetModState() & KMOD_SHIFT) {
                 currentCityOverlay_ = DuneCity::CityOverlayMode::TrafficDensity;
+            } else if (currentCursorMode == CursorMode_CityZone) {
+                selectedZoneType_ = DuneCity::ZoneType::Industrial;
             }
         } break;
 
@@ -3632,6 +3646,15 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
+        case SDLK_z: {
+            if (currentCursorMode == CursorMode_CityZone) {
+                setCursorMode(CursorMode_Normal);
+            } else {
+                setCursorMode(CursorMode_CityZone);
+                selectedZoneType_ = DuneCity::ZoneType::Residential;
+            }
+        } break;
+
         case SDLK_a: {
             //set object to attack
             setCursorMode(CursorMode_Attack);
@@ -3642,7 +3665,11 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_ESCAPE: {
-            onOptions();
+            if (currentCursorMode == CursorMode_CityZone) {
+                setCursorMode(CursorMode_Normal);
+            } else {
+                onOptions();
+            }
         } break;
 
         case SDLK_F1: {
@@ -4044,6 +4071,31 @@ bool Game::handleSelectedObjectsCaptureClick(int xPos, int yPos) {
     }
 
     return false;
+}
+
+void Game::handleCityZonePlacementClick(int xPos, int yPos) {
+    Tile* pTile = currentGameMap->getTile(xPos, yPos);
+
+    if(pTile == nullptr) {
+        return;
+    }
+
+    if (!pTile->isRock() && pTile->getType() != Terrain_Slab) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    if (pTile->hasANonInfantryGroundObject()) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_PLACE_ZONE,
+                                   static_cast<uint32_t>(xPos),
+                                   static_cast<uint32_t>(yPos),
+                                   static_cast<uint32_t>(selectedZoneType_)));
+
+    soundPlayer->playSound(Sound_PlaceStructure);
 }
 
 
