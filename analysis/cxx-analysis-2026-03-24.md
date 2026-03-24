@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-24  
 **Status:** Active Development - Phase 2  
-**Run:** 2:20 PM (10-minute update)
+**Run:** 2:40 PM (10-minute update #3)
 
 ---
 
@@ -128,7 +128,7 @@ case CMD_CITY_TOOL: {
 
 ---
 
-## 3. What's Changed Since Last Run (2:10 PM)
+## 3. What's Changed Since Last Run (2:31 PM)
 
 ### Changes from Previous Analysis
 
@@ -136,7 +136,7 @@ case CMD_CITY_TOOL: {
 - **Tool gap persists** - Still only 3/20 tools implemented
 - **Tests still missing** - No dunecity tests created
 - **Status unchanged** - Analysis shows consistent picture
-- **Test framework corrected** - Dune Legacy uses **Catch2**, not gtest
+- **Test framework confirmed** - Dune Legacy uses **Catch2**, not gtest
 
 ### Git Status (Dune Legacy Modified Files)
 
@@ -186,9 +186,9 @@ cd ~/development/dune/dunelegacy
 ./runUnitTests.sh
 ```
 
-### Test Framework: Catch2 (CORRECTED)
+### Test Framework: Catch2 (CONFIRMED)
 
-**Critical Finding:** Dune Legacy uses **Catch2**, not gtest.
+**Finding:** Dune Legacy uses **Catch2**, not gtest.
 
 ```bash
 # Test runs via CMake
@@ -200,9 +200,14 @@ make dunelegacy_tests
 
 ### Test Framework Location
 
-```bash
-# Find Catch2 in the project
-find ~/development/dune/dunelegacy -name "*catch*" -o -name "*test*" 2>/dev/null | grep -v ".git" | head -20
+```
+~/development/dune/dunelegacy/tests/
+├── CMakeLists.txt
+├── testmain.cpp
+├── FileSystemTestCase/
+├── INIFileTestCase/
+├── NetworkManagerTestCase/
+└── PathBudgetTestCase/
 ```
 
 ### Current Test Gap: Zero dunecity Tests
@@ -355,11 +360,11 @@ simulate.cpp (1729 LOC)   → CitySimulation.cpp (518 LOC) ✓
 zone.cpp (1039 LOC)       → ZoneSimulation.cpp (239 LOC) ◐
 traffic.cpp (519 LOC)     → TrafficSimulation.cpp ✓
 power.cpp (195 LOC)      → PowerGrid.cpp ✓
-disasters.cpp (~418)      → CitySimulation.cpp::do*() ✓
+disasters.cpp (~418)     → CitySimulation.cpp::do*() ✓
 budget.cpp (~350)         → CityBudget.cpp ✓
 evaluate.cpp (~550)      → CityEvaluation.cpp ✓
 scan.cpp (600 LOC)        → CityScanner.cpp ◐
-tool.cpp (1617 LOC)       → CMD_CITY_TOOL (STUB - 3/20)
+tool.cpp (1617 LOC)      → CMD_CITY_TOOL (STUB - 3/20)
 ```
 
 ### Build Integration (Verified)

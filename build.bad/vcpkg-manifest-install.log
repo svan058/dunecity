@@ -1,0 +1,76 @@
+Detecting compiler hash for triplet arm64-osx...
+Compiler found: /usr/bin/c++
+The following packages will be built and installed:
+  * brotli:arm64-osx@1.2.0
+  * bzip2[core,tool]:arm64-osx@1.0.8#6
+    curl[core,non-http,openssl,ssl]:arm64-osx@8.17.0
+    discord-rpc:arm64-osx@3.4.0#4
+  * freetype[brotli,bzip2,core,png,zlib]:arm64-osx@2.13.3
+  * libogg:arm64-osx@1.3.6#1
+  * libpng:arm64-osx@1.6.50
+  * libvorbis:arm64-osx@1.3.7#4
+    miniupnpc:arm64-osx@2.3.2
+  * openssl:arm64-osx@3.6.0#3
+  * rapidjson:arm64-osx@2025-02-26
+    sdl2:arm64-osx@2.32.10
+    sdl2-mixer[core,wavpack]:arm64-osx@2.8.1
+    sdl2-ttf:arm64-osx@2.24.0
+  * vcpkg-cmake:arm64-osx@2024-04-23
+  * vcpkg-cmake-config:arm64-osx@2024-05-23
+  * vcpkg-cmake-get-vars:arm64-osx@2025-05-29
+  * wavpack:arm64-osx@5.8.1#2
+  * zlib:arm64-osx@1.3.1
+Additional packages (*) will be modified to complete this operation.
+Restored 3 package(s) from /Users/stefanclaw/.cache/vcpkg/archives in 10 ms. Use --debug to see more details.
+Installing 1/19 vcpkg-cmake:arm64-osx@2024-04-23...
+Elapsed time to handle vcpkg-cmake:arm64-osx: 1.65 ms
+vcpkg-cmake:arm64-osx package ABI: 8f562362d14e630b4ab6cf632ae3b77c99f41e5d0f318615f1b2d82d1b58c62f
+Installing 2/19 vcpkg-cmake-get-vars:arm64-osx@2025-05-29...
+Elapsed time to handle vcpkg-cmake-get-vars:arm64-osx: 1.69 ms
+vcpkg-cmake-get-vars:arm64-osx package ABI: bdaa3192a8731ccc92e6ef26793250a783159dcb70044d523c27328c61263166
+Installing 3/19 vcpkg-cmake-config:arm64-osx@2024-05-23...
+Elapsed time to handle vcpkg-cmake-config:arm64-osx: 1.34 ms
+vcpkg-cmake-config:arm64-osx package ABI: baa158502e927399219c3d2039c67734b372b63e96f36a7716536e68bdd1aca0
+Installing 4/19 openssl:arm64-osx@3.6.0#3...
+Building openssl:arm64-osx@3.6.0#3...
+-- Using cached openssl-openssl-openssl-3.6.0.tar.gz
+-- Cleaning sources at /Users/stefanclaw/dune/dunelegacy/vcpkg/buildtrees/openssl/src/nssl-3.6.0-a2eab2a5bb.clean. Use --editable to skip cleaning for the packages you specify.
+-- Extracting source /Users/stefanclaw/dune/dunelegacy/vcpkg/downloads/openssl-openssl-openssl-3.6.0.tar.gz
+-- Applying patch cmake-config.patch
+-- Applying patch command-line-length.patch
+-- Applying patch script-prefix.patch
+-- Applying patch aes_cfb128_vaes_encdec_wrapper.diff
+-- Applying patch windows/install-layout.patch
+-- Applying patch windows/install-pdbs.patch
+-- Applying patch windows/install-programs.diff
+-- Applying patch unix/android-cc.patch
+-- Applying patch unix/move-openssldir.patch
+-- Applying patch unix/no-empty-dirs.patch
+-- Applying patch unix/no-static-libs-for-shared.patch
+-- Using source at /Users/stefanclaw/dune/dunelegacy/vcpkg/buildtrees/openssl/src/nssl-3.6.0-a2eab2a5bb.clean
+-- Getting CMake variables for arm64-osx
+-- Loading CMake variables from /Users/stefanclaw/dune/dunelegacy/vcpkg/buildtrees/openssl/cmake-get-vars_C_CXX-arm64-osx.cmake.log
+-- Getting CMake variables for arm64-osx-dbg
+-- Getting CMake variables for arm64-osx-rel
+CMake Error at scripts/cmake/vcpkg_find_acquire_program.cmake:203 (message):
+  Could not find pkg-config.  Please install it via your package manager:
+
+      brew install pkg-config
+Call Stack (most recent call first):
+  scripts/cmake/z_vcpkg_setup_pkgconfig_path.cmake:19 (vcpkg_find_acquire_program)
+  scripts/cmake/vcpkg_configure_make.cmake:816 (z_vcpkg_setup_pkgconfig_path)
+  buildtrees/versioning_/versions/openssl/21c1dabbf149eaa75b6c8b6ba9c3c6edb4f47ea7/unix/portfile.cmake:123 (vcpkg_configure_make)
+  buildtrees/versioning_/versions/openssl/21c1dabbf149eaa75b6c8b6ba9c3c6edb4f47ea7/portfile.cmake:81 (include)
+  scripts/ports.cmake:206 (include)
+
+
+error: building openssl:arm64-osx failed with: BUILD_FAILED
+See https://learn.microsoft.com/vcpkg/troubleshoot/build-failures?WT.mc_id=vcpkg_inproduct_cli for more information.
+Elapsed time to handle openssl:arm64-osx: 3.1 s
+Please ensure you're using the latest port files with `git pull` and `vcpkg update`.
+Then check for known issues at:
+  https://github.com/microsoft/vcpkg/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+openssl
+You can submit a new issue at:
+  https://github.com/microsoft/vcpkg/issues/new?title=%5Bopenssl%5D%20build%20error%20on%20arm64-osx&body=Copy%20issue%20body%20from%20%2FUsers%2Fstefanclaw%2Fdevelopment%2Fdunecity%2Fbuild%2Fvcpkg_installed%2Fvcpkg%2Fissue_body.md
+You can also submit an issue by running (GitHub CLI must be installed):
+  /opt/homebrew/bin/gh issue create -R microsoft/vcpkg --title "[openssl] Build failure on arm64-osx" --body-file /Users/stefanclaw/development/dunecity/build/vcpkg_installed/vcpkg/issue_body.md

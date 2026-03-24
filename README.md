@@ -6,6 +6,28 @@ A hybrid RTS + city-builder: the Dune Legacy engine with Micropolis (SimCity) ci
 
 ---
 
+## Build
+
+```bash
+# Clone
+git clone git@github.com:svan058/dunecity.git ~/development/dunecity
+
+# Configure (uses vcpkg from original dune/dunelegacy)
+cd ~/development/dunecity
+cmake -B build \
+  -DCMAKE_PREFIX_PATH=/Users/stefanclaw/dune/dunelegacy/build/vcpkg_installed/arm64-osx \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DVCPKG_MANIFEST_INSTALL=OFF
+
+# Build
+cmake --build build -j$(sysctl -n hw.ncpu)
+
+# Run
+open build/bin/dunelegacy.app
+```
+
+---
+
 ## For Agents: Quick Context
 
 DuneCity is a fork of [Dune Legacy](https://github.com/svan058/dunelegacy) (a C++17/SDL2 open-source Dune II engine) with the [Micropolis](https://github.com/SimHacker/MicropolisCore) city-building simulation ported into it. Both simulations run in the same fixed-timestep game loop — Dune Legacy processes combat objects every tick, then advances one phase of a 16-phase Micropolis city cycle.
