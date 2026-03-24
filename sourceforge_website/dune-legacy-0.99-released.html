@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dune Legacy 0.99 Released</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="header-wrapper">
+    <div class="center-wrapper">
+      <a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+      <div id="header">
+        <div id="logo">
+          <h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+          <h2 id="site-slogan">A Dune II clone</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrapper">
+    <div class="center-wrapper">
+      <div class="content">
+        <div id="main">
+          <h1>Dune Legacy 0.99 Released</h1>
+          <div class="post-date">November 30, 2025</div>
+          <div class="post-body">
+            <p><b>v0.99 is now out!</b> This major release brings a complete mod system, full AI rebalancing, and tons of gameplay improvements.</p>
+
+            <h3>🎮 Main Changes</h3>
+            <ul>
+              <li><b>God Mode:</b> Type <code>muaddib</code> during single-player for immortality - great for play testing!</li>
+              <li><b>Mod System:</b> Mods can now be created and loaded for play in single and multiplayer! Files live in your app data folder in their own mod folder.</li>
+              <li><b>Full QuantBot Rebalance:</b> Completely rebalanced AI for the standard campaign - let me know how you find it!</li>
+              <li><b>Harvester Limits:</b> Implemented harvester limits - 40 for 128x128 maps and bigger, scaling down for smaller maps. You can still override it in settings.</li>
+              <li><b>Mod Editor:</b> Edit default AI (QuantBot only), units, buildings, and game settings to create new default values. For example, you could balance troopers and infantry to make them useful, or tweak anything else!</li>
+            </ul>
+
+            <h3>📦 Complete Mod System</h3>
+            <ul>
+              <li><b>Mod Editor:</b> Create and edit mods directly in-game with custom names and version tracking</li>
+              <li><b>Mod Management Menu:</b> Access via Main Menu → MODS to list, activate, create, edit, and delete mods</li>
+              <li><b>Multiplayer Mod Sync:</b> Host's mod automatically synced to all clients - no manual file sharing required!</li>
+              <li><b>Metaserver Integration:</b> Server browser shows mod name and version for each game</li>
+              <li><b>Moddable Files:</b> ObjectData.ini (unit stats), GameOptions.ini (game rules), QuantBot Config.ini (AI behavior)</li>
+            </ul>
+
+            <h3>⚔️ Major Combat & Unit Behavior Fixes</h3>
+            <ul>
+              <li><b>Instant Counter-Attack:</b> Units now immediately respond when damaged (no more 2-second delay)</li>
+              <li><b>Pursuit Behavior Fixed:</b> Units now move to exact weapon range instead of stopping 3 tiles short</li>
+              <li><b>Saboteur Fixes:</b> AI palace-spawned saboteurs now work correctly with proper pathfinding to occupied tiles</li>
+              <li><b>AMBUSH Mode:</b> Infantry in AMBUSH mode now pursue attackers (matches Dynasty behavior)</li>
+              <li><b>Sandworm Improvements:</b> Sandworms counter-attack when damaged from range</li>
+            </ul>
+
+            <h3>🤖 AI Improvements</h3>
+            <ul>
+              <li><b>Rebalanced Campaign Difficulty:</b> Better progression from Easy to Brutal with improved spice management</li>
+              <li><b>Factory Priority System:</b> Light Factory/WOR only produce when no Heavy Factory exists (fixes trike spam)</li>
+              <li><b>Enhanced Kiting:</b> Launchers and Deviators kite on all difficulties with proportional retreat distances</li>
+              <li><b>Support Mode Awareness:</b> Long-range units no longer kite when in support mode</li>
+            </ul>
+
+            <h3>🎯 Bug Fixes</h3>
+            <ul>
+              <li><b>Harvester Recovery:</b> Automatic stuck detection and retry system prevents infinite pathfinding loops</li>
+              <li><b>Deviated Unit Positioning:</b> Deviated units now properly move to squad center with tighter 2-tile radius</li>
+              <li><b>Deathhand Accuracy:</b> Dynasty scatter algorithm implemented for more predictable strikes</li>
+              <li><b>Carryall Improvements:</b> Distance-based damage falloff and better pickup/dropoff logic</li>
+            </ul>
+
+            <h3>🎮 Cheat Codes & God Mode</h3>
+            <ul>
+              <li><b>New God Mode:</b> Type "muaddib" during single-player to toggle immortality for human units/structures</li>
+              <li><b>Game Options Menu:</b> Checkbox for "Immortal Human Player" when starting new games</li>
+              <li><b>Special Interactions:</b> Sandworms choke on immortal units, safe carryall drops, survives capture attempts</li>
+            </ul>
+
+            <h3>🗺️ New Multiplayer Maps</h3>
+            <ul>
+              <li>4P Moshpit with Garbages (128x128)</li>
+              <li>6P Alkozeltser 2 (128x128)</li>
+              <li>6P Alkozeltser 4 (256x256)</li>
+              <li>6P Full Wormage (128x128)</li>
+            </ul>
+
+            <h3>🌐 Multiplayer Improvements</h3>
+            <ul>
+              <li><b>Automatic Map Sharing:</b> Custom maps automatically saved to clients when joining games</li>
+              <li><b>Automatic Mod Sync:</b> Host's mod files transferred and synced to all clients with checksum verification</li>
+              <li><b>Server Browser:</b> Shows mod name and version for each active game</li>
+            </ul>
+
+            <h3>⚙️ Performance & Technical</h3>
+            <ul>
+              <li><b>Proper VSync:</b> Implemented using SDL_RenderSetVSync() with multi-tier FPS thresholds</li>
+              <li><b>Configuration Standardization:</b> Renamed .bak files to .ini.default for clarity</li>
+              <li><b>macOS App Bundle Fix:</b> Fixed data directory path resolution for proper mod seeding</li>
+            </ul>
+
+            <h3>Download Links</h3>
+            <ul>
+              <li><b>Windows:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.99.1-Windows-x64.exe/download">DuneLegacy-0.99.1-Windows-x64.exe</a></li>
+              <li><b>macOS:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.99.1-macOS.dmg/download">DuneLegacy-0.99.1-macOS.dmg</a></li>
+            </ul>
+
+            <p><b>Note:</b> All PAK files included in installer - ready to play immediately after installation!</p>
+
+            <h3>Gameplay Impact</h3>
+            <p><b>For Players:</b></p>
+            <ul>
+              <li>Create and share custom mods easily</li>
+              <li>Units respond instantly to threats</li>
+              <li>AI palace saboteurs actually work</li>
+              <li>Infantry and combat units pursue enemies properly</li>
+              <li>God mode available for casual/practice play</li>
+            </ul>
+
+            <p><b>For Multiplayer:</b></p>
+            <ul>
+              <li>Mods automatically synchronized between host and clients</li>
+              <li>Custom maps automatically shared when joining games</li>
+              <li>Server browser shows what mod each game is running</li>
+            </ul>
+
+            <p><b>For Modders:</b></p>
+            <ul>
+              <li>Create mods with custom names directly in-game</li>
+              <li>Edit INI files for full control over stats, AI behavior, and game rules</li>
+              <li>Version tracking and metadata in mod.ini</li>
+              <li>Automatic checksum generation for multiplayer sync</li>
+            </ul>
+
+            <p><a href="downloads.html">Return to the downloads page</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

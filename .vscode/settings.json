@@ -1,0 +1,85 @@
+{
+    "chatgpt.openOnStartup": true,
+    
+    // 💡 BUILD REMINDER: Always use "Build + Create DMG Installer" target!
+    "window.title": "${activeEditorShort}${separator}${rootName} - 💡 Build with DMG target!",
+    
+    // Dune Legacy - Dual Version Setup (0.98.6 vs 0.97.5)
+    "files.associations": {
+        "*.h": "cpp",
+        "*.cpp": "cpp",
+        "*.hpp": "cpp",
+        "*.ini": "ini",
+        "*.pak": "binary",
+        "CMakeLists.txt": "cmake"
+    },
+    
+    // Task automation for build reminders
+    "task.autoDetect": "on",
+    "task.quickOpen.detail": true,
+    "task.quickOpen.skip": false,
+    
+    // C++ IntelliSense Configuration
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/src",
+        "/opt/homebrew/include",
+        "/usr/local/include"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    
+    // CMake
+    "cmake.configureOnOpen": false,
+    "cmake.buildDirectory": "${workspaceFolder}/build-vcpkg",
+    
+    // Editor Settings
+    "editor.formatOnSave": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.rulers": [120],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    
+    // Search Configuration - Include reference version for comparison
+    "search.exclude": {
+        "**/build": true,
+        "**/build-vcpkg": true,
+        "**/bin": true,
+        "**/.git": true,
+        "**/external": true,
+        "**/*.dmg": true,
+        "**/*.zip": true,
+        "**/*.PAK": true,
+        "**/*.pak": true
+    },
+    
+    // Files to watch/exclude
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/build-vcpkg/**": true,
+        "**/bin/**": true,
+        "**/.git/objects/**": true,
+        "**/*.dmg": true
+    },
+    
+    // Terminal Configuration
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    
+    // Cursor AI Context
+    "cursor.general.contextFiles": [
+        "${workspaceFolder}/.cursorrules",
+        "${workspaceFolder}/README",
+        "${workspaceFolder}/documents/*.md",
+        "/Users/stefanvanderwel/development/dune/dunelegacy-code-0.97.5/README"
+    ],
+    
+    // Git Configuration
+    "git.ignoreLimitWarning": true,
+    
+    // Show related files for comparison
+    "explorer.sortOrder": "type",
+    "explorer.compactFolders": false
+}

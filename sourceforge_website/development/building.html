@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>Dune Legacy</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/development/building.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="../index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="../img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="../index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="../faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="../index.html">Home</a></li>
+					
+					
+					<li ><a href="../news.html">News</a></li>
+					
+					
+					<li ><a href="../gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="../downloads.html">Downloads</a></li>
+					
+					
+					<li ><a href="../manual.html">Manual</a></li>
+					
+					
+					<li ><a href="../maps.html">Maps</a></li>
+					
+					
+					<li class="current_page_item"><a href="../development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content" id="content-two-columns">
+			<div id="main-wrapper">
+				<div id="main">
+        			<div id="main">
+
+	<h1>Building Dune Legacy</h1>
+	<p>
+	This page describes how to build Dune Legacy on Linux/Unix. For information on how to build on Mac OS X or Windows have a look at <a href="../development/packaging.html">Packaging Dune Legacy</a>.
+	</p>
+
+	<h2>Prerequirements</h2>
+	<ul>
+		<li>gcc or any other standard compliant C++ compiler</li>
+		<li>autotools</li>
+		<li>SDL 1.2</li>
+		<li>SDL-mixer</li>
+	</ul>
+
+	<h2>Data Location</h2>
+	<p>
+	Dune Legacy can read the needed data from different locations. If you want to keep everything in one directory you should use the first method. You also may decide to install Dune Legacy on your system. Then use the second method.
+	</p>
+
+	<h3>Method 1: Data read from local directory</h3>
+	<p>
+	<a href="../development/sourcecode.html">Get the Dune Legacy source code</a> and run at the top level directory the following commands:
+	</p>
+
+	<blockquote>
+	autoreconf --install<br />
+	./buildlocal.sh
+	</blockquote>
+
+	<p>
+	This will configure and build Dune Legacy and you will find afterwards a "dunelegacy" binary in the top level directory. The data is read from the data subdirectory. You should copy all the PAK-files from Dune 2 into this subdirectory.</p>
+
+	<p>
+	If you want to build a binary with debug symbols use ./builddebug.sh. For subsequent builds it is not necessary to run autoreconf again but ./buildlocal.sh or ./builddebug.sh is sufficient.
+	</p>
+
+
+	<h3>Method 2: Install Dune Legacy on your system</h3>
+	<p>
+	Extract the Dune Legacy source code and run at the top level directory the following commands:
+	</p>
+
+	<blockquote>
+		autoreconf --install<br />
+		./configure<br />
+		make<br />
+		make install
+	</blockquote>
+
+	<p>
+	You may decide to change configure's default prefix to something else, e.g. ./configure --prefix=/usr
+	</p>
+
+</div>
+
+				</div>
+			</div>
+
+			<div id="sidebar-wrapper">
+	<div id="sidebar">
+
+		<div class="box">
+
+			<div class="box-title">Overview</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/sourcecode.html">Getting the source code</a></li>
+					
+					<li><a href="../development/building.html">Building Dune Legacy</a></li>
+					
+					<li><a href="../development/developerguide.html">Dune Legacy: Developer Guide</a></li>
+					
+					<li><a href="../development/unittests.html">Running Unit Tests</a></li>
+					
+					<li><a href="../development/localization.html">Localization</a></li>
+					
+					<li><a href="../development/mapformat.html">Map Format</a></li>
+					
+					<li><a href="../development/modding.html">Modding Dune Legacy</a></li>
+					
+					<li><a href="../development/packaging.html">Packaging Dune Legacy</a></li>
+					
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="box nobborder">
+
+			<div class="box-title">Miscellaneous</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/reportingbugs.html">Reporting Bugs</a></li>
+					
+					<li><a href="../development/featurerequests.html">Feature Requests</a></li>
+					
+					<li><a href="../development/differencestod2.html">Differences to Dune II</a></li>
+					
+					<li><a href="../development/newname.html">New Name for Dune Legacy</a></li>
+					
+					<li><a href="../development/xcode5sdl12.html">Howto: xCode 5 and SDL 1.2</a></li>
+					
+				</ul>
+			</div>
+		
+		</div>
+
+	</div>
+</div>
+
+
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="../img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="../index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

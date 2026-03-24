@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dune Legacy</title>
+    <description>Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!</description>
+    <link>http://dunelegacy.sourceforge.net/website/</link>
+    <atom:link href="http://dunelegacy.sourceforge.net/website/feed.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>Dune Legacy 0.99 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.99 is now available! This major release introduces a complete mod system with multiplayer synchronization, fixes critical unit combat behaviors, and delivers comprehensive AI improvements.&lt;/p&gt;
+
+&lt;h3&gt;🎮 NEW: Complete Mod System&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Mod Editor & Management:&lt;/b&gt; Create, edit, and manage mods directly in-game via Main Menu → MODS&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Multiplayer Mod Sync:&lt;/b&gt; Host's mod automatically synced to all clients - no manual file sharing required!&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Metaserver Integration:&lt;/b&gt; Server browser shows mod name and version for each game&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Moddable Files:&lt;/b&gt; ObjectData.ini (unit stats), GameOptions.ini (game rules), QuantBot Config.ini (AI behavior)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;⚔️ Major Combat & Unit Behavior Fixes&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Instant Counter-Attack:&lt;/b&gt; Units now immediately respond when damaged (eliminated 2-second delay)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Pursuit Behavior Fixed:&lt;/b&gt; Units now move to exact weapon range instead of stopping 3 tiles short&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Saboteur Fixes:&lt;/b&gt; AI palace-spawned saboteurs now work correctly&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;AMBUSH Mode:&lt;/b&gt; Infantry pursue attackers when damaged (matches Dynasty behavior)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Sandworm Improvements:&lt;/b&gt; Counter-attack when damaged from range&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;🤖 AI Improvements&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Campaign Difficulty Balance:&lt;/b&gt; Rebalanced Easy/Medium/Hard/Brutal with better progression&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Factory Priority System:&lt;/b&gt; Fixes Sardaukar producing trikes instead of tanks&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Enhanced Kiting:&lt;/b&gt; Launchers/Deviators kite on all difficulties with proportional retreat distances&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;🎮 Cheat Codes & God Mode&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;New God Mode:&lt;/b&gt; Type "muaddib" during single-player for immortality (single-player only)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Special Effects:&lt;/b&gt; Sandworms choke on immortal units, safe carryall drops&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;🌐 Multiplayer Improvements&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Automatic Map Sharing:&lt;/b&gt; Custom maps automatically saved to clients when joining&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Automatic Mod Sync:&lt;/b&gt; Host's mod files transferred with checksum verification&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;New Maps:&lt;/b&gt; Four new multiplayer maps (4P Moshpit, 6P Alkozeltser, 6P Full Wormage)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.99-Windows-x64.exe/download&quot;&gt;DuneLegacy-0.99-Windows-x64.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.99-macOS.dmg/download&quot;&gt;DuneLegacy-0.99-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Complete mod system enables easy customization. Units respond instantly to threats. Seamless multiplayer with automatic map and mod sharing. All PAK files included!&lt;/p&gt;</description>
+      <pubDate>Sat, 30 Nov 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-11-30-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-11-30-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.7.1 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.98.7.1 is now available! This release doubles the map editor's design canvas, overhauls the pathfinding pipeline, restores the classic Campaign AI as the default opponent, and adds stability fixes for both single-player and multiplayer queue stress situations.&lt;/p&gt;
+
+&lt;h3&gt;🗺️ Map Editor Enhancements&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Expanded Map Sizes:&lt;/b&gt; Map editor now supports creating maps up to &lt;b&gt;512x512 tiles&lt;/b&gt; (doubled from previous 256x256 limit)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Improved Size Selection:&lt;/b&gt; Map size dropdowns now increment by 64 tiles for better granularity (64, 128, 192, 256, 320, 384, 448, 512)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Enhanced Radar/Minimap:&lt;/b&gt; Automatic scaling and centering for all map sizes on the radar viewport&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;⚙️ Performance & Pathfinding&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;New Path Cache:&lt;/b&gt; Unit path requests are cached with destination and map revision tracking so idle squads no longer flush and recompute identical paths every tick&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Map Revision System:&lt;/b&gt; Terrain updates (like structures being placed/destroyed) now increment a pathing revision counter. Cached paths are invalidated only when the topology truly changes, keeping 90% of previously computed paths reusable&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;A* Buffer Pool:&lt;/b&gt; The A* searcher reuses a pool of preallocated tile buffers, removing thousands of malloc/free cycles during late-game battles and cutting frame spikes&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Stuck Detection & Rescue:&lt;/b&gt; Units track progress toward their destination, automatically request a carryall if they fail to make progress&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Queue-Stress Protection:&lt;/b&gt; Military squads stop repathing when the queue depth exceeds 300. Multiplayer FPS drops (12 FPS → 50+ FPS) are eliminated&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Uncapped Rendering:&lt;/b&gt; VSync is now disabled by default so PCs with fast monitors can run at 120+ FPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;🧠 AI & Unit Behavior&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Default AI:&lt;/b&gt; CampaignAIPlayer replaces qBot as the default opponent - authentic Dune II behavior out of the box&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Ground-Contact Activation:&lt;/b&gt; Original AI activation now only triggers after ground-unit contact, matching the classic campaign flow&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Builder Defaults:&lt;/b&gt; AI-produced harvesters automatically start in HARVEST mode&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Immediate Defense:&lt;/b&gt; Campaign AI now scrambles defenders (including Deviators and Launchers) whenever structures or harvesters are hit&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.7.1-Windows-x64.exe/download&quot;&gt;DuneLegacy-0.98.7.1-Windows-x64.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.7.1-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.7.1-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Large-scale skirmishes with 600+ active units hold steady frame times thanks to cached paths and smarter queue budgeting. All PAK files now included in installer!&lt;/p&gt;</description>
+      <pubDate>Thu, 21 Nov 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-11-21-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-11-21-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.6.6 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.98.6.6 is now available! This release focuses on multiplayer stability and performance improvements.&lt;/p&gt;
+
+&lt;h3&gt;What's New in 0.98.6.6&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Fixed Multiplayer Synchronization:&lt;/b&gt; Restored network pacing and command synchronization - games no longer hang with "Waiting for other players" overlay&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Deterministic Pathfinding:&lt;/b&gt; Replaced time-sliced pathfinding with token-based budget system for consistent performance across all machines in multiplayer&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Multiplayer Pause Support:&lt;/b&gt; Players can now pause/resume during multiplayer sessions with synchronized notifications&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Network Improvements:&lt;/b&gt; Command buffering continues during wait states, ensuring peers stay synchronized&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Ornithopter Targeting:&lt;/b&gt; Changed to match original Dune II behavior for authentic gameplay&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Ornithopter Select Button:&lt;/b&gt; Added dedicated button for quick selection of all ornithopters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.6%20Setup.exe/download&quot;&gt;Dune Legacy 0.98.6.6 Setup.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.6-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.6.6-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The deterministic pathfinding system uses node-count budgets instead of wall-clock timing, ensuring all clients process the same number of path calculations per game cycle regardless of CPU speed differences.&lt;/p&gt;</description>
+      <pubDate>Sun, 03 Nov 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-11-03-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-11-03-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.6.4 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.98.6.4 is now available! This critical bugfix release addresses rocket launcher targeting issues and includes comprehensive multiplayer config verification improvements.&lt;/p&gt;
+
+&lt;h3&gt;What's New in 0.98.6.4&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Fixed Rocket Launcher Targeting (CRITICAL):&lt;/b&gt; Rockets no longer explode a square before reaching their target - regression from 0.98.6.3 proximity fuse changes. Rocket launchers now properly use 4-pixel explosion distance for all targets.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Proximity Fuse Clarification:&lt;/b&gt; Rocket turrets use 16-pixel proximity fuse ONLY when targeting flying units. Ground targets use standard 4-pixel explosion for both launchers and turrets.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Multiplayer Config Verification (6 Bugs Fixed!):&lt;/b&gt; Game version, QuantBot Config, and ObjectData validation ensures all players have matching configurations (fixed hash algorithm, client-side validation, race conditions, version checking).&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Required for Multiplayer:&lt;/b&gt; All players must use version 0.98.6.4 to prevent desyncs from config mismatches&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.4%20Setup.exe/download&quot;&gt;Dune Legacy 0.98.6.4 Setup.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.4-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.6.4-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release fixes a critical regression where rocket launchers were detonating too early. The multiplayer config verification system ensures all players use identical game versions and configurations to prevent desyncs.&lt;/p&gt;</description>
+      <pubDate>Mon, 28 Oct 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-10-28-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-10-28-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.6.3 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.98.6.3 is now available! This hotfix release addresses a critical rocket turret damage bug and improves overall game performance.&lt;/p&gt;
+
+&lt;h3&gt;What's New in 0.98.6.3&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Fixed Rocket Turret Damage (CRITICAL):&lt;/b&gt; Turrets now properly damage air units - hit rate improved from 3.5% to 66-100%! The damage formula was incorrectly scaling to zero at explosion radius.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;60+ FPS Support:&lt;/b&gt; Game now runs smoothly at higher framerates with optimized pathfinding&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;New Menu Option:&lt;/b&gt; "Limit to 31 FPS" checkbox for multiplayer stability or low-end systems&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Ornithopter Balance:&lt;/b&gt; Speed adjusted to 17 (from 15) after fixing targeting - still 23% slower than original&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Fixed QuantBot:&lt;/b&gt; AI correctly respects ornithopter attack settings on Easy/Medium difficulties&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Enhanced Logging:&lt;/b&gt; Added detailed performance metrics and combat statistics to Dune Legacy.log&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.3%20Setup.zip/download&quot;&gt;Dune Legacy 0.98.6.3 Setup.zip&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.3-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.6.3-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release may have slightly over-nerfed ornithopters - feedback welcome! The rocket turret fix was critical: damage was rounding to zero despite proximity detonations, making turrets completely ineffective against air units.&lt;/p&gt;</description>
+      <pubDate>Fri, 25 Oct 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-10-25-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-10-25-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.6.2 Released</title>
+      <description>&lt;p&gt;Dune Legacy 0.98.6.2 is now available! This release focuses on game balance and adds user-editable configuration files for units, structures, and AI behavior.&lt;/p&gt;
+
+&lt;h3&gt;What's New in 0.98.6.2&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;User-Editable Config Files:&lt;/b&gt; Customize ObjectData.ini (unit/structure stats) and QuantBot Config.ini (AI difficulty and behavior) without recompiling&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Ornithopter Balance:&lt;/b&gt; Speed reduced from 22 to 15 (32% slower), smaller attack waves (Hard: 1, Brutal: 3 ornis)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Rocket Turret Buffs:&lt;/b&gt; 15x faster scanning (0.2s vs 3s), fixed close-range air targeting, doubled rocket lifespan&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Smarter AI Defense:&lt;/b&gt; Builds 4 insurance turrets proactively, better counter logic, prerequisite checking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.2%20Setup.exe/download&quot;&gt;Dune Legacy 0.98.6.2 Setup.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.2-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.6.2-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Linux:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.2-Linux.tar.gz/download&quot;&gt;DuneLegacy-0.98.6.2-Linux.tar.gz&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release completes the ornithopter balance work - they're now effective but counterable. The new config system lets you customize balance to your liking!&lt;/p&gt;</description>
+      <pubDate>Thu, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-10-24-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-10-24-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.6 Released</title>
+      <description>&lt;p&gt;I am thrilled to announce the release of Dune Legacy version 0.98.6 for Windows and macOS! This is a major update bringing significant improvements to AI, multiplayer gameplay, and performance for large-scale battles.&lt;/p&gt;
+
+&lt;h3&gt;Major Features in 0.98.6&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;QuantBot AI Overhaul:&lt;/b&gt; The AI is now significantly more challenging and strategic (difficulty-scaled ornithopter attacks, intelligent rocket turret defense, smarter targeting)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Multiplayer LAN Fixes:&lt;/b&gt; Fixed pause/unpause freezing, added pause state notifications, optimized network synchronization&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Major Performance Improvements:&lt;/b&gt; Performance logging system, optimized pathfinding, fixed death spiral that caused frame drops&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Crash Reporting System:&lt;/b&gt; Automatic crash logs with stack traces&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;Critical Bug Fixes:&lt;/b&gt; Fixed 4 null pointer crashes, tile squash crash, carryall crash, and targeting issues&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6%20Setup.exe/download&quot;&gt;Dune Legacy 0.98.6 Setup.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.6-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release represents months of intensive development and testing. The QuantBot AI is now significantly more challenging - prepare for tougher battles! Thank you to all contributors and testers who helped make this release possible!&lt;/p&gt;</description>
+      <pubDate>Tue, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-10-22-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-10-22-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.98.4 Released</title>
+      <description>&lt;p&gt;I am excited to announce the release of Dune Legacy version 0.98.4 for Windows and macOS! This update brings further performance improvements, enhanced stability, and various bug fixes.&lt;/p&gt;
+
+&lt;h3&gt;Key Improvements in 0.98.4&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Enhanced graphics performance and rendering optimizations&lt;/li&gt;
+  &lt;li&gt;Improved AI behavior and decision making&lt;/li&gt;
+  &lt;li&gt;Better memory management and reduced memory usage&lt;/li&gt;
+  &lt;li&gt;Fixed various crashes and stability issues&lt;/li&gt;
+  &lt;li&gt;Updated SDL2 libraries for better compatibility&lt;/li&gt;
+  &lt;li&gt;Improved network play stability&lt;/li&gt;
+  &lt;li&gt;Enhanced user interface responsiveness&lt;/li&gt;
+  &lt;li&gt;Better support for high-resolution displays&lt;/li&gt;
+  &lt;li&gt;Various gameplay tweaks and balance improvements&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Download&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;Windows:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.4/Dune%20Legacy%200.98.4%20Setup.exe/download&quot;&gt;Dune Legacy 0.98.4 Setup.exe&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;macOS:&lt;/b&gt; &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.4/DuneLegacy-0.98.4-macOS.dmg/download&quot;&gt;DuneLegacy-0.98.4-macOS.dmg&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As always, you'll need the original Dune 2 PAK files to play. Thank you to all contributors and testers who helped make this release possible!&lt;/p&gt;</description>
+      <pubDate>Tue, 13 Aug 2024 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2024-08-13-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2024-08-13-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.97.04 Released</title>
+      <description>&lt;p&gt;I am pleased to announce that Dune Legacy version 0.97.04 is now available for Windows! This release brings significant performance optimizations and gameplay improvements.&lt;/p&gt;
+
+&lt;h3&gt;Key Improvements in 0.97.04&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Optimized sandworm behavior to use AMBUSH mode for better performance&lt;/li&gt;
+  &lt;li&gt;Fixed sandworm aggression to prevent excessive hunting across the map&lt;/li&gt;
+  &lt;li&gt;Overall improvements in CPU efficiency during large-scale battles&lt;/li&gt;
+  &lt;li&gt;Reduced CPU load during AI decision-making&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Community Updates&lt;/h3&gt;
+&lt;p&gt;We've expanded our community presence! You can now provide feedback and engage with other players in two ways:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Join our new Discord server: &lt;a href=&quot;https://discord.gg/6sAcZr6y3B&quot;&gt;https://discord.gg/6sAcZr6y3B&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Visit our SourceForge forum for traditional forum discussions&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cheers,&lt;br&gt;Stefan&lt;/p&gt;</description>
+      <pubDate>Mon, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-12-04-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-12-04-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.97.03 Released</title>
+      <description>&lt;p&gt;I am pleased to announce that Dune Legacy version 0.97.03 is now available for Windows! This release brings various improvements and fixes to enhance your gaming experience.&lt;/p&gt;
+
+&lt;p&gt;Additionally, I'm excited to announce that work will begin on version 0.97.04 alpha. Stay tuned for future updates and new features!&lt;/p&gt;
+
+&lt;h3&gt;Community Updates&lt;/h3&gt;
+&lt;p&gt;We've expanded our community presence! You can now provide feedback and engage with other players in two ways:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Join our new Discord server: &lt;a href=&quot;https://discord.gg/6sAcZr6y3B&quot;&gt;https://discord.gg/6sAcZr6y3B&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Visit our SourceForge forum for traditional forum discussions&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cheers,&lt;br&gt;Stefan&lt;/p&gt;</description>
+      <pubDate>Mon, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2025-12-04-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2025-12-04-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.97.0 Released for Windows</title>
+      <description>&lt;p&gt;After 6 years, 0.97.0 is being released with campaign AI nerfs and other minor changes so far only for windows. &lt;/p&gt;
+      </description>
+      <pubDate>Tue, 27 Dec 2022 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2022-12-27-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2022-12-27-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96.4 released</title>
+      <description>&lt;p&gt;After quite a longish development cycle and many new, interesting features being implemented the next version of Dune Legacy is ready for &lt;a href=&quot;downloads.html&quot;&gt;download&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Main changes: &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;New AI Smart Bot and Quant Bot&lt;/li&gt;
+  &lt;li&gt;Port to SDL 2&lt;/li&gt;
+  &lt;li&gt;Use hardware acceleration for drawing&lt;/li&gt;
+  &lt;li&gt;HD graphics: Use mask overlays to generate &lt;a href=&quot;hd-graphics-for-dune-legacy.html&quot;&gt;high-res graphics&lt;/a&gt; out of the low-res ones of the original game&lt;/li&gt;
+  &lt;li&gt;Maximum number of units per house (either map dependent or as a new game option "override maximum number of units")&lt;/li&gt;
+  &lt;li&gt;Use a smaller logical resolution for high resolution displays, e.g. 960x540 for 1920x1080&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Further changes: &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Move to fix-point math for game logic as floating-point operations may differ between platforms and compilers&lt;/li&gt;
+  &lt;li&gt;Units entering refineries or repair yards are now moving onto the structure tile before disappearing&lt;/li&gt;
+  &lt;li&gt;ADL music playback replaced: Now combines ScummVM AdlibDriver with Woody OPL chip emulation code from adplug&lt;/li&gt;
+  &lt;li&gt;Tutorial hints are shown in the campaign to guide the user&lt;/li&gt;
+  &lt;li&gt;New key bindings: Cycle through construction yards with 'H' and factories with 'F'; capture buildings with 'C'&lt;/li&gt;
+  &lt;li&gt;Improve performance of Fog of War&lt;/li&gt;
+  &lt;li&gt;Units can now be instructed to find the next repair yard on their own&lt;/li&gt;
+  &lt;li&gt;Save game speed, scroll speed and sound volume as game settings&lt;/li&gt;
+  &lt;li&gt;In campaign mode, the map choice screen remembers the region of a failed mission (the user has to select a different region)&lt;/li&gt;
+  &lt;li&gt;New game option "Manual Carryall Drops"&lt;/li&gt;
+  &lt;li&gt;Mentat's eyes are following the cursor&lt;/li&gt;
+  &lt;li&gt;Clicking on mentat's eyes makes him blink and clicking on mentat's mouth makes him open it&lt;/li&gt;
+  &lt;li&gt;Modding: Make it possible to disable a unit or structure&lt;/li&gt;
+  &lt;li&gt;Save screenshots as PNG&lt;/li&gt;
+  &lt;li&gt;64-bit builds for Windows&lt;/li&gt;
+  &lt;li&gt;Store complete map in save games (and replays) of single player custom games&lt;/li&gt;
+  &lt;li&gt;18 new maps by heinrich arkonnen&lt;/li&gt;
+  &lt;li&gt;4 new maps by Kuffar&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #32): Repaired units getting removed from control group (Reported by Chan Kun Wa)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #36): AI non-hostile and inactive (Reported by Chan Kun Wa)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #40): Bullets from gun turrets hit own building, e.g. other turrets (Reported by Dream Worker)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #50): Changing the player's name while playing a mission makes starting the next mission or restarting the current mission crash&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #53): SFX mismatch when playing Harkonnen &lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #62): Worms spawn under rock (Reported by heinrich arkonnen)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #67): Saving a game under Windows with (for filenames) illegal characters results in no save at all (Reported by vangrunz)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #70): Changing the player name makes replays crash&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #71): Ornithopter animation is too fast (Thanks to Kartones for the patch)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #72): Texture sizes were too big for older hardware; now textures are smaller than 2048x2048 (Reported by gdm85)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug #73): Shift the level of the voc files so that the last sample is 128 (Reported by Vortaka)&lt;/li&gt;
+  &lt;li&gt;Bugfix (Bug 3610246): Mentat help used wrong houses (Reported by kuffar)&lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Tue, 27 Dec 2016 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2016-12-27-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2016-12-27-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>HD graphics for Dune Legacy</title>
+      <description>&lt;p&gt;
+Dune 2 has, due to its age, graphics with very low resolution, e.g. a map tile in the DOS version is only 16x16 pixels. For those of you who like this pixelated look&amp;feel of the original game, Dune Legacy offers the option to use the original graphics. But Dune Legacy also allows to use the pixel-art scaler Scale2x that tries to reduce the pixelated appearance of the original graphics. Sometimes this leads to corners being rounded off, resulting in a cartoonish look.
+
+Two years ago sourceforge user Assembler Bot contacted me with a solution to this problem: "I have almost all bitmaps from old Dune2 up-scaled 3x and carefully pixel-by-pixel smoothed to resemble original bitmaps as close as possible." Some graphics were still missing which I created in the course of the last months. Arranging those high-res graphics to be useful for Dune Legacy also took some time.  Due to copyright issue it wasn't possible to include the graphics directly, but a masking technique was developed: The mask is applied to the original low-res image to create an high-res version. The next version of Dune Legacy will contain (the option) to use those graphics. Screenshots bellow allow you to compare both versions for yourself via the sliders:
+
+&lt;style&gt;
+.Screenshot1NN {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleNN1.png); 
+width: 800px;
+height: 650px;
+border: 3px solid #B16A2C;
+  border-radius: 3px;
+box-shadow: 0 0 1px #999, -2px 2px 3px rgba(0,0,0,.2);
+padding: 0;
+margin: 1rem auto;
+position: relative;
+overflow: hidden;
+}
+
+.Screenshot1HD {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleHD1.png); 
+height: 650px;
+resize: horizontal; 
+position: absolute; 
+top: 0; left: 0; 
+min-width: 0;
+max-width: 800px; 
+-moz-box-sizing: border-box; 
+box-sizing: border-box; 
+}
+.Screenshot1HD:before {
+content: '↔';
+  font-family: roboto;
+  font-weight: 300;
+background: rgba(0,0,0,.7);
+font-size: 18px; 
+color: white; 
+top: 0; right: 0px;
+height: 100%;
+line-height: 666px;  
+position: absolute; 
+}
+
+.Slider1{  
+resize: horizontal; 
+opacity: 0; 
+position: relative; 
+top: -50%;
+left: 0px; 
+margin-right: 0px;  
+width: 0px; height: 15px; 
+max-width: 794px; min-width: 15px; 
+outline: 0 solid transparent; 
+cursor: move;
+cursor: all-scroll;
+transform: scaley(200);
+transform-origin: center center;
+animation: delta 3.5s 1 normal ease-in-out 0s;
+}
+@keyframes delta {
+0% {width: 0px}
+50% {width: 750px}
+100% {width: 0px}
+}
+
+.Screenshot2NN {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleNN2.png); 
+width: 800px;
+height: 650px;
+border: 3px solid #B16A2C;
+  border-radius: 3px;
+box-shadow: 0 0 1px #999, -2px 2px 3px rgba(0,0,0,.2);
+padding: 0;
+margin: 1rem auto;
+position: relative;
+overflow: hidden;
+}
+
+.Screenshot2HD {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleHD2.png); 
+height: 650px;
+resize: horizontal; 
+position: absolute; 
+top: 0; left: 0; 
+min-width: 0;
+max-width: 800px; 
+-moz-box-sizing: border-box; 
+box-sizing: border-box; 
+}
+.Screenshot2HD:before {
+content: '↔';
+  font-family: roboto;
+  font-weight: 300;
+background: rgba(0,0,0,.7);
+font-size: 18px; 
+color: white; 
+top: 0; right: 0px;
+height: 100%;
+line-height: 666px;  
+position: absolute; 
+}
+
+.Slider2{  
+resize: horizontal; 
+opacity: 0; 
+position: relative; 
+top: -50%;
+left: 0px; 
+margin-right: 0px;  
+width: 0px; height: 15px; 
+max-width: 794px; min-width: 15px; 
+outline: 0 solid transparent; 
+cursor: move;
+cursor: all-scroll;
+transform: scaley(200);
+transform-origin: center center;
+}
+&lt;/style&gt;
+
+&lt;div class='Screenshot1NN' title='Original graphics'&gt;
+&lt;div class='Screenshot1HD' title='HD graphics'&gt;
+&lt;textarea readonly cols='0' rows='0' class='Slider1'&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class='Screenshot2NN' title='Original graphics'&gt;
+&lt;div class='Screenshot2HD' title='HD graphics'&gt;
+&lt;textarea readonly cols='0' rows='0' class='Slider2'&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+Above screenshots were taken at the highest zoom level but the graphics for the medium zoom level were also updated. 
+
+
+&lt;/p&gt;
+      </description>
+      <pubDate>Sun, 04 Sep 2016 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2016-09-04-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2016-09-04-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Patch for Mac OS X 10.10</title>
+      <description>&lt;p&gt;Newer versions of Mac OS X seem to have various things changed in a way that it broke backwards compatibility with SDL-based games. Jeffrey Carpenter looked into the issues and finally provided a patch to resolve the problem. The next release of Dune Legacy hopefully will run out of the box on current Mac OS X versions but in the meantime take a look at the install instructions provided by Jeffrey in &lt;a href=&quot;https://sourceforge.net/p/dunelegacy/bugs/51/&quot;&gt;Bug #51&lt;/a&gt;.&lt;/p&gt;
+      </description>
+      <pubDate>Tue, 13 Jan 2015 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2015-01-13-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2015-01-13-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96.3 released</title>
+      <description>&lt;p&gt;Main changes: &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Full-featured map editor with support of Dune2-compatible maps as well as the extended map format &lt;/li&gt;
+  &lt;li&gt;Integration of OpenSuperDune (a replacement to the original SuperDune) &lt;/li&gt;
+  &lt;li&gt;Unit/Structure stats and the techtree is read from a config file &lt;/li&gt;
+  &lt;li&gt;Used scaler (Nearest Neighbor or Scale2x) is configurable (default = Scale2x) &lt;/li&gt;
+  &lt;li&gt;Game completely localizable (except helping menu) &lt;/li&gt;
+  &lt;li&gt;Harvesters now have a return command &lt;/li&gt;
+  &lt;li&gt;Trying to place a structure on a tile which is already occupied by (your own) units orders them to move away &lt;/li&gt;
+  &lt;li&gt;Add support for multiple different AI implementations &lt;/li&gt;
+  &lt;li&gt;Improved AI: Base is now built up faster and more compact &lt;/li&gt;
+  &lt;li&gt;New single and multiplayer maps &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Further changes: &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Determine username automatically upon first start up &lt;/li&gt;
+  &lt;li&gt;Pressing an assigned number twice centers the screen on the selected units &lt;/li&gt;
+  &lt;li&gt;Destroyed units might spawn a soldier (Probability depends on the type of unit) &lt;/li&gt;
+  &lt;li&gt;Quad, Trike and Infantry units have a bumpy moving style when moving over rocks, mountains and thick spice &lt;/li&gt;
+  &lt;li&gt;Idling units randomly turn around &lt;/li&gt;
+  &lt;li&gt;Bullets now have an explosion animation when hitting &lt;/li&gt;
+  &lt;li&gt;Spice blooms have now their own animation &lt;/li&gt;
+  &lt;li&gt;Full Harvesters move 40% slower than empty ones &lt;/li&gt;
+  &lt;li&gt;Units are defined badly damaged (smoke, only one weapon) if &amp;lt; 50% max. health (instead of 30%)&lt;/li&gt;
+  &lt;li&gt;Sardaukar Troopers and Fremen Troopers are no unit types on its own anymore (just normal Troopers)&lt;/li&gt;
+  &lt;li&gt;Deviation chance is now house specific&lt;/li&gt;
+  &lt;li&gt;Starport prices are now normal distributed (instead of uniform)&lt;/li&gt;
+  &lt;li&gt;Limiting number of palaces to one is now optional (default = off)&lt;/li&gt;
+  &lt;li&gt;As in Dune II killed sandworms no longer respawn; old behavior is now an option (default = off)&lt;/li&gt;
+  &lt;li&gt;New game option: Sandworms drop spice when killed (default = off)&lt;/li&gt;
+  &lt;li&gt;Changes to game speed: Globally configurable; saved to and loaded from savegame; configurable before start of a multiplayer game&lt;/li&gt;
+  &lt;li&gt;Update enet to version 1.3.6&lt;/li&gt;
+  &lt;li&gt;Code was refactored in order to have a more consistent style&lt;/li&gt;
+  &lt;li&gt;Bugfix: Sand damage was using the wrong graphics&lt;/li&gt;
+  &lt;li&gt;Bugfix: Make it possible to order any type of unit from the starport if specified in the CHOAM section&lt;/li&gt;
+  &lt;li&gt;Bugfix: Build with SDL 1.2.14 on Mac OS X for Lion compatibility&lt;/li&gt;
+  &lt;li&gt;Bugfix: Allow special units to be delivered by reinforcements&lt;/li&gt;
+  &lt;li&gt;Bugfix: Correct order of houses is Harkonnen, Atreides, Ordos, Fremen, Sardaukar, Mercenary as in the color palette&lt;/li&gt;
+  &lt;li&gt;Bugfix: Minimap was not updated correctly when playing with fog-of-war enabled&lt;/li&gt;
+  &lt;li&gt;Bugfix: Stopping a unit that was awaiting pickup could "freeze" the carryall&lt;/li&gt;
+  &lt;li&gt;Bugfix: It was possible to exceed the spice storage limit (it's still possible to circumvent the limit but it's more complex)&lt;/li&gt;
+  &lt;li&gt;Bugfix: Harvester returns after the last tile of spice on the map is cleared&lt;/li&gt;
+  &lt;li&gt;Bugfix: Playing xmi music on Windows was broken&lt;/li&gt;
+  &lt;li&gt;Bugfix: Various fixes to the correct handling of music and sfx volume changes &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Known issues:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Multiplayer games still have a rare chance of getting out of sync &lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Wed, 27 Feb 2013 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2013-02-27-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2013-02-27-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96.2 released</title>
+      <description>&lt;ul&gt;
+  &lt;li&gt;Add LAN multiplayer mode&lt;/li&gt;
+  &lt;li&gt;Internet multiplayer mode with metaserver (Beta!)&lt;/li&gt;
+  &lt;li&gt;Use scale2x for scaling&lt;/li&gt;
+  &lt;li&gt;Make game scalable ingame (Zoomlevel x1, Zoomlevel x2 and Zoomlevel x3)&lt;/li&gt;
+  &lt;li&gt;Add mentat help&lt;/li&gt;
+  &lt;li&gt;Scroll build list with mouse wheel&lt;/li&gt;
+  &lt;li&gt;Loading maps is more fault tolerant and shows only warnings in most cases&lt;/li&gt;
+  &lt;li&gt;Loading maps now checks for non-standard features (see Section "Features" in the Dune II Format Specification)&lt;/li&gt;
+  &lt;li&gt;Confirm window for game restart and game exit&lt;/li&gt;
+  &lt;li&gt;Added 13 maps by Rippsblack&lt;/li&gt;
+  &lt;li&gt;New options "Structures Degrade On Concrete", "Start with Explored Map" and "Instant Build"&lt;/li&gt;
+  &lt;li&gt;Earthquake ("Window shaking") on large explosions (e.g. death hand explosion)&lt;/li&gt;
+  &lt;li&gt;French translation (incomplete and only a machine translation)&lt;/li&gt;
+  &lt;li&gt;Bugfix: Loading SCENH008.INI of Dune II V1.0 failed&lt;/li&gt;
+  &lt;li&gt;Bugfix: Dune Legacy.log was not used on Windows&lt;/li&gt;
+  &lt;li&gt;Bugfix: Support non-ascii characters in paths and filenames on Windows&lt;/li&gt;
+  &lt;li&gt;Bugfix: Infantry units could not trigger spice blooms&lt;/li&gt;
+  &lt;li&gt;Bugfix: When playing as the Sardaukar, the announcer still says "Harkonnen", e.g. "Harkonnen harvester deployed"&lt;/li&gt;
+  &lt;li&gt;Bugfix: Sardaukar Reinforcements did not work&lt;/li&gt;
+  &lt;li&gt;Refactoring: Drop Visual Studio 6.0 support completely and start using C++0x features &lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Sun, 24 Jul 2011 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2011-07-24-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2011-07-24-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>New Wiki</title>
+      <description>&lt;p&gt;Our new wiki is based upon the Hosted Apps Service provided by SourceForge.net. This eases website management as we do not have to upgrade the wiki software on our own in the future but can rely on SourceForge. While moving the wiki pages we cleaned up and removed outdated/obsolete entries. Furthermore we added some additional pages like a Manual and revamped the Development section.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately the wiki accounts could not be transferred because the Hosted Apps on SourceForge are connected to SourceForge accounts. Thus you will need to get an SourceForge account in order to edit our new wiki.&lt;/p&gt;
+
+&lt;p&gt;The old wiki is still accessible at &lt;a href=&quot;http://dunelegacy.sourceforge.net/wiki/&quot;&gt;http://dunelegacy.sourceforge.net/wiki/&lt;/a&gt;.&lt;/p&gt;
+      </description>
+      <pubDate>Sun, 13 Feb 2011 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2011-02-13-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2011-02-13-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96.1 released</title>
+      <description>&lt;ul&gt;
+  &lt;li&gt;Custom maps implemented (see &lt;a href=&quot;https://sourceforge.net/projects/dunelegacy/files/modding/Dune%20II%20Scenario%20Format%20Specification.pdf/download&quot;&gt;Dune II Format Specification&lt;/a&gt; for details on the map format)&lt;/li&gt;
+  &lt;li&gt;AI fixed (but still dumb)&lt;/li&gt;
+  &lt;li&gt;Play with AI in one team&lt;/li&gt;
+  &lt;li&gt;Fremen, Sardaukar and Mercenary playable (but needs better testing)&lt;/li&gt;
+  &lt;li&gt;Only one palace per house possible&lt;/li&gt;
+  &lt;li&gt;Colors of ingame GUI elements customized for each house&lt;/li&gt;
+  &lt;li&gt;New option screen&lt;/li&gt;
+  &lt;li&gt;I18N support (only English and German atm)&lt;/li&gt;
+  &lt;li&gt;Savegames are sorted by date&lt;/li&gt;
+  &lt;li&gt;Wall-Bug fixed: Walls not drawn correctly after loading a game&lt;/li&gt;
+  &lt;li&gt;Linux: Save configuration files to &lt;em&gt;$XDG_CONFIG_HOME/dunelegacy&lt;/em&gt; if set; otherwise &lt;em&gt;~/.config/dunelegacy&lt;/em&gt; is used&lt;/li&gt;
+  &lt;li&gt;Mac OS X: Save configuration files to &lt;em&gt;~/Library/Application Support/Dune Legacy&lt;/em&gt; instead of &lt;em&gt;~/.config/dunelegacy&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;Calculate md5sum of all PAK-Files at startup and write them to the log file (should ease debugging)&lt;/li&gt;
+  &lt;li&gt;Various smaller bugfixes &lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Tue, 30 Nov 2010 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2010-11-30-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2010-11-30-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96 released</title>
+      <description>&lt;ul&gt;
+  &lt;li&gt;Cutscenes are now integrated&lt;/li&gt;
+  &lt;li&gt;Score at the end of each mission&lt;/li&gt;
+  &lt;li&gt;Decoding music on the fly&lt;/li&gt;
+  &lt;li&gt;Capturing buildings is now possible again&lt;/li&gt;
+  &lt;li&gt;Fixes for gcc 4 (Thanks to David Geier)&lt;/li&gt;
+  &lt;li&gt;Structures are degrading&lt;/li&gt;
+  &lt;li&gt;Fix: Carryalls bring badly damaged units to the repair yard&lt;/li&gt;
+  &lt;li&gt;Packaging deb-files (Ubuntu/Debian)&lt;/li&gt;
+  &lt;li&gt;spec-files for packaging rpms (Fedora, Mandriva, SuSE)&lt;/li&gt;
+  &lt;li&gt;NSIS Installer Script (Windows)&lt;/li&gt;
+  &lt;li&gt;Prepared dmg (Mac OS X)&lt;/li&gt;
+  &lt;li&gt;Check for missing PAK-files&lt;/li&gt;
+  &lt;li&gt;Begin of chating system&lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Sun, 28 Mar 2010 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2010-03-28-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2010-03-28-00-00-00</guid>
+    </item>
+
+    <item>
+      <title>Dune Legacy 0.96 released</title>
+      <description>&lt;p&gt;This branch was forked from dunelegacy-0.93 IIRC. It's main goal is to restructure the game to increase it's code quality. This task is not finishd yet but there where several modifications. The biggest changes are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;All Game Data is now loaded out of the original Dune II PAK-Files (+ one additional LEGACY.PAK File). There is no longer a need to extract the data with an external program.&lt;/li&gt;
+  &lt;li&gt;The Menu-Code has been rewritten.&lt;/li&gt;
+  &lt;li&gt;The GUI-Code has been rewritten and extended.&lt;/li&gt;
+  &lt;li&gt;The music is converted from the original Dune II *.ADL or *.XMI Files. These files are converted to WAV-Files. It is still possible to use other files as background music (Download high-quality mp3-files here)&lt;/li&gt;
+  &lt;li&gt;The configuration is loaded from "Dune Legacy.ini"&lt;/li&gt;
+  &lt;li&gt;The interface for the Structures and Units had been redesigned to seperate functionality of a Unit/Structure and it's interface&lt;/li&gt;
+  &lt;li&gt;The SFX is loaded from PAK-Files and upsampled&lt;/li&gt;
+  &lt;li&gt;The save games are now saved platform independent (endian-safe and 64-bit safe)&lt;/li&gt;
+  &lt;li&gt;Save as many savegames as you like&lt;/li&gt;
+  &lt;li&gt;The campaign works like in the original Dune II&lt;/li&gt;
+  &lt;li&gt;Changed the unit/structure data to be like in the original&lt;/li&gt;
+  &lt;li&gt;Unit/Structure data is loaded from a file&lt;/li&gt;
+  &lt;li&gt;The whole game is now based on a single random number generator and thus reproducable&lt;/li&gt;
+  &lt;li&gt;Replays are now possible&lt;/li&gt;
+  &lt;li&gt;A lot of small graphical effects (Explosions, tracks on sand, dead infantry) where added&lt;/li&gt;
+  &lt;li&gt;The game is very stable now&lt;/li&gt;
+  &lt;li&gt;Many smaller bugfixes&lt;/li&gt;
+&lt;/ul&gt;
+      </description>
+      <pubDate>Thu, 05 Feb 2009 00:00:00 +0000</pubDate>
+      <link>http://dunelegacy.sourceforge.net/website/news.html#2009-02-05-00-00-00</link>
+      <guid isPermaLink="true">http://dunelegacy.sourceforge.net/website/news.html#2009-02-05-00-00-00</guid>
+    </item>
+
+  </channel>
+</rss>

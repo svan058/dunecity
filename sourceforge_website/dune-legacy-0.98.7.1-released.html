@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dune Legacy 0.98.7.1 Released</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="header-wrapper">
+    <div class="center-wrapper">
+      <a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+      <div id="header">
+        <div id="logo">
+          <h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+          <h2 id="site-slogan">A Dune II clone</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrapper">
+    <div class="center-wrapper">
+      <div class="content">
+        <div id="main">
+          <h1>Dune Legacy 0.98.7.1 Released</h1>
+          <div class="post-date">November 21, 2025</div>
+          <div class="post-body">
+            <p>Dune Legacy 0.98.7.1 is now available! This release doubles the map editor's design canvas, overhauls the pathfinding pipeline, restores the classic Campaign AI as the default opponent, and adds stability fixes for both single-player and multiplayer queue stress situations.</p>
+
+            <h3>🗺️ Map Editor Enhancements</h3>
+            <ul>
+              <li><b>Expanded Map Sizes:</b> Map editor now supports creating maps up to <b>512x512 tiles</b> (doubled from previous 256x256 limit)</li>
+              <li><b>Improved Size Selection:</b> Map size dropdowns now increment by 64 tiles for better granularity (64, 128, 192, 256, 320, 384, 448, 512)</li>
+              <li><b>Enhanced Radar/Minimap:</b> Automatic scaling and centering for all map sizes on the radar viewport</li>
+            </ul>
+
+            <h3>⚙️ Performance & Pathfinding</h3>
+            <ul>
+              <li><b>New Path Cache:</b> Unit path requests are cached with destination and map revision tracking so idle squads no longer flush and recompute identical paths every tick</li>
+              <li><b>Map Revision System:</b> Terrain updates (like structures being placed/destroyed) now increment a pathing revision counter. Cached paths are invalidated only when the topology truly changes, keeping 90% of previously computed paths reusable</li>
+              <li><b>A* Buffer Pool:</b> The A* searcher reuses a pool of preallocated tile buffers, removing thousands of malloc/free cycles during late-game battles and cutting frame spikes</li>
+              <li><b>Stuck Detection & Rescue:</b> Units track progress toward their destination, automatically request a carryall if they fail to make progress, and stop thrashing the queue with hopeless retries</li>
+              <li><b>Queue-Stress Protection:</b> Military squads stop repathing when the queue depth exceeds 300, prioritize combat/retreat intents. Multiplayer FPS drops (12 FPS → 50+ FPS) are eliminated</li>
+              <li><b>Uncapped Rendering:</b> VSync is now disabled by default so PCs with fast monitors can run at 120+ FPS while feeding the path budget system more headroom</li>
+            </ul>
+
+            <h3>🧠 AI & Unit Behavior</h3>
+            <ul>
+              <li><b>Default AI:</b> CampaignAIPlayer replaces qBot as the default opponent so new skirmishes use the authentic Dune II behavior</li>
+              <li><b>Ground-Contact Activation:</b> Original AI activation now only triggers after ground-unit contact, matching the classic campaign flow</li>
+              <li><b>Builder Defaults:</b> AI-produced harvesters automatically start in HARVEST mode, reducing idle harvester stalls</li>
+              <li><b>Immediate Defense:</b> Campaign AI now scrambles defenders (including Deviators and Launchers) whenever structures or harvesters are hit, and respects alliances via Team IDs</li>
+            </ul>
+
+            <h3>🧩 Compatibility & Build System</h3>
+            <ul>
+              <li><b>Savegame Back-Compat:</b> Save files as old as version 0.97.05 load cleanly</li>
+              <li><b>MSVC Builds Restored:</b> Campaign AI data tables were rewritten to avoid GCC-only designated initializers. The CMake toolchain is back to C++17 for maximum compiler coverage</li>
+              <li><b>Windows Polish:</b> The Windows executable icon embedding was fixed and updated config backup files include the new AI defaults</li>
+            </ul>
+
+            <h3>Download Links</h3>
+            <ul>
+              <li><b>Windows:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.7.1-Windows-x64.exe/download">DuneLegacy-0.98.7.1-Windows-x64.exe</a></li>
+              <li><b>macOS:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.7.1-macOS.dmg/download">DuneLegacy-0.98.7.1-macOS.dmg</a></li>
+            </ul>
+
+            <p><b>Note:</b> The game is now ready to play immediately after installation with all PAK files included!</p>
+
+            <p><a href="downloads.html">Return to the downloads page</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

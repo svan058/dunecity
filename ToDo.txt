@@ -1,0 +1,76 @@
+Todo:
+-----
+
+✅ DONE - Internet multiplayer working - metaserver restored at https://dunelegacy.sourceforge.net/metaserver/metaserver.php
+
+Reinforcements are delivered in reverse order (really?)
+
+Make command queues for units possible (e.g. waypoints during movement, hit and run, etc.)
+
+Not all original terrain effects on unit speed are present right now, e.g. units should slow down when crossing the sand/rock border, and different movement types are affected in a different way by sand and rock: tracked vehicles move faster on rocks and slow down on sand, while wheeled vehicles do just the opposite.
+
+Add missing voice announcements
+
+Think about other cursor and indictator graphics
+
+Make an option to show the original build icons
+
+Make GUI scale option for higher resolution screens.
+
+Test sound and music volume
+
+Rework message queue to drop redundant messages
+
+Test XMI playback on Windows 7
+
+Test Menu music change with directory player
+
+AI / Bot Improvements:
+----------------------
+
+Fix support bot (QuantBot) so it builds well for multiplayer
+
+Fix nuke targeting to make sure it targets a building
+
+Move to a weighted distribution for prioritising build as opposed to a complex decision tree
+- Priority and numbers based on: money, tech tree, remaining spice, harvesters, rocket defence, power requirement
+
+MCV deployment should favour locations further from existing construction yard
+
+Allow launchers to kite again
+
+Add a start location for moving units which is on sand
+
+Make original campaign AI
+
+Map Editor:
+-----------
+
+Update map editor to double map size available
+
+Modding:
+--------
+
+Allow for modifications to be created and used
+
+Ideas:
+------
+
+Allow for selecting whole rulesets (rules + object data), e.g. for Dune 2 Extended
+
+Air units flying grid-independend
+
+Collecting replays on the game statistics screen
+
+Make the UI scalable, e.g. 2x
+
+Configurable hotkeys for various commands (placing building, ordering units, scrolling, ...). SDL 2.0 has some functions for mapping keys/scancodes to key names which simplifies key mappings a lot.
+
+Upgrades for Windtraps, Silos, Refineries (another Harvester?), Gun-Turrets, ...
+
+Neutral units and structures which can be captured by moving an own unit nearby
+
+A Tower-Defense mode. The computer sends units from one point on the map (source) to another point (sink, destination). The way between these to points is very complicated. The goal for the human players is to kill these units before they reach the sink. For every killed unit the player gets money. The player can only build towers.
+Split-View: Two players can play on one computer like e.g. The Settlers II.
+
+Touchscreen support, e.g. for smartphones

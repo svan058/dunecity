@@ -1,0 +1,555 @@
+# This file contains various data regarding units and structures. Every section describes one unit/structure and should look like this:
+#
+#
+# [structure name]
+# Enabled = true			# is this structure available (starting structures, construction yard)?
+# HitPoints = 500			# what is the maximum health of this structure?
+# Price = 300				# how much does this structure cost?
+# Power = 10				# how much power do this structure require. Wind traps have negative values because they produce power?
+# ViewRange = 3				# how much terrain is revealed when this structure is placed?
+# Capacity = 1000			# how much spice can this structure contain?
+# BuildTime = 80			# how much time does the production of this structure take?
+# InfSpawnProp = 45			# what is the probability (in percent) that a infantry soldier is spawn on destruction?
+#
+# [unit name]
+# Enabled = true			# is this unit available  (starting units, factory, starport, reinforcement)?
+# HitPoints = 100			# what is the maximum health of this unit?
+# Price = 100				# how much does this unit cost?
+# ViewRange = 5				# how much terrain is revealed when this unit is moved?
+# WeaponDamage = 10			# how much damage does the weapon of this unit have?
+# WeaponRange = 4			# how far can this unit shoot?
+# WeaponReloadTime = 100	# how many frames does it take to reload the weapon?
+# MaxSpeed = 3.0			# how fast can this unit move?
+# TurnSpeed = 1.0			# how fast can this unit turn around?
+# BuildTime = 56			# how much time does the production of this unit take?
+# InfSpawnProp = 45			# what is the probability (in percent) that a infantry soldier is spawn on destruction?
+#
+# It depends on the unit/structure if a value is ignored. e.g an unarmed unit will ignore the value of weaponrange.
+# The there are 2 sections for default values for structures and units. These are used if something is not specified.
+
+### default structure ###
+
+[default structure]
+Enabled = false
+HitPoints = 0
+Price = 0
+Power = 0
+ViewRange = 0
+Capacity = 0
+WeaponDamage = 0
+WeaponRange = 0
+WeaponReloadTime = 0
+MaxSpeed = 0
+TurnSpeed = 0
+BuildTime = 80
+InfSpawnProp = 0
+Builder = Invalid
+TechLevel = -1
+UpgradeLevel = 0
+
+### Structures ###
+
+[Barracks]
+Enabled = true
+HitPoints = 300
+Price = 300
+Power = 10
+ViewRange = 2
+BuildTime = 72
+InfSpawnProp = 50
+Builder = Construction Yard
+Builder(H) = Invalid
+TechLevel = 2
+Prerequisite = Windtrap, Radar
+
+[Construction Yard]
+Enabled = true
+HitPoints = 400
+Price = 400
+Power = 0
+ViewRange = 3
+BuildTime = 80
+InfSpawnProp = 25
+
+[Gun-Turret]
+Enabled = true
+HitPoints = 200
+Price = 125
+Power = 10
+ViewRange = 2
+WeaponDamage = 20
+WeaponRange = 5
+WeaponReloadTime = 240
+TurnSpeed = 0.01
+BuildTime = 64
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 5
+Prerequisite = Windtrap, Radar
+
+[Heavy Factory]
+Enabled = true
+HitPoints = 200
+Price = 600
+Power = 35
+ViewRange = 3
+BuildTime = 144
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 4
+Prerequisite = Windtrap, Radar, Light Factory
+
+[Hightech Factory]
+Enabled = true
+HitPoints = 400
+Price = 500
+Power = 35
+ViewRange = 3
+BuildTime = 120
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 5
+Prerequisite = Windtrap, Radar, Light Factory
+
+[House IX]
+Enabled = true
+HitPoints = 400
+Price = 500
+Power = 40
+ViewRange = 3
+BuildTime = 80
+BuildTime = 120
+InfSpawnProp = 75
+Builder = Construction Yard
+TechLevel = 7
+Prerequisite = Windtrap, Refinery, Starport
+
+[Light Factory]
+Enabled = true
+HitPoints = 350
+Price = 400
+Power = 20
+ViewRange = 3
+BuildTime = 96
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 2
+TechLevel(H) = 3
+TechLevel(S) = 3
+Prerequisite = Windtrap, Refinery
+
+[Palace]
+Enabled = true
+HitPoints = 1000
+Price = 999
+Power = 80
+ViewRange = 5
+BuildTime = 130
+InfSpawnProp = 50
+Builder = Construction Yard
+TechLevel = 8
+Prerequisite = Starport
+
+[Radar]
+Enabled = true
+HitPoints = 500
+Price = 400
+Power = 30
+ViewRange = 10
+BuildTime = 80
+InfSpawnProp = 50
+Builder = Construction Yard
+TechLevel = 2
+Prerequisite = Windtrap
+
+[Refinery]
+Enabled = true
+HitPoints = 450
+Price = 400
+Power = 30
+ViewRange = 4
+Capacity = 1005
+BuildTime = 80
+InfSpawnProp = 50
+Builder = Construction Yard
+TechLevel = 1
+Prerequisite = Windtrap
+
+[Repair Yard]
+Enabled = true
+HitPoints = 200
+Price = 700
+Power = 20
+ViewRange = 3
+BuildTime = 80
+InfSpawnProp = 50
+Builder = Construction Yard
+TechLevel = 5
+Prerequisite = Windtrap, Radar, Light Factory
+
+[Rocket-Turret]
+Enabled = true
+HitPoints = 200 
+Price = 250
+Power = 25
+ViewRange = 5
+WeaponDamage = 30
+WeaponRange = 8
+WeaponReloadTime = 360
+TurnSpeed = 0.01
+BuildTime = 96
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 6
+Prerequisite = Windtrap, Radar
+UpgradeLevel = 2
+
+[Spice Silo]
+Enabled = true
+HitPoints = 150
+Price = 150
+Power = 5
+ViewRange = 2
+Capacity = 1000
+BuildTime = 48
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 2
+Prerequisite = Windtrap, Refinery
+
+[Slab1]
+Enabled = true
+Price = 5
+ViewRange = 1
+BuildTime = 16
+Builder = Construction Yard
+TechLevel = 1
+
+[Slab4]
+Enabled = true
+Price = 20
+ViewRange = 1
+BuildTime = 16
+Builder = Construction Yard
+TechLevel = 4
+UpgradeLevel = 1
+
+[Starport]
+Enabled = true
+HitPoints = 500
+Price = 500
+Power = 50
+ViewRange = 6
+BuildTime = 120
+InfSpawnProp = 50
+Builder = Construction Yard
+TechLevel = 6
+Prerequisite = Windtrap, Refinery
+
+[Wall]
+Enabled = true
+HitPoints = 50
+Price = 50
+Power = 0
+ViewRange = 1
+BuildTime = 40
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 4
+Prerequisite = Windtrap, Radar
+
+[Windtrap]
+Enabled = true
+HitPoints = 200
+Price = 300
+Power = -100		# power supply
+ViewRange = 2
+BuildTime = 48
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 1
+
+[WOR]
+Enabled = true
+HitPoints = 400
+Price = 400
+Power = 20
+ViewRange = 3
+BuildTime = 104
+InfSpawnProp = 50
+Builder = Construction Yard
+Builder(A) = Invalid
+TechLevel = 5
+TechLevel(H) = 2
+Prerequisite = Windtrap, Radar, Barracks
+Prerequisite(H) = Windtrap, Radar
+
+### default unit ###
+
+[default unit]
+Enabled = false
+HitPoints = 0
+Price = 0
+Power = 0
+ViewRange = 0
+Capacity = 0
+WeaponDamage = 0
+WeaponRange = 0
+WeaponReloadTime = 0
+MaxSpeed = 2.0
+TurnSpeed = 0.0625
+BuildTime = 80
+InfSpawnProp = 0
+Builder = Invalid
+TechLevel = 1
+UpgradeLevel = 0
+
+### Units ###
+
+[Carryall]
+Enabled = true
+HitPoints = 100
+Price = 800
+ViewRange = 5
+MaxSpeed = 32.0
+TurnSpeed = 0.25
+BuildTime = 64
+InfSpawnProp = 0
+Builder = Hightech Factory
+
+[Devastator]
+Enabled = true
+HitPoints = 400
+Price = 800
+ViewRange = 4
+WeaponDamage = 40
+WeaponRange = 5
+WeaponReloadTime = 300
+MaxSpeed = 1.28
+BuildTime = 104
+InfSpawnProp = 25
+Builder = Heavy Factory
+Builder(A) = Invalid
+Builder(O) = Invalid
+Prerequisite = House IX
+
+[Deviator]
+Enabled = true
+HitPoints = 120
+Price = 750
+ViewRange = 5
+WeaponDamage = 0
+WeaponRange = 7
+WeaponReloadTime = 540
+MaxSpeed = 4.0
+BuildTime = 80
+InfSpawnProp = 25
+Builder(O) = Heavy Factory
+TechLevel = 1
+Prerequisite = House IX
+
+[Frigate]
+Enabled = true
+HitPoints = 10000
+Price = 0
+ViewRange = 5
+MaxSpeed = 21.35
+TurnSpeed = 0.125
+InfSpawnProp = 0
+
+[Harvester]
+Enabled = true
+HitPoints = 150
+Price = 300
+ViewRange = 2
+MaxSpeed = 2.56
+BuildTime = 64
+InfSpawnProp = 50
+Builder = Heavy Factory
+
+[Launcher]
+Enabled = true
+HitPoints = 100
+Price = 450
+ViewRange = 5
+WeaponDamage = 75
+WeaponRange = 9
+WeaponReloadTime = 360
+MaxSpeed = 4.0
+BuildTime = 72
+InfSpawnProp = 25
+Builder = Heavy Factory
+Builder(O) = Invalid
+TechLevel = 5
+UpgradeLevel = 2
+
+[MCV]
+Enabled = true
+HitPoints = 150
+Price = 900
+ViewRange = 2
+MaxSpeed = 2.56
+BuildTime = 80
+InfSpawnProp = 25
+Builder = Heavy Factory
+TechLevel = 4
+UpgradeLevel = 1
+
+[Ornithopter]
+Enabled = true
+HitPoints = 25
+Price = 600
+ViewRange = 5
+WeaponDamage = 50
+WeaponRange = 5
+WeaponReloadTime = 150
+MaxSpeed = 22.0
+TurnSpeed = 0.125
+BuildTime = 96
+InfSpawnProp = 0
+Builder = Hightech Factory
+Builder(H) = Invalid
+TechLevel = 7
+Prerequisite = House IX
+UpgradeLevel = 1
+
+[Quad]
+Enabled = true
+HitPoints = 130
+Price = 200
+ViewRange = 2
+WeaponDamage = 7
+WeaponRange = 3
+WeaponReloadTime = 150
+MaxSpeed = 5.12
+BuildTime = 48
+InfSpawnProp = 25
+Builder = Light Factory
+TechLevel = 3
+TechLevel(H) = 1
+UpgradeLevel = 1
+UpgradeLevel(H) = 0
+
+[Raider Trike]
+Enabled = true
+HitPoints = 80
+Price = 150
+ViewRange = 2
+WeaponDamage = 5
+WeaponRange = 3
+WeaponReloadTime = 150
+MaxSpeed = 9.25
+BuildTime = 40
+InfSpawnProp = 25
+Builder = Light Factory
+Builder(A) = Invalid
+Builder(H) = Invalid
+
+[Saboteur]
+Enabled = true
+HitPoints = 10
+Price = 0
+ViewRange = 1
+MaxSpeed = 5.12
+BuildTime = 48
+InfSpawnProp = 0
+
+[Sandworm]
+Enabled = true
+HitPoints = 1000
+Price = 0
+ViewRange = 2
+WeaponDamage = 300
+WeaponRange = 0
+WeaponReloadTime = 60
+MaxSpeed = 3.76471
+TurnSpeed = 0.625
+InfSpawnProp = 0
+
+[Siege Tank]
+Enabled = true
+HitPoints = 300
+Price = 600
+ViewRange = 4
+WeaponDamage = 30
+WeaponRange = 5
+WeaponReloadTime = 270
+MaxSpeed = 2.56
+BuildTime = 96
+InfSpawnProp = 25
+Builder = Heavy Factory
+TechLevel = 6
+TechLevel(O) = 7
+UpgradeLevel = 3
+UpgradeLevel(O) = 2
+
+[Soldier]
+Enabled = true
+HitPoints = 20
+Price = 60
+ViewRange = 1
+WeaponDamage = 3
+WeaponRange = 2
+WeaponReloadTime = 135
+MaxSpeed = 1.28
+BuildTime = 32
+InfSpawnProp = 0
+Builder = Barracks
+
+[Sonic Tank]
+Enabled = true
+HitPoints = 110
+Price = 600
+ViewRange = 4
+WeaponDamage = 60
+WeaponRange = 8
+WeaponReloadTime = 240
+MaxSpeed = 4.0
+BuildTime = 104
+InfSpawnProp = 25
+Builder = Heavy Factory
+Builder(O) = Invalid
+Builder(H) = Invalid
+Prerequisite = House IX
+
+[Tank]
+Enabled = true
+HitPoints = 200
+Price = 300
+ViewRange = 3
+WeaponDamage = 25
+WeaponRange = 4
+WeaponReloadTime = 240
+MaxSpeed = 4.0
+BuildTime = 64
+InfSpawnProp = 25
+Builder = Heavy Factory
+
+[Trike]
+Enabled = true
+HitPoints = 100
+Price = 150
+ViewRange = 2
+WeaponDamage = 5
+WeaponRange = 3
+WeaponReloadTime = 150
+MaxSpeed = 6.4425
+BuildTime = 40
+InfSpawnProp = 25
+Builder = Light Factory
+Builder(O) = Invalid
+Builder(H) = Invalid
+
+[Trooper]
+Enabled = true
+HitPoints = 45
+Price = 100
+ViewRange = 1
+WeaponDamage = 5
+WeaponRange = 5
+WeaponReloadTime = 150
+MaxSpeed = 1.28
+BuildTime = 56
+InfSpawnProp = 0
+Builder = WOR
+

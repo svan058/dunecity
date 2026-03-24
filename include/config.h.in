@@ -1,0 +1,36 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#ifndef VERSION
+    #define VERSION "@PROJECT_VERSION@"
+#endif
+
+#ifndef PACKAGE
+    #define PACKAGE "@PROJECT_NAME@"
+#endif
+
+#define VERSIONSTRING   PACKAGE VERSION
+
+#ifndef DUNELEGACY_DATADIR
+    #define DUNELEGACY_DATADIR "@CMAKE_INSTALL_FULL_DATADIR@/@PROJECT_NAME@"
+#endif
+
+#ifndef CONFIGFILENAME
+    #define CONFIGFILENAME "Dune Legacy.ini"
+#endif
+
+#ifndef LOGFILENAME
+    #define LOGFILENAME "Dune Legacy.log"
+#endif
+
+#cmakedefine HAS_GETHOSTBYADDR_R
+#cmakedefine HAS_GETHOSTBYNAME_R
+#cmakedefine HAS_POLL
+#cmakedefine HAS_FCNTL
+#cmakedefine HAS_INET_PTON
+#cmakedefine HAS_INET_NTOP
+#cmakedefine HAS_MSGHDR_FLAGS
+#cmakedefine HAS_SOCKLEN_T
+#cmakedefine ENET_BUFFER_MAXIMUM @ENET_BUFFER_MAXIMUM@
+
+#endif // CONFIG_H 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dune Legacy 0.98.6.3 Released</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="header-wrapper">
+    <div class="center-wrapper">
+      <a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+      <div id="header">
+        <div id="logo">
+          <h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+          <h2 id="site-slogan">A Dune II clone</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrapper">
+    <div class="center-wrapper">
+      <div class="content">
+        <div id="main">
+          <h1>Dune Legacy 0.98.6.3 Released</h1>
+          <div class="post-date">October 25, 2025</div>
+          <div class="post-body">
+            <p>Dune Legacy 0.98.6.3 is now available! This hotfix release addresses critical rocket turret damage issues and improves overall game performance.</p>
+            
+            <h3>What's New in 0.98.6.3</h3>
+            
+            <h4>🚀 Rocket Turret Damage Fix (Critical)</h4>
+            <ul>
+              <li><b>Fixed zero damage bug:</b> Rockets now apply full 30 damage to air units within blast radius (previously scaled to 0)</li>
+              <li><b>Hit rate improvement:</b> 3.5% → 66-100% against ornithopters</li>
+              <li><b>Kill rate improvement:</b> 0% → 66-100% (turrets are finally effective!)</li>
+              <li><b>Proximity fuse:</b> Rockets detonate within half-tile of air targets</li>
+              <li><b>Extended lifespan:</b> 5-second rocket lifetime for better pursuit</li>
+            </ul>
+            
+            <h4>⚖️ Ornithopter Balance Adjustment</h4>
+            <ul>
+              <li>Speed increased slightly: 15 → 17 (after fixing targeting issues)</li>
+              <li>Still 23% slower than original (22 → 17)</li>
+              <li>Remains counterable but viable for harassment</li>
+            </ul>
+            
+            <h4>⚡ Performance Improvements</h4>
+            <ul>
+              <li><b>60+ FPS support:</b> Game now runs smoothly at higher framerates</li>
+              <li><b>New menu option:</b> "Limit to 31 FPS" for multiplayer stability or low-end systems</li>
+              <li><b>Optimized pathfinding:</b> Reduced budget for better frame pacing</li>
+            </ul>
+            
+            <div style="text-align: center; margin: 20px 0;">
+              <img src="screenshots/extra-menu-option.png" alt="New FPS limit option in settings menu" style="max-width: 600px; border: 1px solid #ccc;">
+              <p style="font-style: italic; color: #666;">New FPS limit option in Video settings</p>
+            </div>
+            
+            <h4>🤖 QuantBot Behavior Fix</h4>
+            <ul>
+              <li><b>Fixed:</b> AI no longer attacks with ornithopters on Easy/Medium difficulties (behavior was incorrectly enabled)</li>
+              <li><b>Customizable:</b> Adjust AI behavior in <code>QuantBot Config.ini</code> in your AppData directory</li>
+              <li><b>Unit stats:</b> Modify unit/structure properties in <code>ObjectData.ini</code></li>
+            </ul>
+            
+            <div style="text-align: center; margin: 20px 0;">
+              <img src="screenshots/quantbot config.png" alt="QuantBot configuration file" style="max-width: 600px; border: 1px solid #ccc;">
+              <p style="font-style: italic; color: #666;">User-editable QuantBot configuration</p>
+            </div>
+            
+            <h4>📊 Enhanced Logging</h4>
+            <ul>
+              <li>Added detailed performance metrics to <code>Dune Legacy.log</code></li>
+              <li>Combat statistics tracking (targeting, firing, hits, kills)</li>
+              <li>Turret behavior logging for debugging</li>
+            </ul>
+            
+            <h3>Download Links</h3>
+            <ul>
+              <li><b>Windows:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.3%20Setup.zip/download">Dune Legacy 0.98.6.3 Setup.zip</a></li>
+              <li><b>macOS:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.3-macOS.dmg/download">DuneLegacy-0.98.6.3-macOS.dmg</a></li>
+            </ul>
+            
+            <p>As always, you'll need the original Dune 2 PAK files to play. See our <a href="./faq.html">FAQ</a> for more information.</p>
+            
+            <p><a href="downloads.html">Download Dune Legacy 0.98.6.3</a></p>
+            
+            <p><b>Config File Locations:</b></p>
+            <ul>
+              <li><b>Windows:</b> <code>C:\Users\&lt;username&gt;\AppData\Roaming\dunelegacy\config\</code></li>
+              <li><b>Linux:</b> <code>~/.config/dunelegacy/config/</code></li>
+              <li><b>macOS:</b> <code>~/Library/Application Support/dunelegacy/config/</code></li>
+            </ul>
+            
+            <p><b>Note:</b> This release may have over-nerfed ornithopters slightly - please provide feedback on the balance! The rocket turret fix was critical: previously, distance falloff was rounding damage to zero, making turrets completely ineffective against air units despite firing successfully.</p>
+            
+            <p><b>Technical Details:</b> The damage formula for air units was applying exponential falloff based on distance, reducing 30 damage to 0 at the edge of the explosion radius. This has been changed to flat 100% damage within the blast radius for all air targets, making anti-air missiles effective as intended.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>Dune Legacy 0.96.4 released</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/dune-legacy-0.96.4-released.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="./faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="./index.html">Home</a></li>
+					
+					
+					<li ><a href="./news.html">News</a></li>
+					
+					
+					<li ><a href="./gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="./downloads.html">Downloads</a></li>
+					
+					
+					<li ><a href="./manual.html">Manual</a></li>
+					
+					
+					<li ><a href="./maps.html">Maps</a></li>
+					
+					
+					<li ><a href="./development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content">
+        	<div id="main">
+
+	<div class="post">
+
+	  <header class="post-header">
+		<h1>Dune Legacy 0.96.4 released</h1>
+		<p class="meta">Dec 27, 2016</p>
+	  </header>
+
+	  <article class="post-content">
+	  <p>After quite a longish development cycle and many new, interesting features being implemented the next version of Dune Legacy is ready for <a href="downloads.html">download</a>.</p>
+
+<p>Main changes: </p>
+
+<ul>
+  <li>New AI Smart Bot and Quant Bot</li>
+  <li>Port to SDL 2</li>
+  <li>Use hardware acceleration for drawing</li>
+  <li>HD graphics: Use mask overlays to generate <a href="hd-graphics-for-dune-legacy.html">high-res graphics</a> out of the low-res ones of the original game</li>
+  <li>Maximum number of units per house (either map dependent or as a new game option “override maximum number of units”)</li>
+  <li>Use a smaller logical resolution for high resolution displays, e.g. 960x540 for 1920x1080</li>
+</ul>
+
+<p>Further changes: </p>
+
+<ul>
+  <li>Move to fix-point math for game logic as floating-point operations may differ between platforms and compilers</li>
+  <li>Units entering refineries or repair yards are now moving onto the structure tile before disappearing</li>
+  <li>ADL music playback replaced: Now combines ScummVM AdlibDriver with Woody OPL chip emulation code from adplug</li>
+  <li>Tutorial hints are shown in the campaign to guide the user</li>
+  <li>New key bindings: Cycle through construction yards with ‘H’ and factories with ‘F’; capture buildings with ‘C’</li>
+  <li>Improve performance of Fog of War</li>
+  <li>Units can now be instructed to find the next repair yard on their own</li>
+  <li>Save game speed, scroll speed and sound volume as game settings</li>
+  <li>In campaign mode, the map choice screen remembers the region of a failed mission (the user has to select a different region)</li>
+  <li>New game option “Manual Carryall Drops”</li>
+  <li>Mentat’s eyes are following the cursor</li>
+  <li>Clicking on mentat’s eyes makes him blink and clicking on mentat’s mouth makes him open it</li>
+  <li>Modding: Make it possible to disable a unit or structure</li>
+  <li>Save screenshots as PNG</li>
+  <li>64-bit builds for Windows</li>
+  <li>Store complete map in save games (and replays) of single player custom games</li>
+  <li>18 new maps by heinrich arkonnen</li>
+  <li>4 new maps by Kuffar</li>
+  <li>Bugfix (Bug #32): Repaired units getting removed from control group (Reported by Chan Kun Wa)</li>
+  <li>Bugfix (Bug #36): AI non-hostile and inactive (Reported by Chan Kun Wa)</li>
+  <li>Bugfix (Bug #40): Bullets from gun turrets hit own building, e.g. other turrets (Reported by Dream Worker)</li>
+  <li>Bugfix (Bug #50): Changing the player’s name while playing a mission makes starting the next mission or restarting the current mission crash</li>
+  <li>Bugfix (Bug #53): SFX mismatch when playing Harkonnen </li>
+  <li>Bugfix (Bug #62): Worms spawn under rock (Reported by heinrich arkonnen)</li>
+  <li>Bugfix (Bug #67): Saving a game under Windows with (for filenames) illegal characters results in no save at all (Reported by vangrunz)</li>
+  <li>Bugfix (Bug #70): Changing the player name makes replays crash</li>
+  <li>Bugfix (Bug #71): Ornithopter animation is too fast (Thanks to Kartones for the patch)</li>
+  <li>Bugfix (Bug #72): Texture sizes were too big for older hardware; now textures are smaller than 2048x2048 (Reported by gdm85)</li>
+  <li>Bugfix (Bug #73): Shift the level of the voc files so that the last sample is 128 (Reported by Vortaka)</li>
+  <li>Bugfix (Bug 3610246): Mentat help used wrong houses (Reported by kuffar)</li>
+</ul>
+
+	  </article>
+
+	</div>
+
+</div>
+
+		</div>
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="./img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="./index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

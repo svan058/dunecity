@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>Dune Legacy</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/manual.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="./faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="./index.html">Home</a></li>
+					
+					
+					<li ><a href="./news.html">News</a></li>
+					
+					
+					<li ><a href="./gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="./downloads.html">Downloads</a></li>
+					
+					
+					<li class="current_page_item"><a href="./manual.html">Manual</a></li>
+					
+					
+					<li ><a href="./maps.html">Maps</a></li>
+					
+					
+					<li ><a href="./development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content">
+        	<div id="main">
+
+	<h1>Manual</h1>
+	<br />
+	<h2>Getting Started</h2>
+	<div class="notice">
+	<p><strong>You need the following files from original Dune II in order to play Dune Legacy:</strong></p>
+	<ul>
+	<li>ATRE.PAK</li>
+	<li>DUNE.PAK</li>
+	<li>ENGLISH.PAK</li>
+	<li>FINALE.PAK</li>
+	<li>HARK.PAK</li>
+	<li>INTRO.PAK</li>
+	<li>INTROVOC.PAK</li>
+	<li>MENTAT.PAK</li>
+	<li>MERC.PAK</li>
+	<li>ORDOS.PAK</li>
+	<li>SCENARIO.PAK</li>
+	<li>SOUND.PAK</li>
+	<li>VOC.PAK</li>
+	<li>GERMAN.PAK (only for playing in german)</li>
+	<li>FRENCH.PAK (only for playing in french)</li>
+	</ul>
+	</div>
+
+	<br />
+	<p>It depends on your system and installation where to put these files. LEGACY.PAK is supplied with Dune Legacy and is already in the data directory. All the other files should be copied there too. If you are not allowed to copy files there you may copy these files inside the dunelegacy configuration directory inside a data directory (e.g. ~/.config/dunelegacy/data/ on unix). </p>
+	<h3>Linux:</h3>
+	<p>It depends on how the game was compiled. Normally you should put these files under /usr/share/dunelegacy/ or /usr/local/share/dunelegacy/ . Just look for LEGACY.PAK. If you do not have root access to your system you should put them in your home directory under ~/.config/dunelegacy/data/ . </p>
+	<h3>Windows:</h3>
+	<p>The installer has already asked for the files and put them in the installation directory. If not put the PAK-files inside your installation folder or if you do not have administrator privileges you should put them to C:\Documents and Settings\&lt;YourName&gt;\Application Data\dunelegacy\data\ . </p>
+	<h3>MAC OS X:</h3>
+	<p>The PAK-files have to be copied inside the application bundle. If you have followed the steps in the supplied dmg you have already copied them there. Otherwise just right-click on the bundle and select "Show Bundle Content". Then navigate into "Contents" and then into "Resources". There you will find LEGACY.PAK. Put the other PAK-files there too. Alternativly you can put them in your home directory under ~/.config/dunelegacy/data/ but putting them inside the application bundle is the preferred way. </p>
+	<br/>
+
+	<h2>Keyboard Shortcuts</h2>
+
+	<table class="data-table">
+	<tbody>
+	<tr><th>Key</th><th>Function</th></tr>
+	<tr class="even"><td>Escape</td><td>Go to menu</td></tr>
+	<tr><td>Space</td><td>Pause game</td></tr>
+	<tr class="even"><td>Alt + Enter</td><td>Toggle fullscreen</td></tr>
+	<tr><td>Alt + Tab</td><td>Switch to other application</td></tr>
+	<tr class="even"><td>Print Key or Ctrl + P</td><td>Save screenshot as ScreenshotX.bmp with increasing</td></tr>
+	<tr><td>Enter</td><td>Start/Stop chatting</td></tr>
+	<tr class="even"><td>Key F1</td><td>Zoomlevel x1</td></tr>
+	<tr><td>Key F2</td><td>Zoomlevel x2</td></tr>
+	<tr class="even"><td>Key F3</td><td>Zoomlevel x3</td></tr>
+	<tr><td>Key T</td><td>Toggle display of current game time</td></tr>
+	<tr class="even"><td>Key F10</td><td>Toggle sound effects and voice</td></tr>
+	<tr><td>Key F11</td><td>Toggle music</td></tr>
+	<tr class="even"><td>Key F12</td><td>Toggle display of FPS</td></tr>
+	<tr><td>Key Up, Down, Left or Right</td><td>Move on the map</td></tr>
+	<tr class="even"><td>Key G</td><td>Cycle through construction yards</td></tr>
+	<tr><td>Key F</td><td>Cycle through factories/other builders</td></tr>
+	<tr class="even"><td>Key F4</td><td>Skip 10 seconds</td></tr>
+	<tr><td>Key F5</td><td>Skip 30 seconds</td></tr>
+	<tr class="even"><td>Key F6</td><td>Skip 2 minutes</td></tr>
+	<tr><td>Key -</td><td>Decrease gamespeed</td></tr>
+	<tr class="even"><td>Key +</td><td>Increase gamespeed</td></tr>
+	<tr><td>Ctrl + (Key 1 to Key 9)</td><td>Save the list of selected units as unit group 1 to 9</td></tr>
+	<tr class="even"><td>Key 1 to Key 9</td><td>Select units from unit group 1 to 9</td></tr>
+	<tr><td>Shift + (Key 1 to Key 9)</td><td>Add all units from unit group 1 to 9 to the list of currently selected units</td></tr>
+	<tr class="even"><td>Key 0</td><td>Deselect all currently selected units</td></tr>
+	<tr><td>Ctrl + Key 0</td><td>Remove currently selected units form all unit groups (group 1-9)</td></tr>
+	<tr class="even"><td>Key M</td><td>Order unit to move to some position</td></tr>
+	<tr><td>Key A</td><td>Order selected units to attack some unit, structure or position</td></tr>
+	<tr class="even"><td>Key C</td><td>Order selected infantry units to capture some structure</td></tr>
+	<tr><td>Key R</td><td>Repair selected structure</td></tr>
+	<tr class="even"><td>Key H</td><td>Return selected harvester</td></tr>
+	<tr><td>Key D</td><td>Request a carryall drop (only if this game option is enabled)</td></tr>
+	<tr class="even"><td>Key U</td><td>Upgrade selected structure</td></tr>
+	<tr><td>Key P</td><td>Place a structure (if a construction yard is selected)</td></tr>
+	</tbody>
+	</table>
+
+	<h3>Map Editor:</h3>
+	<table class="data-table">
+	<tbody>
+	<tr class="even"><td>Print Key or Ctrl + P</td><td>Save a picture of the whole map as &lt;Mapname&gt;.bmp</td></tr>
+	<tr><td>Ctrl + Z</td><td>Undo last edit</td></tr>
+	<tr class="even"><td>Ctrl + Y</td><td>Redo last edit</td></tr>
+	</tbody>
+	</table>
+	<br/>
+
+	<h2>Configuration file</h2>
+	<p>If you want to fine tune the configuration of Dune Legacy you might want to take a look at the configuration file "Dune Legacy.ini". Depending on your system it is either placed in</p>
+	<ul>
+	<li>~/.config/dunelegacy (on Linux)</li>
+	<li>~/Library/Application Support/Dune Legacy (on Mac OS X)</li>
+	<li>C:\Documents and Settings\&amp;lt;YourName&gt;\Application Data\dunelegacy\ (on Windows)</li>
+	</ul>
+	<br/>
+
+	<h2>Internet Game</h2>
+	<p>To play online via Internet you have to manually enable port forwarding if you use a NAT Router. Forward the Dune Legacy Server Port (Default is 28747) from your NAT Router to your computer. Use the same port on your router as configured in Dune Legacy.</p>
+	<p>Example: If your machine has IP 192.168.123.1 and your using the default Dune Legacy Port, than forward port 28747 from your router to 192.168.123.1:28747.</p>
+
+</div>
+
+		</div>
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="./img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="./index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

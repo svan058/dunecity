@@ -1,0 +1,5 @@
+/* Dunelegacy application icon */
+#include <windows.h>
+
+/* Icon */
+MAINICON ICON "../dunelegacy.ico" 

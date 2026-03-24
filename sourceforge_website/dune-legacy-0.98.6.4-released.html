@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dune Legacy 0.98.6.4 Released</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="header-wrapper">
+    <div class="center-wrapper">
+      <a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+      <div id="header">
+        <div id="logo">
+          <h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+          <h2 id="site-slogan">A Dune II clone</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrapper">
+    <div class="center-wrapper">
+      <div class="content">
+        <div id="main">
+          <h1>Dune Legacy 0.98.6.4 Released</h1>
+          <div class="post-date">October 28, 2025</div>
+          <div class="post-body">
+            <p>Dune Legacy 0.98.6.4 is now available! This critical bugfix release addresses rocket launcher targeting issues and includes comprehensive multiplayer config verification improvements.</p>
+            
+            <h3>What's New in 0.98.6.4</h3>
+            
+            <h4>🚀 Rocket Launcher Targeting Fix (Critical)</h4>
+            <ul>
+              <li><b>Fixed regression:</b> Rocket launchers now correctly detonate at their target (within 4 pixels)</li>
+              <li><b>Proximity fuse clarification:</b> Only rocket turrets use the 16-pixel proximity fuse, and only against flying units</li>
+              <li><b>Ground targets:</b> Both rocket launchers and turrets now use proper explosion distance for ground units</li>
+              <li><b>No more premature detonation:</b> Rockets no longer explode a square before reaching enemies</li>
+            </ul>
+            
+            <h4>🔒 Multiplayer Config Verification (6 Bugs Fixed!)</h4>
+            <ul>
+              <li><b>Game version checking:</b> Players must have identical game versions to play together</li>
+              <li><b>Config hash validation:</b> Ensures all players use matching QuantBot and ObjectData settings</li>
+              <li><b>Deterministic hashing:</b> Fixed non-deterministic hash algorithm that caused false negatives</li>
+              <li><b>Client-side validation:</b> Both host and client verify compatibility before game starts</li>
+              <li><b>Race condition fixes:</b> Prevents game from starting after mismatch is detected</li>
+              <li><b>Clear error messages:</b> Shows exactly which configs differ and why connection was rejected</li>
+            </ul>
+            
+            <h4>⚡ Previous 0.98.6.3 Improvements</h4>
+            <ul>
+              <li><b>60+ FPS support:</b> Game now runs smoothly at higher framerates</li>
+              <li><b>New menu option:</b> "Limit to 31 FPS" for multiplayer stability</li>
+              <li><b>Rocket turret damage fix:</b> 66-100% hit rate against ornithopters (from 3.5%)</li>
+              <li><b>Ornithopter balance:</b> Speed adjusted to 17 for better gameplay</li>
+            </ul>
+            
+            <h3>Download Links</h3>
+            <ul>
+              <li><b>Windows:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.4%20Setup.exe/download">Dune Legacy 0.98.6.4 Setup.exe</a></li>
+              <li><b>macOS:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.4-macOS.dmg/download">DuneLegacy-0.98.6.4-macOS.dmg</a></li>
+            </ul>
+            
+            <p>As always, you'll need the original Dune 2 PAK files to play. See our <a href="./faq.html">FAQ</a> for more information.</p>
+            
+            <p><a href="downloads.html">Download Dune Legacy 0.98.6.4</a></p>
+            
+            <p><b>Config File Locations:</b></p>
+            <ul>
+              <li><b>Windows:</b> <code>C:\Users\&lt;username&gt;\AppData\Roaming\dunelegacy\config\</code></li>
+              <li><b>Linux:</b> <code>~/.config/dunelegacy/config/</code></li>
+              <li><b>macOS:</b> <code>~/Library/Application Support/dunelegacy/config/</code></li>
+            </ul>
+            
+            <p><b>Note:</b> Version 0.98.6.4 is <b>required for multiplayer</b> to ensure all players have matching configurations. The config verification system will prevent mismatches that could cause desyncs.</p>
+            
+            <p><b>Technical Details:</b> The rocket launcher fix ensures that standard launcher rockets use the same 4-pixel explosion logic they've always used, while rocket turrets only apply the proximity fuse (16 pixels) when targeting flying units. This was a regression introduced in 0.98.6.3 where the proximity fuse was incorrectly applying to all units.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

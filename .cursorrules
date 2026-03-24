@@ -1,0 +1,420 @@
+# Dune Legacy Project Configuration for Cursor
+
+## Workflow
+- Follow `.analysis/development-approach.md` (2-doc feature process under `.analysis/features/`).
+
+## Project Overview
+This is Dune Legacy, a modernized clone of Westwood Studios' "Dune 2" real-time strategy game.
+
+### Current Development
+- **Version**: 0.99.5 (see `CMakeLists.txt` line 4)
+- **Path**: `/Users/stefanvanderwel/development/dune/dunelegacy/`
+- Platform: Cross-platform (Windows, macOS, Linux)
+- Language: C++17
+- Graphics: SDL2, SDL2_mixer, SDL2_ttf
+
+## Development Environment
+
+### Windows Development
+- **Shell**: PowerShell (default on Windows)
+- **Terminal**: Windows Terminal or PowerShell
+- **Commands**: Use PowerShell syntax for Windows-specific operations
+- **Path Separator**: Use backslashes (`\`) for Windows paths in PowerShell commands
+- **Script Execution**: PowerShell scripts use `.ps1` extension
+
+### macOS Development
+- **Shell**: Bash/Zsh
+- **Terminal**: Terminal.app or iTerm2
+
+### Linux Development
+- **Shell**: Bash
+- **Terminal**: Various terminal emulators
+
+## Build System & Platforms
+
+### macOS (Primary Development Platform)
+- **IDE**: Xcode project located at `IDE/xCode/Dune Legacy.xcodeproj`
+- **Build Command**: `cd IDE/xCode && xcodebuild -project "Dune Legacy.xcodeproj" -configuration Release`
+- **Output**: `IDE/xCode/build/Release/Dune Legacy.app`
+- **Installer Creation**: `./create_dmg.sh` (creates DMG from Xcode build)
+- **Dependencies**: SDL2 frameworks included in `IDE/xCode/external/frameworks/`
+
+### Windows
+- **Shell**: PowerShell (use PowerShell syntax for commands)
+- **Cross-compilation**: `./buildcrosswin32.sh` (requires mingw, run in PowerShell)
+- **Native**: Visual Studio project in `IDE/VC/`
+- **Installer**: NSIS scripts in `legacy/nsis-old/` directory
+- **Build Commands**: Use PowerShell syntax, e.g., `.\buildcrosswin32.sh` or `& .\buildcrosswin32.sh`
+- **Visual Studio 2022**: Open `IDE/VC/DuneLegacy.sln` and build for x64 Release/Debug
+- **SDL Dependencies**: All SDL2 libraries are included as project references in the solution
+
+### Linux
+- **Build System**: CMake or Autotools
+- **Commands**: 
+  - CMake: `cmake -B build && make -C build`
+  - Autotools: `autoreconf --install && ./configure && make`
+
+## Key Dependencies
+- SDL2 (≥2.32.4)
+- SDL2_mixer (≥2.8.1) 
+- SDL2_ttf (≥2.24.0)
+- Original Dune 2 PAK files (required for gameplay)
+
+## Important Directories
+- `src/` - Main source code
+- `include/` - Header files
+- `data/` - Game data files and PAK files
+- `IDE/` - Platform-specific IDE projects
+- `tests/` - Unit tests
+- `nsis/` - Windows installer scripts
+
+## Common Tasks
+
+### Building for macOS
+
+#### Quick Build + Installer (RECOMMENDED)
+**Always use the CMake build system with vcpkg for consistent, reproducible builds:**
+
+```bash
+# Navigate to project root
+cd /Users/stefanvanderwel/development/dune/dunelegacy
+
+# Build and create DMG installer (one command does it all!)
+cmake --build build --target dmg --config Release
+```
+
+**Output**: `build/DuneLegacy-0.99.5-macOS.dmg`
+
+**What this does automatically:**
+1. Cleans CPack cache to prevent stale files
+2. Builds the binary with Release optimizations
+3. Stages all files (app bundle, data, config, docs)
+4. Creates fresh DMG installer with hdiutil
+5. Cleans up staging directory
+
+#### Fresh Build from Scratch (Clean Build)
+**Use this when you want to rebuild everything without using any cache:**
+
+```bash
+cd /Users/stefanvanderwel/development/dune/dunelegacy
+
+# Step 1: Remove build directory
+rm -rf build
+
+# Step 2: Configure CMake with vcpkg (builds all dependencies from source)
+cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE=/Users/stefanvanderwel/development/dune/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release
+
+# Step 3: Build and create DMG installer
+cmake --build build --target dmg --config Release
+```
+
+**First build takes ~5-10 minutes** as vcpkg downloads and compiles SDL2 libraries.
+**Subsequent builds are much faster** (seconds to minutes depending on changes).
+
+#### Legacy Xcode Build (Alternative)
+```bash
+cd IDE/xCode
+xcodebuild -project "Dune Legacy.xcodeproj" -configuration Release
+./create_dmg.sh  # Creates DMG from Xcode build
+```
+
+### Building for Windows
+
+#### CMake + vcpkg Build (RECOMMENDED)
+```powershell
+# PowerShell - Navigate to project root
+cd C:\path\to\dunelegacy
+
+# Configure (one-time or after CMakeLists.txt changes)
+cmake -B build -G "Visual Studio 17 2022" -A x64 `
+  -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+
+# Build and create installer
+cmake --build build --target installer --config Release
+```
+
+**Output**: 
+- `build/DuneLegacy-0.99.5-Windows-x64.exe` (NSIS installer)
+- `build/DuneLegacy-0.99.5-Windows-x64.zip` (portable zip)
+
+### Building for Linux
+
+```bash
+cd /path/to/dunelegacy
+
+# Configure with vcpkg
+cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release
+
+# Build and create packages (DEB, RPM, TGZ)
+cmake --build build --target package --config Release
+```
+
+### Running Tests
+
+Unit tests use the Catch2 framework. See `tests/README.md` for full documentation.
+
+```bash
+# Install Catch2 (one-time setup)
+brew install catch2  # macOS
+# sudo apt-get install catch2  # Debian/Ubuntu
+
+# Configure with tests enabled
+cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE=/Users/stefanvanderwel/development/dune/dunelegacy/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DDUNELEGACY_BUILD_TESTS=ON
+
+# Build tests
+cmake --build build --target dunelegacy_tests
+
+# Run all tests
+./build/dunelegacy_tests
+
+# Run specific test suites
+./build/dunelegacy_tests "[pathbudget]"  # PathBudget sync tests
+./build/dunelegacy_tests "[network]"     # NetworkManager tests
+./build/dunelegacy_tests "[desync]"      # DESYNC detection tests
+
+# List available tests
+./build/dunelegacy_tests --list-tests
+```
+
+**Test Suites:**
+- **PathBudgetTestCase** - Tests for multiplayer budget synchronization protocol (see `.analysis/features/pathbudget-sync/design.md`)
+- **NetworkManagerTestCase** - Tests for packet types, address utilities, serialization, keep-alive, NAT traversal
+
+### Updating Localizations
+```bash
+./updatelocale.sh
+```
+
+## Build Troubleshooting
+
+### Common Build Issues
+
+#### Missing Release Notes File
+**Problem**: DMG/installer creation fails with "Error copying file RELEASE_NOTES.md"
+
+**Solution**: Ensure `release_notes/RELEASE_NOTES.md` exists:
+```bash
+# Verify release notes file exists
+ls release_notes/RELEASE_NOTES.md
+```
+
+#### vcpkg Dependencies Not Found
+**Problem**: CMake can't find SDL2 or other dependencies
+
+**Solution**: Ensure vcpkg toolchain file path is correct:
+```bash
+# Verify vcpkg location
+ls /Users/stefanvanderwel/development/dune/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+# Reconfigure with correct path
+cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE=/Users/stefanvanderwel/development/dune/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release
+```
+
+#### Stale Files in Installer
+**Problem**: Old binary or files appear in DMG/installer after rebuild
+
+**Solution**: The `dmg`, `installer`, and `package` targets automatically clean CPack cache. If issues persist:
+```bash
+# Manual clean
+rm -rf build/_CPack_Packages
+rm -rf build/install
+rm build/*.dmg
+
+# Then rebuild
+cmake --build build --target dmg --config Release
+```
+
+#### macOS Version Warnings
+**Problem**: Warnings like "object file was built for newer 'macOS' version (15.0) than being linked (14.0)"
+
+**Solution**: These are harmless warnings. vcpkg builds for current OS but CMake targets 14.0 for compatibility. To suppress:
+```bash
+# Update CMakeLists.txt line 24 to match your OS version
+set(CMAKE_OSX_DEPLOYMENT_TARGET "15.0" CACHE STRING "Minimum OS X deployment version" FORCE)
+```
+
+### Important Notes
+
+- **Always use installer targets** (`dmg`, `installer`, `package`) - they ensure fresh builds
+- **First vcpkg build is slow** (~5-10 min) - subsequent builds are fast
+- **vcpkg caches binaries** in `~/.cache/vcpkg/archives` for reuse across projects
+- **Build directory is safe to delete** - just reconfigure and rebuild
+- **Release notes** uses single file `release_notes/RELEASE_NOTES.md` (no version in filename)
+
+## Recent Fixes
+- Network permission handling on macOS (prevents crashes when accessing multiplayer)
+- Socket initialization retry mechanism for permission prompts
+- Visual Studio 2022 build configuration fixes for x64 Release/Debug builds
+- SDL2 library dependency resolution and project reference updates
+- **SDL2 DLL Copying Fix**: Fixed post-build events in `IDE/VC/DuneLegacy.vcxproj` for x64 configurations to correctly copy SDL2 DLLs from their build location to the output directory
+- **Release Notes Simplification**: Changed to single `RELEASE_NOTES.md` file without version in filename
+
+## Code Style Notes
+- C++17 standard
+- SDL2 for cross-platform compatibility
+- ENet for networking
+- Custom exception handling with THROW macro
+
+## Build Warnings
+- Some deprecation warnings in format.h are expected (legacy formatting library)
+- Integer precision warnings are known issues with existing codebase
+- STL4043 deprecation warnings for `stdext::checked_array_iterator` are suppressed with `_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING`
+
+## When Making Changes
+- Test on multiple platforms when possible
+- Update version numbers in CMakeLists.txt and project files
+- Rebuild installers after significant changes
+- Consider PAK file compatibility with original Dune 2
+
+## Windows Installer Directory Structure (CRITICAL - DO NOT BREAK!)
+
+**IMPORTANT**: All game files must be installed to the ROOT directory of the Windows installation, NOT in a `share/DuneLegacy` subdirectory.
+
+### Correct Installation Structure
+```
+C:\Program Files\DuneLegacy\
+├── dunelegacy.exe          (executable in root)
+├── *.PAK                   (data files in root)
+├── *.dll                   (SDL2 DLLs in root)
+├── locale/                 (locale folder in root)
+├── maps/                   (maps folder in root)
+├── config/                 (config folder in root)
+├── AUTHORS, COPYING, etc.  (docs in root)
+```
+
+### WRONG Structure (DO NOT DO THIS!)
+```
+C:\Program Files\DuneLegacy\
+├── dunelegacy.exe
+├── share/DuneLegacy/       ❌ WRONG - no share subdirectory!
+    ├── *.PAK
+    ├── locale/
+    ├── maps/
+    └── config/
+```
+
+### Key CMake Configuration (CMakeLists.txt lines 139-144)
+```cmake
+if(WIN32)
+    set(DUNELEGACY_DATA_DIR ".")      # Root directory, NOT "share/${PROJECT_NAME}"
+    set(DUNELEGACY_CONFIG_DIR "config")  # NOT "share/${PROJECT_NAME}/config"
+```
+
+### Key Installation Commands (src/CMakeLists.txt lines 451-480)
+All Windows install commands must use `DESTINATION .` (root), never `DESTINATION share/${PROJECT_NAME}`.
+
+### CRITICAL: Compile-Time Data Path (src/CMakeLists.txt lines 516-524)
+**Windows MUST NOT define `DUNELEGACY_DATADIR`!**
+
+```cmake
+if(NOT APPLE)
+    if(WIN32)
+        # DON'T define DUNELEGACY_DATADIR - let SDL_GetBasePath() find executable directory
+    else()
+        # Linux: define DUNELEGACY_DATADIR for FHS structure
+        target_compile_definitions(dunelegacy PRIVATE DUNELEGACY_DATADIR="...")
+    endif()
+endif()
+```
+
+**Why This Matters**: 
+1. The game executable looks for data files relative to its own location using SDL_GetBasePath()
+2. If `DUNELEGACY_DATADIR` is defined, it overrides this and uses a hardcoded path
+3. If files are installed to root but the executable looks in `share/`, the game crashes with "Cannot find 'TEXTH.LanguageFileExtension'"
+4. Both installation paths AND compile-time definitions must match!
+
+**Testing**: After building installer, verify installation directory structure matches the "Correct" example above, then run the game to ensure it finds PAK files.
+
+## Visual Studio Build Configuration (Fixed Issues)
+- **ToolsVersion**: Updated from `4.0` to `15.0` in all SDL project files
+- **PlatformToolset**: Set to `v143` for Visual Studio 2022 compatibility
+- **LibraryPath**: Corrected SDL2 library paths in SDL_mixer and SDL_ttf projects
+- **IncludePath**: Fixed SDL header include paths for proper compilation
+- **Project References**: Added all SDL projects (SDL2, SDL2_mixer, SDL_ttf, freetype) to main solution
+- **Dependencies**: Ensured proper build order with project dependencies
+- **x64 Support**: All configurations now properly support x64 Release and Debug builds
+
+## Windows Build Troubleshooting
+
+### SDL2 DLL Copying Issues
+**Problem**: Build succeeds but shows errors like "The file cannot be copied onto itself" and "SDL2.dll not found" in post-build events.
+
+**Root Cause**: Post-build events in `IDE/VC/DuneLegacy.vcxproj` for x64 configurations were attempting to copy SDL2 DLLs from `$(OutDir)` to `$(OutDir)`, but the DLLs are actually built to `IDE/VC/x64/Release` (or `Debug`), while `$(OutDir)` is set to `bin\Release-x64\`.
+
+**Solution**: 
+1. Open `IDE/VC/DuneLegacy.vcxproj`
+2. Locate the `PostBuildEvent` sections for `Debug|x64` (lines ~130-137) and `Release|x64` (lines ~204-211)
+3. Update the `copy` commands to use correct source paths:
+   - **Debug|x64**: Change from `copy "$(OutDir)SDL2.dll"` to `copy "x64\Debug\SDL2.dll"`
+   - **Release|x64**: Change from `copy "$(OutDir)SDL2.dll"` to `copy "x64\Release\SDL2.dll"`
+4. Apply the same pattern for all SDL2 DLLs: `SDL2.dll`, `SDL2main.dll`, `SDL2_mixer.dll`, `SDL2_ttf.dll`
+
+**Correct Post-Build Commands**:
+```xml
+<!-- Debug|x64 -->
+<Command>copy "x64\Debug\SDL2.dll" "$(OutDir)" 2&gt;nul || echo SDL2.dll not found
+copy "x64\Debug\SDL2main.dll" "$(OutDir)" 2&gt;nul || echo SDL2main.dll not found
+copy "x64\Debug\SDL2_mixer.dll" "$(OutDir)" 2&gt;nul || echo SDL2_mixer.dll not found
+copy "x64\Debug\SDL2_ttf.dll" "$(OutDir)" 2&gt;nul || echo SDL2_ttf.dll not found
+robocopy "..\..\data\." "$(OutDir)." /E /NP /NJH /NJS
+IF %ERRORLEVEL% LSS 8 exit 0</Command>
+
+<!-- Release|x64 -->
+<Command>copy "x64\Release\SDL2.dll" "$(OutDir)" 2&gt;nul || echo SDL2.dll not found
+copy "x64\Release\SDL2main.dll" "$(OutDir)" 2&gt;nul || echo SDL2main.dll not found
+copy "x64\Release\SDL2_mixer.dll" "$(OutDir)" 2&gt;nul || echo SDL2_mixer.dll not found
+copy "x64\Release\SDL2_ttf.dll" "$(OutDir)" 2&gt;nul || echo SDL2_ttf.dll not found
+robocopy "..\..\data\." "$(OutDir)." /E /NP /NJH /NJS
+IF %ERRORLEVEL% LSS 8 exit 0</Command>
+```
+
+**Note**: Win32 configurations don't have this issue because they only link `SDL2.lib` and `SDL2main.lib`, while x64 configurations also link `SDL2_mixer.lib` and `SDL2_ttf.lib` which require separate DLL copying.
+
+### MSBuild Command Issues
+**Problem**: `msbuild` command not found or syntax errors in PowerShell.
+
+**Solutions**:
+1. **Command not found**: Use full path to MSBuild:
+   ```powershell
+   "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\amd64\MSBuild.exe" DuneLegacy.sln /p:Configuration=Release /p:Platform=x64
+   ```
+2. **Syntax errors**: Use PowerShell syntax (`;` instead of `&&` for command chaining)
+3. **Build without project references**: Add `/p:BuildProjectReferences=false` to build only the main project
+
+## Developer Tools
+- Xcode for macOS development
+- Visual Studio or Code::Blocks for Windows
+- Any C++17 compatible compiler for Linux
+- NSIS for Windows installer creation
+- hdiutil for macOS DMG creation
+
+## Communication Guidelines
+
+### DO NOT Make Up Statistics or Claims
+- **NEVER** invent specific percentages, numbers, or ROI calculations without actual data
+- **NEVER** claim problems are "finally solved" or "balance achieved" without testing
+- **NEVER** state definitive outcomes like "this will work" - use "this should" or "expected to"
+- **NEVER** calculate fake metrics like "ROI: 556%" or "88% improvement" without measurement
+
+### Be Honest About Uncertainty
+- ✅ Use: "Expected to", "Should", "Likely", "May", "Estimated"
+- ❌ Avoid: "Finally solved", "Balance achieved", "Proven", "Definitely"
+- ✅ Say: "This change should improve performance" 
+- ❌ Don't say: "This change improves performance by 67%"
+- ✅ Say: "These 4 turrets may provide better defense"
+- ❌ Don't say: "These 4 turrets achieve 80% coverage (tested)"
+
+### When Presenting Changes
+- State what was changed (facts)
+- Explain the reasoning (logic)
+- Describe expected outcomes (predictions, clearly marked as such)
+- **Don't** invent test results or claim things are verified without evidence

@@ -1,0 +1,16 @@
+Dune Legacy has been written by many people. e.g.:
+ Stefan van der Wel (stefan.vanderwelATgmail.com) - current developer
+ 
+ Anthony Cole (anthonycole81AThotmail.com.au) - started this great game
+ Richard Schaller (richard.schallerATgmx.de)
+ Olaf van der Spek
+ Raal Goff (gumbyATleemingwireless.net)
+ Stefen Hendriks - random map generator: MapGenerator.cpp
+ Félix Medrano - Spanish translation
+
+Graphics, Sound and other data:
+Most of the graphics and sounds are loaded from the Dune II pak files (which are not part of Dune Legacy) during the start of the game.
+Some of the shipped icons (mostly those used in the map editor) are from the tango icon theme which is public domain.
+All other graphics are contributions to Dune Legacy and are under the same license as Dune Legacy.
+The only exception are the maps which are under CC-BY-SA.
+

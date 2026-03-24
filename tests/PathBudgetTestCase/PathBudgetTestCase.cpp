@@ -1,0 +1,156 @@
+/*
+ *  PathBudgetTestCase.cpp - Unit tests for PathBudget synchronization protocol
+ *
+ *  Tests the contract defined in: .analysis/features/pathbudget-sync/design.md
+ */
+
+#include <catch2/catch_all.hpp>
+#include <Network/PathBudgetSync.h>
+
+using namespace PathBudgetSync;
+
+// Constants matching Game.cpp
+static constexpr uint32_t kBudgetCheckInterval = 375;
+
+// =============================================================================
+// Budget Validity Tests (DESYNC Detection)
+// =============================================================================
+
+TEST_CASE("PathBudget: Budget matches current is valid", "[pathbudget][desync]") {
+    // Scenario 1: Normal operation - client budget matches host budget
+    uint32_t clientBudget = 15500;
+    size_t hostBudget = 15500;
+    size_t previousBudget = 15000;
+    uint32_t clientReportCycle = 749;
+    uint32_t lastChangeCycle = 750;
+    
+    REQUIRE(isBudgetValid(clientBudget, hostBudget, previousBudget, 
+                          clientReportCycle, lastChangeCycle));
+}
+
+TEST_CASE("PathBudget: Delayed packet with grace period is valid", "[pathbudget][desync]") {
+    // Scenario 2: Delayed packet - client sent old budget before change
+    uint32_t clientBudget = 15000;  // Old budget
+    size_t hostBudget = 15500;      // New budget (already applied)
+    size_t previousBudget = 15000;  // Previous budget matches client
+    uint32_t clientReportCycle = 749;  // Before change
+    uint32_t lastChangeCycle = 750;    // Change happened at 750
+    
+    // Should be valid - client report is from before change
+    REQUIRE(isBudgetValid(clientBudget, hostBudget, previousBudget,
+                          clientReportCycle, lastChangeCycle));
+}
+
+TEST_CASE("PathBudget: Real desync after change cycle is invalid", "[pathbudget][desync]") {
+    // Scenario 3: Real DESYNC - client reports old budget AFTER change cycle
+    uint32_t clientBudget = 15000;     // Old budget
+    size_t hostBudget = 15500;         // New budget
+    size_t previousBudget = 15000;     // Matches client, but...
+    uint32_t clientReportCycle = 751;  // AFTER change cycle
+    uint32_t lastChangeCycle = 750;
+    
+    // Should be INVALID - client report is from after change
+    REQUIRE_FALSE(isBudgetValid(clientBudget, hostBudget, previousBudget,
+                                clientReportCycle, lastChangeCycle));
+}
+
+TEST_CASE("PathBudget: Real desync wrong previous budget is invalid", "[pathbudget][desync]") {
+    // Scenario 4: Real DESYNC - client budget doesn't match current OR previous
+    uint32_t clientBudget = 14000;     // Neither current nor previous
+    size_t hostBudget = 16000;         // Current
+    size_t previousBudget = 15500;     // Previous
+    uint32_t clientReportCycle = 1124;
+    uint32_t lastChangeCycle = 1125;
+    
+    // Should be INVALID - budget matches neither
+    REQUIRE_FALSE(isBudgetValid(clientBudget, hostBudget, previousBudget,
+                                clientReportCycle, lastChangeCycle));
+}
+
+TEST_CASE("PathBudget: Multiple changes with missed budget is invalid", "[pathbudget][desync]") {
+    // Scenario 5: Multiple changes - client missed several changes
+    uint32_t clientBudget = 15000;     // Very old budget
+    size_t hostBudget = 16000;         // Current (after 2 changes)
+    size_t previousBudget = 15500;     // Previous (15500, not 15000)
+    uint32_t clientReportCycle = 1124;
+    uint32_t lastChangeCycle = 1125;
+    
+    // Should be INVALID - client budget doesn't match previous
+    REQUIRE_FALSE(isBudgetValid(clientBudget, hostBudget, previousBudget,
+                                clientReportCycle, lastChangeCycle));
+}
+
+// =============================================================================
+// Budget-for-Decision-Time Tests
+// =============================================================================
+
+TEST_CASE("PathBudget: No pending change returns current budget", "[pathbudget][decision]") {
+    size_t currentBudget = 15000;
+    std::vector<PendingBudgetChange> pending;
+    uint32_t currentCycle = 749;
+    
+    REQUIRE(getBudgetForDecisionTime(currentBudget, pending, currentCycle) == currentBudget);
+}
+
+TEST_CASE("PathBudget: With pending change returns new budget", "[pathbudget][decision]") {
+    size_t currentBudget = 15000;
+    std::vector<PendingBudgetChange> pending = {
+        {15500, 750}  // Change to 15500 at cycle 750
+    };
+    uint32_t currentCycle = 749;
+    
+    REQUIRE(getBudgetForDecisionTime(currentBudget, pending, currentCycle) == 15500);
+}
+
+TEST_CASE("PathBudget: Multiple pending changes uses correct one", "[pathbudget][decision]") {
+    size_t currentBudget = 15000;
+    std::vector<PendingBudgetChange> pending = {
+        {15500, 750},   // First change at 750
+        {16000, 1125}   // Second change at 1125
+    };
+    uint32_t currentCycle = 749;
+    
+    // Should return 15500 (change at 750), not 16000
+    REQUIRE(getBudgetForDecisionTime(currentBudget, pending, currentCycle) == 15500);
+}
+
+TEST_CASE("PathBudget: Pending change for wrong cycle returns current", "[pathbudget][decision]") {
+    size_t currentBudget = 15000;
+    std::vector<PendingBudgetChange> pending = {
+        {15500, 1125}  // Change at 1125, not 750
+    };
+    uint32_t currentCycle = 749;
+    
+    REQUIRE(getBudgetForDecisionTime(currentBudget, pending, currentCycle) == currentBudget);
+}
+
+// =============================================================================
+// Timing Tests
+// =============================================================================
+
+TEST_CASE("PathBudget: Stats should be sent one cycle before interval", "[pathbudget][timing]") {
+    REQUIRE(shouldSendStats(374, kBudgetCheckInterval));
+    REQUIRE(shouldSendStats(749, kBudgetCheckInterval));
+    REQUIRE(shouldSendStats(1124, kBudgetCheckInterval));
+    
+    REQUIRE_FALSE(shouldSendStats(375, kBudgetCheckInterval));
+    REQUIRE_FALSE(shouldSendStats(373, kBudgetCheckInterval));
+}
+
+TEST_CASE("PathBudget: Decision should be made at interval boundaries", "[pathbudget][timing]") {
+    REQUIRE(shouldMakeDecision(375, kBudgetCheckInterval));
+    REQUIRE(shouldMakeDecision(750, kBudgetCheckInterval));
+    REQUIRE(shouldMakeDecision(1125, kBudgetCheckInterval));
+    REQUIRE(shouldMakeDecision(0, kBudgetCheckInterval));
+    
+    REQUIRE_FALSE(shouldMakeDecision(374, kBudgetCheckInterval));
+    REQUIRE_FALSE(shouldMakeDecision(376, kBudgetCheckInterval));
+}
+
+TEST_CASE("PathBudget: Apply cycle is next interval boundary", "[pathbudget][timing]") {
+    REQUIRE(calculateApplyCycle(375, kBudgetCheckInterval) == 750);
+    REQUIRE(calculateApplyCycle(376, kBudgetCheckInterval) == 750);
+    REQUIRE(calculateApplyCycle(749, kBudgetCheckInterval) == 750);
+    REQUIRE(calculateApplyCycle(750, kBudgetCheckInterval) == 1125);
+    REQUIRE(calculateApplyCycle(0, kBudgetCheckInterval) == 375);
+}

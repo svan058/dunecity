@@ -1,0 +1,96 @@
+name: Build Dune Legacy
+
+on:
+  push:
+    branches: [ main, release-* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+      
+      - name: Build
+        run: cmake --build build --config Release
+      
+      - name: Create Installer Package
+        run: |
+          cd build
+          cmake --install . --prefix install --config Release
+          cpack -G ZIP -C Release
+      
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuneLegacy-Windows-Installer
+          path: build/*.zip
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-osx-dynamic
+      
+      - name: Build
+        run: cmake --build build --config Release
+      
+      - name: Create DMG Installer
+        run: |
+          cd build
+          cmake --install . --prefix install --config Release
+          cpack -G DragNDrop -C Release
+      
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuneLegacy-macOS-DMG
+          path: build/*.dmg
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+      
+      - name: Build
+        run: cmake --build build --config Release
+      
+      - name: Create Linux Packages
+        run: |
+          cd build
+          cmake --install . --prefix install --config Release
+          cpack -G "DEB;RPM;TGZ" -C Release
+      
+      - name: Upload Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuneLegacy-Linux-Packages
+          path: |
+            build/*.deb
+            build/*.rpm
+            build/*.tar.gz
+

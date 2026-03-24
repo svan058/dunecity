@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>Dune Legacy</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/development/developerguide.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="../index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="../img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="../index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="../faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="../index.html">Home</a></li>
+					
+					
+					<li ><a href="../news.html">News</a></li>
+					
+					
+					<li ><a href="../gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="../downloads.html">Downloads</a></li>
+					
+					
+					<li ><a href="../manual.html">Manual</a></li>
+					
+					
+					<li ><a href="../maps.html">Maps</a></li>
+					
+					
+					<li class="current_page_item"><a href="../development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content" id="content-two-columns">
+			<div id="main-wrapper">
+				<div id="main">
+        			<div id="main">
+
+	<h1>Dune Legacy: Developer Guide</h1>
+
+<p>
+This text is intended for new developers that want to contribute to Dune Legacy. It tries to describe the basic design concepts of Dune Legacy.
+</p>
+
+<h2>Introduction</h2>
+<p>
+Dune Legacy consists of different parts. The 3 main parts are as follows:
+</p>
+
+
+<h3>Data Management:</h3>
+<p>
+These classes are responsible for loading the different media formats (pictures, sounds-effects, music, video). Everything that needs to be loaded from files is loaded through these classes. GFXManager, SFXManager and TextManager manage all the different media. They provide all these media to the other parts of dune legacy.
+</p>
+<p>
+Files: /FileClasses/*
+</p>
+
+<h3>Menu:</h3>
+<p>
+The menu is shown at the start of the game and let the user specify what scenario/map he wants to play. Every menu screen is basically a endless loop of drawing the screen and processing the input. If you click on a button to open a new menu screen the event handler calls the endless loop of this new menu. Thus the event handler code for the main menu is just stopped when a sub menu is opened and you will get back there if the submenu quits.
+</p>
+<p>
+Files: /Menu/* , GUI/*
+</p>
+
+<h3>In-Game:</h3>
+<p>
+When a game is started the main loop in GameClass is started. This loop consists of 3 main tasks: First the screen is draws, then the input is processed and finally the game logic performed. These 3 aspects are separated strictly. The first two are not time critical. But the game logic must be performed with strict timing. Otherwise the game would have different speed on different computers. Another issue is very important with the third aspect: It has to be deterministic to ensure a network game is in sync.
+Every Unit/Structure is implemented in it's own class. These classes are derived from ObjectClass. All objects have an unique ObjectID and every linking to a unit/structure should use these ObjectID instead of a pointer. Through the class ObjectTree it is possible to map an ObjectID to a pointer to that object. But it is important to not save this pointer somewhere for reuse later. It might happen that the unit/structure is destroyed and the memory for this object gets deleted. Thus the pointer gets invalid. Before deleting an object the ObjectTree is informed and thus can later inform you that the ObjectID is no longer valid.
+</p>
+<p>
+Files: /* , /units/* , /structures/* , ( /GUI/* )
+</p>
+
+
+<h2>Data Management</h2>
+<p>
+To ease development all data is loaded once when Dune Legacy is started. This causes a memory usage of Dune Legacy of about 50MB.
+</p>
+
+<h3>FileManager</h3>
+<p>
+The FileManager is responsible for making data files accessible to other parts of the game. It looks for files in the following order
+</p>
+<ul>
+	<li>Dune Legacy data directory</li>
+	<li>data directory inside the Dune Legacy configuration directory</li>
+	<li>all loaded PAK files</li>
+</ul>
+<p>
+Lookup is done case insensitive. FileManager is only used for data files. Configuration files, save game, replays, custom maps, etc. are loaded directly.
+</p>
+
+<h3>GFXManager</h3>
+<p>
+GFXManager loads all the graphics and animations (except the cut scene videos). Some of the graphics are composed out of the original Dune II graphics. Composition is done by PictureFactory-Class.
+</p>
+
+<h3>SFXManager</h3>
+<p>
+SFXManager is responsible for loading the voice (language dependent) and sound effects. There are different voices for each house in the English version of Dune II. French and German voices do not differ between houses. Sound Effects are only partially language dependant (e.g. unit feedback like "reporting").
+</p>
+
+<h3>FontManager</h3>
+<p>
+FontManager loads the 3 used picture fonts (accessible as FONT_STD10,	FONT_STD12 and FONT_STD24). The fonts contain all characters needed by ISO 8859-15.
+</p>
+
+<h3>TextManager</h3>
+<p>
+All texts are loaded by TextManager. Most texts are read from the Dune II files containing them. These include the unit/structure names, the reached rank after each mission (see getDuneText() ) and the briefing texts (see getBriefingText() ). Also the encyclopedia shown by the mentat are provided by TextManager (see getAllMentatEntries() ). For texts which are needed by Dune Legacy but can not be found in Dune II a Gettext like approach is used. We us a simple hash map which maps English text to a translated one (see getLocalized() ). All text is encoded in ISO 8859-15.
+</p>
+
+<h3>Memory Usage</h3>
+<p>
+The downside of loading all data at startup is the higher memory usage. The following table summarizes what data needs how much RAM (measured with Dune Legacy 0.96.2 on Linux x86-64).
+</p>
+
+<table class="data-table">
+	<tbody>
+		<tr class="even"><td>Main Program</td><td>2 MB</td></tr>
+		<tr><td>Fonts</td><td>0,5 MB</td></tr>
+		<tr class="even"><td>GFXManager - Object Pictures</td><td>6 MB</td></tr>
+		<tr><td>GFXManager - Small Detail Pictures</td><td>0,5 MB</td></tr>
+		<tr class="even"><td>GFXManager - Animations</td><td>22 MB</td></tr>
+		<tr><td>GFXManager - GUI</td><td>8 MB</td></tr>
+		<tr class="even"><td>SFXManager - Voice (English)</td><td>10 MB</td></tr>
+		<tr><td>SFXManager - Sound Effects</td><td>3 MB</td></tr>
+		<tr class="even"><td></td><td></td></tr>
+		<tr><td>Total</td><td>52 MB</td></tr>
+	</tbody>
+</table>
+
+
+<h2>Menu</h2>
+<p>
+The following menus are used in Dune Legacy
+</p>
+
+<table class="data-table">
+	<tbody>
+		<tr class="even"><td>Class</td><td>Description</td></tr>
+		<tr><td>MainMenu</td><td>The main menu shown at the start of the game</td></tr>
+		<tr class="even"><td>SinglePlayerMenu</td><td>The menu shown when selecting the single player option on main menu</td></tr>
+		<tr><td>HouseChoiceMenu</td><td>Screen shown when starting a new campaign</td></tr>
+		<tr class="even"><td>HouseChoiceInfoMenu</td><td>Bene Gesserit giving you some info about a chosen house</td></tr>
+		<tr><td>CustomGameMenu</td><td>Menu for starting a new custom game and selecting a map</td></tr>
+		<tr class="even"><td>CustomGamePlayers</td><td>Menu for setting up all players for a custom game</td></tr>
+		<tr><td>SinglePlayerSkirmishMenu</td><td>Menu for starting a skirmish game and selecting which house and mission to play</td></tr>
+		<tr class="even"><td>MultiPlayerMenu</td><td>The menu shown when selecting the multiplayer option on main menu</td></tr>
+		<tr><td>OptionsMenu</td><td>The menu shown when selecting the options entry on main menu</td></tr>
+		<tr class="even"><td>AboutMenu</td><td>Showing the about game screen (about entry on main menu)</td></tr>
+		<tr><td>BriefingMenu</td><td>Shown before and after a mission</td></tr>
+		<tr class="even"><td>GameStatsMenu</td><td>Shown after a mission showing some statistics and your rank</td></tr>
+		<tr><td>MapChoice</td><td>The map of Dune where you choose your next mission</td></tr>
+		<tr class="even"><td>MentatHelp</td><td>When you press the Mentat button ingame</td></tr>
+	</tbody>
+</table>
+
+
+<h2>Input Handling and Game Logic</h2>
+<p>
+As pointed out in the introduction input handling and game logic are strictly isolated aspects. These two parts can only communicate through so-called "Commands". Consider for example a right-click on the map to order a unit to move somewhere. The input handling will finally ending with calling handleActionClick() of the unit that should be moved. This method will add a Command to the CommandManager. The CommandManager saves this Command and schedules it to be performed later. In the simplest case it is scheduled to be performed in the next game cycle. But consider a network with low latency. Then the command will be scheduled for e.g. 10 game cycles later. These 10 cycles are needed to send the Command to all other computers.
+</p>
+<p>
+The CommandManager will be called every game cycle and performs all commands that are scheduled for this cycle. Reconsider our example from above. The command that was added by handleActionClick() gets now fetched from the command queue for this cycle and gets executed. It calls doMove() from this unit and the unit finally starts moving to the new destination.
+To sum it up: The input handling is only allowed to call methods that do not change the game state or that add Commands. These later methods have a name that starts with "handle" and end with "Click". The game logic may call any method but there are some methods that have a special name. They start with "do". These methods actual issue some things that a player can do with a unit/structure. These methods are called by the AI and when executing a command.
+</p>
+
+
+<h2>Coordinate systems</h2>
+<p>
+There are mainly 4 coordinate systems to deal with: Map, World, zoomed World and Screen Coordinate System.
+</p>
+
+<h3>Map-Coordinate System:</h3>
+<p>
+The map consists of a number of tiles. The original dune 2 used mostly 64x64 maps. Each tile has a 2-dimensional coordinate. Both coordinate values are between 0 and 63. A coordinate in this form is called map coordinate in dune legacy.
+</p>
+
+<h3>World-Coordinate System:</h3>
+<p>
+Each tile is 64*64 pixels wide. This value is defined by TILESIZE. The world coordinate system describes every pixel on the map not only every tile as the map coordinate system does. Thus conversion between Map and World coordinate system is simply a multiplication or division by TILESIZE. (If converting Map to World you will get the world coordinate of the top left corner of the tile)
+</p>
+
+<h3>Zoomed World-Coordinate System:</h3>
+<p>
+As we support zooming we need another coordinate system. The zoomed World-Coordinate System is depending on the zoom level currently set. We have 4 zoom levels (but level 3 is unused):
+</p>
+<table class="data-table">
+	<tbody>
+		<tr><th>Zoom level</th><th>Tile size on screen</th><th>Comment</th></tr>
+		<tr class="even"><td>0</td><td>16x16</td><td>Same as in Dune II</td></tr>
+		<tr><td>1</td><td>32x32</td><td></td></tr>
+		<tr class="even"><td>2</td><td>48x48</td><td></td></tr>
+		<tr><td>3</td><td>64x64	</td><td>Unused by Dune Legacy</td></tr>
+	</tbody>
+</table>
+
+<h3>Screen-Coordinate System:</h3>
+<p>
+If the user clicks somewhere on the game board you have to first check if the click is really on the game area itself or on the gamebar. And then you have to convert these values to world or map coordinates.
+</p>
+
+<h3>Conversion between the different coordinate systems</h3>
+<p>
+The ScreenBorder-Class supports convenient methods for conversion. Coordinates given in zoomed world coordinates or in screen coordinates are only valid within one game cycle because the user may change the viewport or zoom level.
+</p>
+
+
+<h2>Adding additional game options</h2>
+<p>
+Dune Legacy supports different game rules named game options. To add an additional rule you must modify the following parts:
+</p>
+<ul>
+<li>Add the new option to SettingsClass::GameOptionsClass in DataTypes.h. Don't forget to add it also to the constructor initialization list and to operator==().</li>
+<li>Add the new option to the default generated configuration file. It is located in main.cpp in function createDefaultConfigFile(). The default option of the new rule should be as in the original Dune II.</li>
+<li>Read the new config value into the new option in SettingsClass::GameOptionsClass. This is done in main.cpp in function main().</li>
+<li>Add the new option to GameOptionsWindow: Add a new widget (e.g. a chechbox) to the class in GameOptionsWindow.h. Then set it up in GameOptionsWindow::GameOptionsWindow() by adding it to the window and setting its name and tooltip. You might need to adjust the window size. If possible localize all added strings. Afterwards modify GameOptionsWindow::onOK() to read the new value from the widget into SettingsClass::GameOptionsClass.</li>
+<li>Change OptionsMenu::saveConfiguration() in OptionsMenu.cpp to write out the new option.</li>
+<li>Finally add the reading and writing logic to GameInitSettings (the loading constructor and the save method).</li>
+<li>Now you may start using the option and add the appropriate code pieces. You can access the option by using currentGame->getGameInitSettings().getGameOptions().nameOfOption.</li>
+</ul>
+
+
+<h2>AI Players</h2>
+
+<p>
+AI Players are implemented as child-classes of the class Player (players/Player.h). They shall replace/imitate a human opponent. Therefore they shall have the same controlling mechanisms as a human player does and they also shall not directly interact with the game logic (compare chapter 3). On the other side the AI has to gather information about the current game state (e.g. position of units) to make "intelligent" decisions. To enforce this separation in the code the AI gets only access to constant objects of the game world. Thus the AI is only allowed to call methods qualified as const. (Note: There might be ways to circumvent this constness but an AI player shall not use them). The only way the AI player may influence the game is by calling the do methods of the class Player. Accessing global variables (e.g. currentGame) is not allowed but getter methods are available in the class Player.
+</p>
+<p>
+To add a new AI player it is necessary to register it in players/PlayerFactory.cpp with a unique id (a string used for internal purposes), a name shown in the gui and two functions for creating and loading ai players of this type.
+</p>
+
+</div>
+
+				</div>
+			</div>
+
+			<div id="sidebar-wrapper">
+	<div id="sidebar">
+
+		<div class="box">
+
+			<div class="box-title">Overview</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/sourcecode.html">Getting the source code</a></li>
+					
+					<li><a href="../development/building.html">Building Dune Legacy</a></li>
+					
+					<li><a href="../development/developerguide.html">Dune Legacy: Developer Guide</a></li>
+					
+					<li><a href="../development/unittests.html">Running Unit Tests</a></li>
+					
+					<li><a href="../development/localization.html">Localization</a></li>
+					
+					<li><a href="../development/mapformat.html">Map Format</a></li>
+					
+					<li><a href="../development/modding.html">Modding Dune Legacy</a></li>
+					
+					<li><a href="../development/packaging.html">Packaging Dune Legacy</a></li>
+					
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="box nobborder">
+
+			<div class="box-title">Miscellaneous</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/reportingbugs.html">Reporting Bugs</a></li>
+					
+					<li><a href="../development/featurerequests.html">Feature Requests</a></li>
+					
+					<li><a href="../development/differencestod2.html">Differences to Dune II</a></li>
+					
+					<li><a href="../development/newname.html">New Name for Dune Legacy</a></li>
+					
+					<li><a href="../development/xcode5sdl12.html">Howto: xCode 5 and SDL 1.2</a></li>
+					
+				</ul>
+			</div>
+		
+		</div>
+
+	</div>
+</div>
+
+
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="../img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="../index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

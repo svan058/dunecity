@@ -1,0 +1,132 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🚀 Build + Create Installer (RECOMMENDED)",
+            "type": "shell",
+            "windows": {
+                "command": "cmake --build build --target installer --config Release"
+            },
+            "osx": {
+                "command": "cmake --build build-vcpkg --target dmg --config Release"
+            },
+            "linux": {
+                "command": "cmake --build build --target package --config Release"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false
+            },
+            "detail": "Builds the game AND creates platform-specific installer (always use this!)"
+        },
+        {
+            "label": "⚠️ Build Binary Only (NO INSTALLER - USE WITH CAUTION)",
+            "type": "shell",
+            "windows": {
+                "command": "cmake --build build --config Release"
+            },
+            "osx": {
+                "command": "cmake --build build-vcpkg --config Release"
+            },
+            "linux": {
+                "command": "cmake --build build --config Release"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "showReuseMessage": false
+            },
+            "detail": "Only builds the binary. Installer won't be updated! Use 'Build + Create Installer' instead."
+        },
+        {
+            "label": "🔧 Configure CMake (vcpkg)",
+            "type": "shell",
+            "windows": {
+                "command": "cmake -B build -G \"Visual Studio 17 2022\" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            },
+            "osx": {
+                "command": "cmake -B build-vcpkg -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/../vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-osx-dynamic"
+            },
+            "linux": {
+                "command": "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "detail": "Run CMake configuration with vcpkg (run this first!)"
+        },
+        {
+            "label": "🧹 Clean Build",
+            "type": "shell",
+            "windows": {
+                "command": "if (Test-Path build) { Remove-Item -Recurse -Force build }; cmake -B build -G \"Visual Studio 17 2022\" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "options": {
+                    "shell": {
+                        "executable": "powershell.exe"
+                    }
+                }
+            },
+            "osx": {
+                "command": "rm -rf build-vcpkg && cmake -B build-vcpkg -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/../vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=arm64-osx-dynamic"
+            },
+            "linux": {
+                "command": "rm -rf build && cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "detail": "Delete build directory and reconfigure from scratch"
+        },
+        {
+            "label": "▶️ Run Game",
+            "type": "shell",
+            "windows": {
+                "command": "Start-Process -FilePath '.\\build\\bin\\Release\\dunelegacy.exe'",
+                "options": {
+                    "shell": {
+                        "executable": "powershell.exe"
+                    }
+                }
+            },
+            "osx": {
+                "command": "open build-vcpkg/bin/dunelegacy.app"
+            },
+            "linux": {
+                "command": "./build/bin/dunelegacy"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "never",
+                "panel": "shared"
+            },
+            "detail": "Launch the game from the build directory"
+        },
+        {
+            "label": "🎯 Build and Run",
+            "dependsOn": [
+                "🚀 Build + Create Installer (RECOMMENDED)",
+                "▶️ Run Game"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "detail": "Complete workflow: Build installer and run the game"
+        }
+    ]
+}
+

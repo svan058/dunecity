@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>HD graphics for Dune Legacy</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/hd-graphics-for-dune-legacy.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="./faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="./contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="./index.html">Home</a></li>
+					
+					
+					<li ><a href="./news.html">News</a></li>
+					
+					
+					<li ><a href="./gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="./downloads.html">Downloads</a></li>
+					
+					
+					<li ><a href="./manual.html">Manual</a></li>
+					
+					
+					<li ><a href="./maps.html">Maps</a></li>
+					
+					
+					<li ><a href="./development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content">
+        	<div id="main">
+
+	<div class="post">
+
+	  <header class="post-header">
+		<h1>HD graphics for Dune Legacy</h1>
+		<p class="meta">Sep 4, 2016</p>
+	  </header>
+
+	  <article class="post-content">
+	  <p>
+Dune 2 has, due to its age, graphics with very low resolution, e.g. a map tile in the DOS version is only 16x16 pixels. For those of you who like this pixelated look&feel of the original game, Dune Legacy offers the option to use the original graphics. But Dune Legacy also allows to use the pixel-art scaler Scale2x that tries to reduce the pixelated appearance of the original graphics. Sometimes this leads to corners being rounded off, resulting in a cartoonish look.
+
+Two years ago sourceforge user Assembler Bot contacted me with a solution to this problem: "I have almost all bitmaps from old Dune2 up-scaled 3x and carefully pixel-by-pixel smoothed to resemble original bitmaps as close as possible." Some graphics were still missing which I created in the course of the last months. Arranging those high-res graphics to be useful for Dune Legacy also took some time.  Due to copyright issue it wasn't possible to include the graphics directly, but a masking technique was developed: The mask is applied to the original low-res image to create an high-res version. The next version of Dune Legacy will contain (the option) to use those graphics. Screenshots bellow allow you to compare both versions for yourself via the sliders:
+
+<style>
+.Screenshot1NN {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleNN1.png); 
+width: 800px;
+height: 650px;
+border: 3px solid #B16A2C;
+  border-radius: 3px;
+box-shadow: 0 0 1px #999, -2px 2px 3px rgba(0,0,0,.2);
+padding: 0;
+margin: 1rem auto;
+position: relative;
+overflow: hidden;
+}
+
+.Screenshot1HD {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleHD1.png); 
+height: 650px;
+resize: horizontal; 
+position: absolute; 
+top: 0; left: 0; 
+min-width: 0;
+max-width: 800px; 
+-moz-box-sizing: border-box; 
+box-sizing: border-box; 
+}
+.Screenshot1HD:before {
+content: '↔';
+  font-family: roboto;
+  font-weight: 300;
+background: rgba(0,0,0,.7);
+font-size: 18px; 
+color: white; 
+top: 0; right: 0px;
+height: 100%;
+line-height: 666px;  
+position: absolute; 
+}
+
+.Slider1{  
+resize: horizontal; 
+opacity: 0; 
+position: relative; 
+top: -50%;
+left: 0px; 
+margin-right: 0px;  
+width: 0px; height: 15px; 
+max-width: 794px; min-width: 15px; 
+outline: 0 solid transparent; 
+cursor: move;
+cursor: all-scroll;
+transform: scaley(200);
+transform-origin: center center;
+animation: delta 3.5s 1 normal ease-in-out 0s;
+}
+@keyframes delta {
+0% {width: 0px}
+50% {width: 750px}
+100% {width: 0px}
+}
+
+.Screenshot2NN {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleNN2.png); 
+width: 800px;
+height: 650px;
+border: 3px solid #B16A2C;
+  border-radius: 3px;
+box-shadow: 0 0 1px #999, -2px 2px 3px rgba(0,0,0,.2);
+padding: 0;
+margin: 1rem auto;
+position: relative;
+overflow: hidden;
+}
+
+.Screenshot2HD {
+background-image: url(screenshots/Dunelegacy-0.96.4-ScaleHD2.png); 
+height: 650px;
+resize: horizontal; 
+position: absolute; 
+top: 0; left: 0; 
+min-width: 0;
+max-width: 800px; 
+-moz-box-sizing: border-box; 
+box-sizing: border-box; 
+}
+.Screenshot2HD:before {
+content: '↔';
+  font-family: roboto;
+  font-weight: 300;
+background: rgba(0,0,0,.7);
+font-size: 18px; 
+color: white; 
+top: 0; right: 0px;
+height: 100%;
+line-height: 666px;  
+position: absolute; 
+}
+
+.Slider2{  
+resize: horizontal; 
+opacity: 0; 
+position: relative; 
+top: -50%;
+left: 0px; 
+margin-right: 0px;  
+width: 0px; height: 15px; 
+max-width: 794px; min-width: 15px; 
+outline: 0 solid transparent; 
+cursor: move;
+cursor: all-scroll;
+transform: scaley(200);
+transform-origin: center center;
+}
+</style>
+
+<div class='Screenshot1NN' title='Original graphics'>
+<div class='Screenshot1HD' title='HD graphics'>
+<textarea readonly cols='0' rows='0' class='Slider1'></textarea>
+</div>
+</div>
+
+<div class='Screenshot2NN' title='Original graphics'>
+<div class='Screenshot2HD' title='HD graphics'>
+<textarea readonly cols='0' rows='0' class='Slider2'></textarea>
+</div>
+</div>
+
+Above screenshots were taken at the highest zoom level but the graphics for the medium zoom level were also updated. 
+
+
+</p>
+
+	  </article>
+
+	</div>
+
+</div>
+
+		</div>
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="./img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="./index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="./development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

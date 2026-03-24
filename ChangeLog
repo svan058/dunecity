@@ -1,0 +1,156 @@
+version 0.98.6.6
+	* NEW: Dynamic Performance Optimization for Multiplayer
+		- Adaptive token budget (5k-25k) automatically scales pathfinding based on real-time FPS
+		- "Slowest peer wins" protocol: host monitors all clients and adjusts budget to keep everyone in sync
+		- Deterministic budget negotiation via network packets (NETWORKPACKET_CLIENTSTATS, NETWORKPACKET_SETPATHBUDGET)
+		- Budget adjusts every 375 cycles (~7.5s): reduce by 4k if any peer < 50 FPS, increase by 500 if all > 80 FPS
+		- Queue depth gate: blocks increases if pathfinding queue exceeds 300 requests
+		- Graceful degradation: 15k → 11k → 7k → 5k minimum to support slower hardware
+	* FIX: Critical host recognition bug (host incorrectly identified as client, preventing budget negotiation)
+	* FIX: AI performance spikes eliminated (disabled broken QuantBot concrete slab planner)
+	* FIX: Budget desync detection with automatic re-sync protocol
+	* FIX: Disconnected client handling (clears stale stats to prevent permanent budget penalties)
+	* FIX: Missing client stats timeout (host reuses stale data or forces reductions)
+	* IMPROVEMENT: Minimum pathfinding budget lowered to 5k tokens/cycle for struggling PCs
+	* IMPROVEMENT: Cycle-based budget adjustment (deterministic for multiplayer)
+	* IMPROVEMENT: Enhanced performance logging (budget changes, FPS averages, queue statistics)
+	* IMPROVEMENT: Server state persistence via new stopAnnouncing() function (keeps bIsServer=true during gameplay)
+
+version 0.98.4
+	* Fix cursor system to match 0.98.3 implementation
+	* Restore software cursor drawing for both menus and gameplay
+	* Remove broken hardware cursor system
+	* Cherry-pick performance and AI improvements from 0.98.3
+	* Add SpatialGrid optimization system
+	* Improve pathfinding and targeting algorithms
+	* Balance adjustments for AI difficulty
+
+version 0.97.0
+	* Completely reworked air units (much more similar to the original game)
+	* Air unit limit increases with (ground) unit limit
+	* Use truetype font for all texts
+	* Swap button order for question boxes and mentat screens (same as in the original game)
+	* Option: Rotate air unit graphics smoothly (option is off by default)
+	* Update fmt library to version 3.0.2
+	* Radar shows number of visible enemy units and visible friendly units
+	* Bugfix (Bug #77) Window moves to primary screen on resolution change (Reported by Urs Enke)
+	* Bugfix (Bug #81) Wrong "Built Object" stats (Reported by Urs Enke)
+	* Bugfix (Bug #82) Deviator effectlessly targets Sandworms (Reported by Urs Enke)
+	* Bugfix (Bug #83) Crash when trying to change options and no language is selected (Reported by Petr Holik)
+
+version 0.96.4
+	* New AI Smart Bot and Quant Bot
+	* Port to SDL 2
+	* Use hardware acceleration for drawing
+	* HD graphics: Use mask overlays to generate high-res graphics out of the low-res ones of the original game
+	* Maximum number of units per house (either map dependent or as a new game option "override maximum number of units")
+	* Move to fix-point math for game logic as floating-point operations may differ between platforms and compilers
+	* Units entering refineries or repair yards are now moving onto the structure tile before disappearing
+	* ADL music playback replaced: Now combines ScummVM AdlibDriver with Woody OPL chip emulation code from adplug
+	* Tutorial hints are shown in the campaign to guide the user
+	* New key bindings: Cycle through construction yards with 'H' and factories with 'F'; capture buildings with 'C'
+	* Improve performance of Fog of War
+	* Units can now be instructed to find the next repair yard on their own
+	* Save game speed, scroll speed and sound volume as game settings
+	* Use a smaller logical resolution for high resolution displays, e.g. 960x540 for 1920x1080
+	* In campaign mode, the map choice screen remembers the region of a failed mission (the user has to select a different region)
+	* New game option "Manual Carryall Drops"
+	* Mentat's eyes are following the cursor
+	* Clicking on mentat's eyes makes him blink and clicking on mentat's mouth makes him open it
+	* Modding: Make it possible to disable a unit or structure
+	* Save screenshots as PNG
+	* 64-bit builds for Windows
+	* Store complete map in save games (and replays) of single player custom games
+	* 18 new maps by heinrich arkonnen
+	* 4 new maps by Kuffar
+	* Bugfix (Bug #32): Repaired units getting removed from control group (Reported by Chan Kun Wa)
+	* Bugfix (Bug #36): AI non-hostile and inactive (Reported by Chan Kun Wa)
+	* Bugfix (Bug #40): Bullets from gun turrets hit own building, e.g. other turrets (Reported by Dream Worker)
+	* Bugfix (Bug #50): Changing the player's name while playing a mission makes starting the next mission or restarting the current mission crash
+	* Bugfix (Bug #53): SFX mismatch when playing Harkonnen 
+	* Bugfix (Bug #62): Worms spawn under rock (Reported by heinrich arkonnen)
+	* Bugfix (Bug #67): Saving a game under Windows with (for filenames) illegal characters results in no save at all (Reported by vangrunz)
+	* Bugfix (Bug #70): Changing the player name makes replays crash
+	* Bugfix (Bug #71): Ornithopter animation is too fast (Thanks to Kartones for the patch)
+	* Bugfix (Bug #72): Texture sizes were too big for older hardware; now textures are smaller than 2048x2048 (Reported by gdm85)
+	* Bugfix (Bug #73): Shift the level of the voc files so that the last sample is 128 (Reported by Vortaka)
+	* Bugfix (Bug 3610246): Mentat help used wrong houses (Reported by kuffar)
+
+version 0.96.3
+	* Full-featured map editor with support of Dune2-compatible maps as well as the extended map format
+	* Integration of OpenSuperDune (a replacement to the original SuperDune)
+	* Unit/Structure stats and the techtree is read from a config file
+	* Used scaler (Nearest Neighbor or Scale2x) is configurable (default = Scale2x)
+	* Game completely localizable (except helping menu)
+	* Harvesters now have a return command
+	* Trying to place a structure on a tile which is already occupied by (your own) units orders them to move away
+	* Add support for multiple different AI implementations
+	* Improved AI: Base is now built up faster and more compact
+	* New single and multiplayer maps
+	* Determine username automatically upon first start up
+	* Pressing an assigned number twice centers the screen on the selected units
+	* Destroyed units might spawn a soldier (Probability depends on the type of unit)
+	* Quad, Trike and Infantry units have a bumpy moving style when moving over rocks, mountains and thick spice
+	* Idling units randomly turn around
+	* Bullets now have an explosion animation when hitting
+	* Spice blooms have now their own animation
+	* Full Harvesters move 40% slower than empty ones
+	* Units are defined badly damaged (smoke, only one weapon) if < 50% max. health (instead of 30%)
+	* Sardaukar Troopers and Fremen Troopers are no unit types on its own anymore (just normal Troopers)
+	* Deviation chance is now house specific
+	* Starport prices are now normal distributed (instead of uniform)
+	* Limiting number of palaces to one is now optional (default = off)
+	* As in Dune II killed sandworms no longer respawn; old behavior is now an option (default = off)
+	* New game option: Sandworms drop spice when killed (default = off)
+	* Changes to game speed: Globally configurable; saved to and loaded from savegame; configurable before start of a multiplayer game
+	* Update enet to version 1.3.6
+	* Code was refactored in order to have a more consistent style
+	* Bugfix: Sand damage was using the wrong graphics
+	* Bugfix: Make it possible to order any type of unit from the starport if specified in the CHOAM section
+	* Bugfix: Build with SDL 1.2.14 on Mac OS X for Lion compatibility
+	* Bugfix: Allow special units to be delivered by reinforcements
+	* Bugfix: Correct order of houses is Harkonnen, Atreides, Ordos, Fremen, Sardaukar, Mercenary as in the color palette
+	* Bugfix: Minimap was not updated correctly when playing with fog-of-war enabled
+	* Bugfix: Stopping a unit that was awaiting pickup could "freeze" the carryall
+	* Bugfix: It was possible to exceed the spice storage limit (it's still possible to circumvent the limit but it's more complex)
+	* Bugfix: Harvester returns after the last tile of spice on the map is cleared
+	* Bugfix: Playing xmi music on Windows was broken
+	* Bugfix: Various fixes to the correct handling of music and sfx volume changes
+
+version 0.96.2
+	* Added LAN multiplayer mode
+	* Internet multiplayer mode with metaserver (Beta!)
+	* Use scale2x for scaling
+	* Make game scalable ingame (Zoomlevel x1, Zoomlevel x2 and Zoomlevel x3)
+	* Add mentat help
+	* Scroll build list with mouse wheel
+	* Loading maps is more fault tolerant and shows only warnings in most cases
+	* Loading maps now checks for non-standard features (see Section "Features" in the Dune II Format Specification)
+	* Confirm window for game restart and game exit
+	* Added 13 maps by Rippsblack
+	* New options "Structures Degrade On Concrete", "Start with Explored Map" and "Instant Build"
+	* Earthquake ("Window shaking") on large explosions (e.g. death hand explosion)
+	* French translation (incomplete and only a machine translation)
+	* Bugfix: Loading SCENH008.INI of Dune II V1.0 failed
+	* Bugfix: Dune Legacy.log was not used on Windows
+	* Bugfix: Support non-ascii characters in paths and filenames on Windows
+	* Bugfix: Infantry units could not trigger spice blooms
+	* Bugfix: When playing as the Sardaukar, the announcer still says "Harkonnen", e.g. "Harkonnen harvester deployed"
+	* Bugfix: Sardaukar Reinforcements did not work
+	* Refactoring: Drop Visual Studio 6.0 support completely and start using C++0x features
+
+version 0.96.1
+	* Custom maps implemented (see Dune II Format Specification for details of the map format)
+	* AI fixed (but still dumb)
+	* Play with AI in one team
+	* Fremen, Sardaukar and Mercenary playable (but needs better testing)
+	* Only one palace per house possible
+	* Colors of ingame GUI elements customized for each house
+	* New option screen
+	* I18N support (only English and German atm)
+	* Savegames are sorted by date
+	* Wall-Bug fixed: Walls not drawn correctly after loading a game
+	* Linux: Save configuration files to $XDG_CONFIG_HOME/dunelegacy if set; otherwise ~/.config/dunelegacy is used
+	* Mac OS X: Save configuration files to ~/Library/Application Support/Dune Legacy instead of ~/.config/dunelegacy
+	* Calculate md5sum of all PAK-Files at startup and write them to the log file (should ease debugging)
+	* Various smaller bugfixes

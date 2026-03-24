@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dune Legacy 0.98.6.2 Released</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="header-wrapper">
+    <div class="center-wrapper">
+      <a href="./index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="./img/logo.png" alt="" height="96" width="96"></a>
+      <div id="header">
+        <div id="logo">
+          <h1 id="site-title"><a href="./index.html">Dune <span>Legacy</span></a></h1>
+          <h2 id="site-slogan">A Dune II clone</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="content-wrapper">
+    <div class="center-wrapper">
+      <div class="content">
+        <div id="main">
+          <h1>Dune Legacy 0.98.6.2 Released</h1>
+          <div class="post-date">October 24, 2025</div>
+          <div class="post-body">
+            <p>Dune Legacy 0.98.6.2 is now available! This release focuses on game balance and adds user-editable configuration files for units, structures, and AI behavior.</p>
+            
+            <h3>What's New in 0.98.6.2</h3>
+            
+            <h4>🎛️ User-Editable Configuration Files</h4>
+            <ul>
+              <li><b>ObjectData.ini:</b> Customize unit/structure stats (HP, speed, damage, cost, build time) without recompiling</li>
+              <li><b>QuantBot Config.ini:</b> Adjust AI difficulty, unit composition, attack behavior, and harvester limits</li>
+              <li>Config files auto-copied to user directory on first run (Windows: <code>%APPDATA%\dunelegacy\config\</code>)</li>
+              <li>Includes detailed inline documentation and examples</li>
+            </ul>
+            
+            <h4>⚖️ Ornithopter Balance Changes</h4>
+            <ul>
+              <li>Speed: 22 → 15 (32% slower, turret rockets can now catch them)</li>
+              <li>Attack waves: Hard (2→1 ornis), Brutal (4→3 ornis) - smaller, more frequent raids</li>
+              <li>AI builds ornithopters but won't attack with them on Easy/Medium difficulties</li>
+            </ul>
+            
+            <h4>🚀 Rocket Turret Improvements</h4>
+            <ul>
+              <li>Scan frequency: 3 seconds → 0.2 seconds (15x faster targeting)</li>
+              <li>Fixed close-range air targeting bug (turrets now shoot air units at all ranges)</li>
+              <li>Rocket detonation timer: 30 → 60 cycles (doubled pursuit time)</li>
+              <li>Immediate retaliation when damaged</li>
+            </ul>
+            
+            <h4>🤖 AI Defense Improvements</h4>
+            <ul>
+              <li>Builds 4 insurance rocket turrets proactively (before seeing enemy ornithopters)</li>
+              <li>Proactive CY upgrade to level 2 after Starport (no more reactive delays)</li>
+              <li>Counter logic fixed: builds 2 turrets per enemy ornithopter (max from single house, not sum)</li>
+              <li>Prerequisite checking: ensures Windtrap + Radar before building turrets</li>
+            </ul>
+            
+            <h3>Download Links</h3>
+            <ul>
+              <li><b>Windows:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/Dune%20Legacy%200.98.6.2%20Setup.exe/download">Dune Legacy 0.98.6.2 Setup.exe</a></li>
+              <li><b>macOS:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.2-macOS.dmg/download">DuneLegacy-0.98.6.2-macOS.dmg</a></li>
+              <li><b>Linux:</b> <a href="https://sourceforge.net/projects/dunelegacy/files/dunelegacy/0.98.0aplpha/DuneLegacy-0.98.6.2-Linux.tar.gz/download">DuneLegacy-0.98.6.2-Linux.tar.gz</a></li>
+            </ul>
+            
+            <p>As always, you'll need the original Dune 2 PAK files to play. See our <a href="./faq.html">FAQ</a> for more information.</p>
+            
+            <p><a href="downloads.html">Download Dune Legacy 0.98.6.2</a></p>
+            
+            <p><b>Config File Locations:</b></p>
+            <ul>
+              <li><b>Windows:</b> <code>C:\Users\&lt;username&gt;\AppData\Roaming\dunelegacy\config\</code></li>
+              <li><b>Linux:</b> <code>~/.config/dunelegacy/config/</code></li>
+              <li><b>macOS:</b> <code>~/Library/Application Support/dunelegacy/config/</code></li>
+            </ul>
+            
+            <p>This release completes the ornithopter balance work - they're now effective but counterable. The new config system lets you customize balance to your liking!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

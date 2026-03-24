@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="expires" content="0">
+    <title>Dune Legacy</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Dune Legacy is an effort by a handful of developers to revitalize the first-ever real-time strategy game. The original game was the basis for the hugely successful Command and Conquer series, and the gameplay has been replicated an extended to a wide variety of storylines and series. Lead one of three interplanetary houses, Atreides, Harkonnen or Ordos, in an attempt to harvest the largest amount of spice from the sand dunes. Exchange your spice stockpiles for credits through refinement and build an army capable of thwarting attempts of the other houses to stop your harvesting!">
+    <meta name="keywords" content="Dune Legacy, Atreides, Harkonnen, Ordos, Dune II clone" />
+    <link rel="canonical" href="http://dunelegacy.sourceforge.net/website/development/sourcecode.html">
+	<link href="http://dunelegacy.sourceforge.net/website/feed.xml" type="application/atom+xml" rel="alternate" title="Dune Legacy News">
+
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+	<link type="image/x-icon" href="img/favicon.ico">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+
+    <body>
+
+    <div id="header-wrapper">
+	<div id="header-wrapper-2">
+		<div class="center-wrapper">
+
+			<a href="../index.html"><img style="width: 96px; height: 96px; float: left; margin: 13px" src="../img/logo.png" alt="" height="96" width="96"></a>
+
+			<div id="header">
+
+
+				<div id="logo">
+					<h1 id="site-title"><a href="../index.html">Dune <span>Legacy</span></a></h1>
+					<h2 id="site-slogan">A Dune II clone</h2>
+				</div>
+
+				<span class="clear" />
+
+				<div id="help-wrapper">
+					<div id="help">
+
+						
+						<a href="../faq.html">FAQ</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../forum.html">Forum</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contact.html">Contact</a>
+						
+						<span class="text-separator">|</span>
+						
+						
+						<a href="../contributing.html">Contributing</a>
+						
+						
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="navigation-wrapper">
+	<div id="navigation-wrapper-2">
+		<div class="center-wrapper">
+	
+			<div id="navigation">
+
+				<ul class="tabbed">
+					
+					
+					
+					<li ><a href="../index.html">Home</a></li>
+					
+					
+					<li ><a href="../news.html">News</a></li>
+					
+					
+					<li ><a href="../gallery.html">Gallery</a></li>
+					
+					
+					<li ><a href="../downloads.html">Downloads</a></li>
+					
+					
+					<li ><a href="../manual.html">Manual</a></li>
+					
+					
+					<li ><a href="../maps.html">Maps</a></li>
+					
+					
+					<li class="current_page_item"><a href="../development/index.html">Development</a></li>
+					
+				</ul>
+
+				
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+    <div id="content-wrapper">
+      <div class="center-wrapper">
+
+		<div class="content" id="content-two-columns">
+			<div id="main-wrapper">
+				<div id="main">
+        			<div id="main">
+
+	<h1>Getting the source code</h1>
+	<p>
+	The Dune Legacy source code is packaged as a tar.bz2 archive when a release is done. But for development purposes it is best to get the latest code directly from the git repository.
+	</p>
+	<h2>Needed tools</h2>
+	<p>
+	In order to get the latest code you need a git client installed. Depending on your operating system you might try one of these:
+	<ul>
+	<li>Linux: Just install the package git with you package manager</li>
+	<li>Windows: <a href="https://code.google.com/p/tortoisegit/" target="_blank">TortoiseGit</a></li>
+	<li>Mac OS X: <a href="http://gitx.frim.nl/" target="_blank">GitX</a></li>
+	</ul>
+	</p>
+	<h2>Checking out/cloning the code</h2>
+	<p>
+	The git repository is hosted on sourceforge and you can get read-only access to it via
+
+	<blockquote>
+	git://dunelegacy.git.sourceforge.net/gitroot/dunelegacy/dunelegacy
+	</blockquote>
+	</p>
+
+	<p>
+	Thus with the commandline git client you can get the code via the following shell command:
+	<blockquote>
+	git clone git://dunelegacy.git.sourceforge.net/gitroot/dunelegacy/dunelegacy
+	</blockquote>
+	</p>
+
+	<p>
+	After the check out you might try to <a href="../development/building.html">build the code</a>.
+	</p>
+
+	<p>
+	To keep your local repository up to date you should run
+	<blockquote>
+	git pull
+	</blockquote>
+	</p>
+
+	<h2>Submitting changes</h2>
+	<p>
+	When you have modified the code (e.g. fixed a bug, implemented a feature, etc.) you might want to share your changes. This can be done via a patch file. To create one you first should make sure that you commited all changes to your local copy of the repository:
+	<blockquote>
+	git commit -a -m "Useful commit message"
+	</blockquote>
+	</p>
+	<p>
+	Then you can create a patch containing the difference between the repository on sourceforge and your local repository:
+	<blockquote>
+	git format-patch origin --stdout &gt; my-changes.patch
+	</blockquote>
+	</p>
+
+	<p>
+	This patch can then be attached to a <a href="../development/reportingbugs.html">bug ticket</a> or <a href="../development/featurerequests.html">feature request</a>. You might need to open a new ticket if the bug or feature was not reported before.
+	</p>
+
+</div>
+
+				</div>
+			</div>
+
+			<div id="sidebar-wrapper">
+	<div id="sidebar">
+
+		<div class="box">
+
+			<div class="box-title">Overview</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/sourcecode.html">Getting the source code</a></li>
+					
+					<li><a href="../development/building.html">Building Dune Legacy</a></li>
+					
+					<li><a href="../development/developerguide.html">Dune Legacy: Developer Guide</a></li>
+					
+					<li><a href="../development/unittests.html">Running Unit Tests</a></li>
+					
+					<li><a href="../development/localization.html">Localization</a></li>
+					
+					<li><a href="../development/mapformat.html">Map Format</a></li>
+					
+					<li><a href="../development/modding.html">Modding Dune Legacy</a></li>
+					
+					<li><a href="../development/packaging.html">Packaging Dune Legacy</a></li>
+					
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="box nobborder">
+
+			<div class="box-title">Miscellaneous</div>
+
+			<div class="box-content">
+				<ul class="nice-list">
+					
+					<li><a href="../development/reportingbugs.html">Reporting Bugs</a></li>
+					
+					<li><a href="../development/featurerequests.html">Feature Requests</a></li>
+					
+					<li><a href="../development/differencestod2.html">Differences to Dune II</a></li>
+					
+					<li><a href="../development/newname.html">New Name for Dune Legacy</a></li>
+					
+					<li><a href="../development/xcode5sdl12.html">Howto: xCode 5 and SDL 1.2</a></li>
+					
+				</ul>
+			</div>
+		
+		</div>
+
+	</div>
+</div>
+
+
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+      </div>
+    </div>
+
+    <div id="footer-wrapper">
+
+	<div class="center-wrapper">
+
+		<div class="right" style="margin-right: 16px; margin-top: 6px; ">
+			<a href="http://sourceforge.net/projects/dunelegacy" style="float: right;"><img src="../img/sourceforge.png"></a>
+			<!--				
+			<a href="#">Top ^</a>
+			-->
+		</div>
+
+		<div id="footer" style="padding-bottom: 3px;">
+
+			<div class="left">
+				
+				<a href="../index.html">Home</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../news.html">News</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../gallery.html">Gallery</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../downloads.html">Downloads</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../manual.html">Manual</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../maps.html">Maps</a>
+				
+				<span class="text-separator">|</span>
+				
+				
+				<a href="../development/index.html">Development</a>
+				
+				
+			</div>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		
+
+	</div>
+
+</div>
+
+<div id="bottom">
+
+	<div class="center-wrapper">
+
+		<div class="left">
+			&copy; Dune Legacy 
+		</div>
+
+		<div class="right">
+			<a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a> 
+		</div>
+		
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>
+
+
+    </body>
+</html>

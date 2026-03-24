@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "dunelegacy",
+  "version": "0.99.5",
+  "description": "Dune Legacy - A modern OpenSource Dune 2 engine",
+  "homepage": "https://dunelegacy.sourceforge.net",
+  "dependencies": [
+    "sdl2",
+    "sdl2-mixer",
+    "sdl2-ttf",
+    "curl",
+    "miniupnpc",
+    "discord-rpc"
+  ],
+  "builtin-baseline": "0804e3b55b7e435c593707071052363fa876f170",
+  "overrides": [
+    {
+      "name": "sdl2",
+      "version": "2.32.10"
+    },
+    {
+      "name": "sdl2-mixer",
+      "version": "2.8.1"
+    },
+    {
+      "name": "sdl2-ttf",
+      "version": "2.24.0"
+    }
+  ]
+}
