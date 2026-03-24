@@ -2,7 +2,7 @@
 
 A hybrid RTS + city-builder: the Dune Legacy engine with Micropolis (SimCity) city simulation integrated into the game loop.
 
-**Status:** All 9 implementation phases complete. Compiles and links. No tests yet. No rendering for city features yet.
+**Status:** App renamed to DuneCity. City simulation compiles and runs. No rendering yet - see [GitHub issues](https://github.com/svan058/dunecity/issues) for roadmap.
 
 ---
 
