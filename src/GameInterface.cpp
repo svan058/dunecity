@@ -20,6 +20,7 @@
 #include <globals.h>
 
 #include <FileClasses/GFXManager.h>
+#include <FileClasses/FontManager.h>
 #include <House.h>
 #include <Game.h>
 
@@ -29,12 +30,18 @@
 
 #include <misc/draw_util.h>
 #include <misc/SDL2pp.h>
+#include <misc/format.h>
+
+#include <dunecity/CitySimulation.h>
+#include <dunecity/CityBudget.h>
+#include <dunecity/CityEvaluation.h>
 
 #include <algorithm>
 
 GameInterface::GameInterface() : Window(0,0,0,0) {
     pObjectContainer = nullptr;
     objectID = NONE_ID;
+    showCityStatsOverlay = false;
 
     setTransparentBackground(true);
 
@@ -173,6 +180,10 @@ void GameInterface::draw(Point position) {
         SDL_Rect dest = calcSpriteDrawingRect(digitsTex, getRendererWidth() - sideBar.getSize().x + 49 + (6 - NumDigits + i)*10, 135, 10);
         SDL_RenderCopy(renderer, digitsTex, &source, &dest);
     }
+
+    if(showCityStatsOverlay) {
+        drawCityStatsOverlay();
+    }
 }
 
 void GameInterface::updateObjectInterface() {
@@ -237,4 +248,68 @@ void GameInterface::removeOldContainer() {
         pObjectContainer = nullptr;
         objectID = NONE_ID;
     }
+}
+
+void GameInterface::drawCityStatsOverlay() {
+    auto* citySim = currentGame->getCitySimulation();
+    if(!citySim || !citySim->isInitialized()) {
+        return;
+    }
+
+    const int overlayWidth = 220;
+    const int overlayHeight = 160;
+    const int overlayX = getRendererWidth() - overlayWidth - 10;
+    const int overlayY = 10;
+    const int padding = 8;
+    const int lineHeight = 16;
+
+    SDL_Rect bgRect = { overlayX, overlayY, overlayWidth, overlayHeight };
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &bgRect);
+
+    int textX = overlayX + padding;
+    int textY = overlayY + padding;
+
+    auto drawText = [&](const std::string& text, unsigned int fontSize) {
+        sdl2::texture_ptr textTexture = pFontManager->createTextureWithText(text, COLOR_WHITE, fontSize);
+        if(textTexture) {
+            SDL_Rect destRect = { textX, textY, 0, 0 };
+            SDL_QueryTexture(textTexture.get(), nullptr, nullptr, &destRect.w, &destRect.h);
+            SDL_RenderCopy(renderer, textTexture.get(), nullptr, &destRect);
+        }
+        textY += lineHeight;
+    };
+
+    drawText("=== CITY STATS ===", 12);
+    textY += 4;
+
+    drawText(fmt::sprintf("Population: %d", citySim->getTotalPop()), 12);
+
+    drawText(fmt::sprintf("Treasury: %d", citySim->getTotalFunds()), 12);
+
+    drawText(fmt::sprintf("Tax Rate: %d%%", citySim->getCityTax()), 12);
+
+    int totalTiles = citySim->getMapWidth() * citySim->getMapHeight();
+    int poweredTiles = 0;
+    const auto& powerMap = citySim->getPowerGridMap();
+    for(int y = 0; y < citySim->getMapHeight(); y++) {
+        for(int x = 0; x < citySim->getMapWidth(); x++) {
+            if(powerMap.get(x, y) > 0) {
+                poweredTiles++;
+            }
+        }
+    }
+    int powerPercent = totalTiles > 0 ? (poweredTiles * 100) / totalTiles : 0;
+    drawText(fmt::sprintf("Power Coverage: %d%%", powerPercent), 12);
+
+    drawText(fmt::sprintf("City Score: %d", citySim->getCityEvaluation().getCityScore()), 12);
+
+    drawText(fmt::sprintf("Year: %d", citySim->getCityYear()), 12);
+
+    textY += 4;
+    drawText("Press C to toggle", 10);
 }

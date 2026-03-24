@@ -44,7 +44,7 @@ cmake -B build \
 cmake --build build -j$(sysctl -n hw.ncpu)
 
 # Run
-open build/bin/dunelegacy.app
+open build/bin/dunecity.app
 ```
 
 ---

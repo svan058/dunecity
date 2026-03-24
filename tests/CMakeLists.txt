@@ -64,7 +64,7 @@ add_test(NAME dunelegacy_tests COMMAND dunelegacy_tests)
 
 # Set test properties
 set_tests_properties(dunelegacy_tests PROPERTIES
-    ENVIRONMENT "DUNELEGACY_DATADIR=${CMAKE_SOURCE_DIR}/data"
+    ENVIRONMENT "DUNECITY_DATADIR=${CMAKE_SOURCE_DIR}/data"
 )
 
 # Copy test data to build directory

@@ -114,7 +114,7 @@ void setVideoMode(int displayIndex);
 void realign_buttons();
 
 static void printUsage() {
-    fprintf(stderr, "Usage:\n\tdunelegacy [--showlog] [--fullscreen|--window] [--PlayerName=X] [--ServerPort=X]\n");
+    fprintf(stderr, "Usage:\n\tdunecity [--showlog] [--fullscreen|--window] [--PlayerName=X] [--ServerPort=X]\n");
 }
 
 int getLogicalToPhysicalResolutionFactor(int physicalWidth, int physicalHeight) {
@@ -178,7 +178,7 @@ void setVideoMode(int displayIndex)
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");  // Use nearest-neighbor scaling for pixel-perfect look
     SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");       // Enable render batching for performance
 
-    window = SDL_CreateWindow("Dune Legacy",
+    window = SDL_CreateWindow("DuneCity",
                               SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex),
                               settings.video.physicalWidth, settings.video.physicalHeight,
                               videoFlags);
@@ -288,7 +288,7 @@ std::string getPerformanceLogFilepath()
 {
     // determine path to performance logfile
     char tmp[FILENAME_MAX];
-    if(fnkdat("Dune Legacy-Performance.log", tmp, FILENAME_MAX, FNKDAT_USER | FNKDAT_CREAT) < 0) {
+    if(fnkdat("DuneCity-Performance.log", tmp, FILENAME_MAX, FNKDAT_USER | FNKDAT_CREAT) < 0) {
         THROW(std::runtime_error, "fnkdat() failed for performance log!");
     }
 
@@ -609,20 +609,20 @@ void logOutputFunction(void *userdata, int category, SDL_LogPriority priority, c
 void showMissingFilesMessageBox() {
     SDL_ShowCursor(SDL_ENABLE);
 
-    std::string instruction = "Dune Legacy uses the data files from original Dune II. The following files are missing:\n";
+    std::string instruction = "DuneCity uses the data files from original Dune II. The following files are missing:\n";
 
     for(const std::string& missingFile : FileManager::getMissingFiles()) {
         instruction += " " + missingFile + "\n";
     }
 
-    instruction += "\nPut them in one of the following directories and restart Dune Legacy:\n";
+    instruction += "\nPut them in one of the following directories and restart DuneCity:\n";
     for(const std::string& searchPath : FileManager::getSearchPath()) {
         instruction += " " + searchPath + "\n";
     }
 
     instruction += "\nYou may want to add GERMAN.PAK or FRENCH.PAK for playing in these languages.";
 
-    if(!SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Dune Legacy", instruction.c_str(), nullptr)) {
+    if(!SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "DuneCity", instruction.c_str(), nullptr)) {
         fprintf(stderr, "%s\n", instruction.c_str());
     }
 }
@@ -758,7 +758,7 @@ int main(int argc, char *argv[]) {
         std::string crashLogPath = getLogFilepath();
         installCrashHandlers(crashLogPath.c_str());
 
-        SDL_Log("Starting Dune Legacy %s on %s", VERSION, SDL_GetPlatform());
+        SDL_Log("Starting DuneCity %s on %s", VERSION, SDL_GetPlatform());
 
         // First check for missing files
         std::vector<std::string> missingFiles = FileManager::getMissingFiles();
@@ -866,7 +866,7 @@ int main(int argc, char *argv[]) {
                     setBackToEnglishWarning += filename + "\n";
                 }
                 setBackToEnglishWarning += "\nLanguage is changed to English!";
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Dune Legacy", setBackToEnglishWarning.c_str(), NULL);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "DuneCity", setBackToEnglishWarning.c_str(), NULL);
 
                 SDL_Log("Warning: Language is changed to English!");
 
@@ -1162,8 +1162,8 @@ int main(int argc, char *argv[]) {
             THROW(std::runtime_error, "Cannot uninitialize fnkdat!");
         }
     } catch(const std::exception& e) {
-        std::string message = std::string("An unhandled exception of type \'") + demangleSymbol(typeid(e).name()) + std::string("\' was thrown:\n\n") + e.what() + std::string("\n\nDune Legacy will now be terminated!");
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Dune Legacy: Unrecoverable error", message.c_str(), nullptr);
+        std::string message = std::string("An unhandled exception of type \'") + demangleSymbol(typeid(e).name()) + std::string("\' was thrown:\n\n") + e.what() + std::string("\n\nDuneCity will now be terminated!");
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "DuneCity: Unrecoverable error", message.c_str(), nullptr);
 
         return EXIT_FAILURE;
     }

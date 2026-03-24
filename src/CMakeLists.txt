@@ -7,84 +7,84 @@ configure_file(
 # Main executable
 if(APPLE)
     # Create macOS application bundle
-    add_executable(dunelegacy MACOSX_BUNDLE)
+    add_executable(dunecity MACOSX_BUNDLE)
     
     # Set bundle properties
-    set_target_properties(dunelegacy PROPERTIES
+    set_target_properties(dunecity PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME "Dune Legacy"
+        MACOSX_BUNDLE_BUNDLE_NAME "Dune City"
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_ICON_FILE "dunelegacy.icns"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "net.dunelegacy.DuneLegacy"
+        MACOSX_BUNDLE_ICON_FILE "dunecity.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "net.dunecity.DuneCity"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/IDE/xCode/Info.plist"
         MACOSX_BUNDLE_COPYRIGHT "© Dune Legacy Team"
-        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "net.dunelegacy.DuneLegacy"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "net.dunecity.DuneCity"
     )
     
     # Add icon to bundle
-    set_source_files_properties(${CMAKE_SOURCE_DIR}/dunelegacy.icns PROPERTIES
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/dunecity.icns PROPERTIES
         MACOSX_PACKAGE_LOCATION "Resources"
     )
-    target_sources(dunelegacy PRIVATE ${CMAKE_SOURCE_DIR}/dunelegacy.icns)
+    target_sources(dunecity PRIVATE ${CMAKE_SOURCE_DIR}/dunecity.icns)
 else()
-    add_executable(dunelegacy)
+    add_executable(dunecity)
 endif()
 
 # Enable Win32 subsystem on Windows
 if(WIN32)
     if(MSVC)
         # Add Windows resource file with icon for MSVC
-        target_sources(dunelegacy PRIVATE "${CMAKE_SOURCE_DIR}/resource.rc")
+        target_sources(dunecity PRIVATE "${CMAKE_SOURCE_DIR}/resource.rc")
         # Set application icon properties for MSVC
-        set_target_properties(dunelegacy PROPERTIES
+        set_target_properties(dunecity PROPERTIES
             VS_DPI_AWARE "PerMonitor"
             WIN32_EXECUTABLE TRUE)
         
-        target_link_options(dunelegacy PRIVATE
+        target_link_options(dunecity PRIVATE
             $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
             $<$<CONFIG:Debug>:/SUBSYSTEM:CONSOLE>
         )
     else()
         # For MinGW, add the resource file with the icon
         configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/dunelegacy.rc"
-            "${CMAKE_CURRENT_BINARY_DIR}/dunelegacy.rc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/dunecity.rc"
+            "${CMAKE_CURRENT_BINARY_DIR}/dunecity.rc"
             COPYONLY
         )
-        target_sources(dunelegacy PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/dunelegacy.rc")
+        target_sources(dunecity PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/dunecity.rc")
         
         # MinGW equivalent for Windows subsystem
         if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            target_link_options(dunelegacy PRIVATE -mwindows)
+            target_link_options(dunecity PRIVATE -mwindows)
         else()
-            target_link_options(dunelegacy PRIVATE -mconsole)
+            target_link_options(dunecity PRIVATE -mconsole)
         endif()
     endif()
     
     # When using vcpkg, CMake will automatically handle DLL copying
     # Add a post-build message for confirmation
-    add_custom_command(TARGET dunelegacy POST_BUILD
+    add_custom_command(TARGET dunecity POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "vcpkg will automatically copy required DLLs to output directory"
         COMMENT "Checking for SDL2 DLLs..."
     )
 endif()
 
 # Precompiled headers
-if(DUNELEGACY_ENABLE_PCH AND WIN32 AND MSVC)
-    target_precompile_headers(dunelegacy
+if(DUNECITY_ENABLE_PCH AND WIN32 AND MSVC)
+    target_precompile_headers(dunecity
         PRIVATE
             ${PCH_HEADER}
     )
-    target_sources(dunelegacy
+    target_sources(dunecity
         PRIVATE
             ${PCH_SOURCE}
     )
 endif()
 
 # All source files
-target_sources(dunelegacy
+target_sources(dunecity
     PRIVATE
         # Root sources
         AStarSearch.cpp
@@ -323,7 +323,7 @@ target_sources(dunelegacy
 )
 
 # C source files
-target_sources(dunelegacy
+target_sources(dunecity
     PRIVATE
         # enet
         enet/callbacks.c
@@ -351,7 +351,7 @@ target_sources(dunelegacy
 
 # Platform-specific source files
 if(APPLE)
-    target_sources(dunelegacy
+    target_sources(dunecity
         PRIVATE
             ${CMAKE_SOURCE_DIR}/IDE/xCode/MacFunctions.m
     )
@@ -366,14 +366,14 @@ endif()
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${sources})
 
 # Include directories
-target_include_directories(dunelegacy PRIVATE
+target_include_directories(dunecity PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src
 )
 
 # Platform-specific include directories
 if(APPLE)
-    target_include_directories(dunelegacy PRIVATE
+    target_include_directories(dunecity PRIVATE
         ${CMAKE_SOURCE_DIR}/IDE/xCode
     )
 endif()
@@ -386,7 +386,7 @@ find_library(DISCORD_RPC_LIBRARY discord-rpc PATHS ${CMAKE_PREFIX_PATH}/lib)
 
 # Link libraries
 # vcpkg provides modern CMake targets for SDL2
-target_link_libraries(dunelegacy
+target_link_libraries(dunecity
     PRIVATE
         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
@@ -398,7 +398,7 @@ target_link_libraries(dunelegacy
 )
 
 if(WIN32)
-    target_link_libraries(dunelegacy
+    target_link_libraries(dunecity
         PRIVATE
             ws2_32
             winmm
@@ -409,7 +409,7 @@ endif()
 
 # macOS-specific frameworks
 if(APPLE)
-    target_link_libraries(dunelegacy
+    target_link_libraries(dunecity
         PRIVATE
             "-framework Cocoa"
             "-framework Foundation"
@@ -418,7 +418,7 @@ if(APPLE)
 endif()
 
 # Compiler options
-target_compile_options(dunelegacy
+target_compile_options(dunecity
     PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W4>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
@@ -430,9 +430,9 @@ set(DATA_DIR "${CMAKE_SOURCE_DIR}/data")
 if(APPLE)
     # For macOS bundle, copy data files directly to Resources/ (not Resources/data/)
     # This matches the Xcode project structure where .PAK files are in Resources root
-    set(BUNDLE_RESOURCES_DIR "$<TARGET_BUNDLE_CONTENT_DIR:dunelegacy>/Resources")
+    set(BUNDLE_RESOURCES_DIR "$<TARGET_BUNDLE_CONTENT_DIR:dunecity>/Resources")
     add_custom_command(
-        TARGET dunelegacy
+        TARGET dunecity
         POST_BUILD
         # Copy all .PAK files and other data to Resources root
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -455,16 +455,16 @@ if(APPLE)
     # This is required for macOS Gatekeeper to allow the app to run when downloaded
     # Without proper signing, users get "app is damaged and can't be opened" error
     add_custom_command(
-        TARGET dunelegacy
+        TARGET dunecity
         POST_BUILD
-        COMMAND codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:dunelegacy>"
+        COMMAND codesign --force --deep --sign - "$<TARGET_BUNDLE_DIR:dunecity>"
         COMMENT "Code signing app bundle with ad-hoc signature"
     )
 else()
     # For other platforms, copy to build/data directory
     set(BUILD_DATA_DIR "${CMAKE_BINARY_DIR}/data")
     add_custom_command(
-        TARGET dunelegacy
+        TARGET dunecity
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${DATA_DIR}"
@@ -522,7 +522,7 @@ endif()
 if(WIN32)
     # Windows: install to root directory
     # Use CMake build output (not VS IDE output)
-    install(TARGETS dunelegacy
+    install(TARGETS dunecity
         RUNTIME DESTINATION .
     )
     # Install vcpkg DLLs for Windows
@@ -534,29 +534,29 @@ if(WIN32)
     endif()
 elseif(APPLE)
     # macOS: install as bundle
-    install(TARGETS dunelegacy
+    install(TARGETS dunecity
         BUNDLE DESTINATION .
     )
 else()
     # Linux: install to bin directory
-    install(TARGETS dunelegacy
+    install(TARGETS dunecity
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif()
 
 # Define data directory path for runtime
-# On macOS bundles, don't define DUNELEGACY_DATADIR so SDL_GetBasePath() is used (points to Resources/)
+# On macOS bundles, don't define DUNECITY_DATADIR so SDL_GetBasePath() is used (points to Resources/)
 if(NOT APPLE)
     if(WIN32)
         # Windows: data files are in the same directory as the executable (root install dir)
-        # Don't define DUNELEGACY_DATADIR so it uses SDL_GetBasePath() which points to executable directory
-        # This matches the installation structure where PAK files are in root, not share/DuneLegacy
+        # Don't define DUNECITY_DATADIR so it uses SDL_GetBasePath() which points to executable directory
+        # This matches the installation structure where PAK files are in root, not share/DuneCity
     else()
-        # Linux: use FHS structure with share/DuneLegacy
-        target_compile_definitions(dunelegacy
+        # Linux: use FHS structure with share/DuneCity
+        target_compile_definitions(dunecity
             PRIVATE
                 DATA_DIRECTORY="${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}"
-                DUNELEGACY_DATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}"
+                DUNECITY_DATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}"
         )
     endif()
 endif() 

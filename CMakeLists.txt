@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project name and version
-project(DuneLegacy VERSION 0.99.5 LANGUAGES C CXX)
+project(DuneCity VERSION 0.99.5 LANGUAGES C CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -50,9 +50,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Options
-option(DUNELEGACY_BUILD_TESTS "Build test suite" OFF)
-option(DUNELEGACY_ENABLE_PCH "Enable precompiled headers" ON)
-option(DUNELEGACY_STATIC_RUNTIME "Use static runtime libraries" OFF)
+option(DUNECITY_BUILD_TESTS "Build test suite" OFF)
+option(DUNECITY_ENABLE_PCH "Enable precompiled headers" ON)
+option(DUNECITY_STATIC_RUNTIME "Use static runtime libraries" OFF)
 
 # Find required packages
 # When using vcpkg, these will be automatically found via CMAKE_TOOLCHAIN_FILE
@@ -73,14 +73,14 @@ if(WIN32)
         set(CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE "x64")
         
         # Runtime library settings
-        if(DUNELEGACY_STATIC_RUNTIME)
+        if(DUNECITY_STATIC_RUNTIME)
             set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
         else()
             set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
         endif()
         
         # Precompiled header settings
-        if(DUNELEGACY_ENABLE_PCH)
+        if(DUNECITY_ENABLE_PCH)
             set(PCH_SOURCE "${CMAKE_SOURCE_DIR}/IDE/VC/stdafx.cpp")
             set(PCH_HEADER "${CMAKE_SOURCE_DIR}/IDE/VC/stdafx.h")
         endif()
@@ -115,7 +115,7 @@ endif()
 
 # Add subdirectories
 add_subdirectory(src)
-if(DUNELEGACY_BUILD_TESTS)
+if(DUNECITY_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
@@ -131,29 +131,29 @@ if(NOT APPLE)
     )
     
     # Add dependency to ensure data files are copied after main target is built
-    add_dependencies(copy_data dunelegacy)
+    add_dependencies(copy_data dunecity)
 endif()
 
 
 # Platform-specific install configuration
 if(WIN32)
     # Windows: install all files to root directory (not in a share subdirectory)
-    set(DUNELEGACY_INSTALL_ROOT ".")
-    set(DUNELEGACY_DATA_DIR ".")
-    set(DUNELEGACY_CONFIG_DIR "config")
-    set(DUNELEGACY_DOC_DIR ".")
+    set(DUNECITY_INSTALL_ROOT ".")
+    set(DUNECITY_DATA_DIR ".")
+    set(DUNECITY_CONFIG_DIR "config")
+    set(DUNECITY_DOC_DIR ".")
 elseif(APPLE)
     # macOS already handled via bundle
-    set(DUNELEGACY_INSTALL_ROOT ".")
-    set(DUNELEGACY_DATA_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-    set(DUNELEGACY_CONFIG_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/config")
-    set(DUNELEGACY_DOC_DIR "${CMAKE_INSTALL_DOCDIR}")
+    set(DUNECITY_INSTALL_ROOT ".")
+    set(DUNECITY_DATA_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+    set(DUNECITY_CONFIG_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/config")
+    set(DUNECITY_DOC_DIR "${CMAKE_INSTALL_DOCDIR}")
 else()
     # Unix/Linux FHS structure
-    set(DUNELEGACY_INSTALL_ROOT "${CMAKE_INSTALL_BINDIR}")
-    set(DUNELEGACY_DATA_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-    set(DUNELEGACY_CONFIG_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/config")
-    set(DUNELEGACY_DOC_DIR "${CMAKE_INSTALL_DOCDIR}")
+    set(DUNECITY_INSTALL_ROOT "${CMAKE_INSTALL_BINDIR}")
+    set(DUNECITY_DATA_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+    set(DUNECITY_CONFIG_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/config")
+    set(DUNECITY_DOC_DIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
 # Install data files
@@ -170,24 +170,24 @@ if(NOT APPLE)
             "config/QuantBot Config.ini.default"
             "config/Dune Legacy.ini"
             config/README.md
-            DESTINATION ${DUNELEGACY_CONFIG_DIR}
+            DESTINATION ${DUNECITY_CONFIG_DIR}
         )
     endif()
 endif()
 
 # Install desktop file and icons on Linux
 if(UNIX AND NOT APPLE)
-    install(FILES dunelegacy.desktop
+    install(FILES dunecity.desktop
         DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
     )
-    install(FILES dunelegacy.png
+    install(FILES dunecity.png
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps
     )
-    install(FILES dunelegacy-128x128.png
+    install(FILES dunecity-128x128.png
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps
-        RENAME dunelegacy.png
+        RENAME dunecity.png
     )
-    install(FILES dunelegacy.svg
+    install(FILES dunecity.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
     )
 endif()
@@ -196,20 +196,20 @@ endif()
 if(WIN32)
     # Windows: install docs to root
     install(FILES AUTHORS COPYING NEWS README
-        DESTINATION ${DUNELEGACY_DOC_DIR}
+        DESTINATION ${DUNECITY_DOC_DIR}
     )
     # Install release notes
     install(FILES "release_notes/RELEASE_NOTES.md"
-        DESTINATION ${DUNELEGACY_DOC_DIR}
+        DESTINATION ${DUNECITY_DOC_DIR}
         RENAME "Release_Notes.md"
     )
 elseif(NOT APPLE)
     # Linux: use standard doc directory
     install(FILES AUTHORS COPYING NEWS README
-        DESTINATION ${DUNELEGACY_DOC_DIR}
+        DESTINATION ${DUNECITY_DOC_DIR}
     )
     install(FILES "release_notes/RELEASE_NOTES.md"
-        DESTINATION ${DUNELEGACY_DOC_DIR}
+        DESTINATION ${DUNECITY_DOC_DIR}
         RENAME "Release_Notes.md"
         OPTIONAL
     )
@@ -228,23 +228,23 @@ if(WIN32)
     set(CPACK_GENERATOR "NSIS;ZIP")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
     set(CPACK_NSIS_MODIFY_PATH OFF)
-    set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/dunelegacy.ico")
-    set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/dunelegacy.ico")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "dunelegacy.exe")
-    set(CPACK_NSIS_DISPLAY_NAME "Dune Legacy")
-    set(CPACK_NSIS_PACKAGE_NAME "Dune Legacy")
-    set(CPACK_PACKAGE_INSTALL_DIRECTORY "DuneLegacy")
-    set(CPACK_PACKAGE_FILE_NAME "DuneLegacy-${PROJECT_VERSION}-Windows-x64")
+    set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/dunecity.ico")
+    set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/dunecity.ico")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "dunecity.exe")
+    set(CPACK_NSIS_DISPLAY_NAME "Dune City")
+    set(CPACK_NSIS_PACKAGE_NAME "Dune City")
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "DuneCity")
+    set(CPACK_PACKAGE_FILE_NAME "DuneCity-${PROJECT_VERSION}-Windows-x64")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
-    set(CPACK_NSIS_MUI_FINISHPAGE_RUN "dunelegacy.exe")
+    set(CPACK_NSIS_MUI_FINISHPAGE_RUN "dunecity.exe")
     
     # Add checkbox to view release notes on finish page
     set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-        WriteRegStr HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunelegacy.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\dunelegacy.exe\\\"
-        WriteRegStr HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunelegacy.exe\\\" \\\"Path\\\" \\\"$INSTDIR\\\"
+        WriteRegStr HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunecity.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\dunecity.exe\\\"
+        WriteRegStr HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunecity.exe\\\" \\\"Path\\\" \\\"$INSTDIR\\\"
     ")
     set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        DeleteRegKey HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunelegacy.exe\\\"
+        DeleteRegKey HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\dunecity.exe\\\"
     ")
     
     # Custom NSIS code for release notes checkbox on finish page
@@ -256,7 +256,7 @@ if(WIN32)
     
     # Create Start Menu shortcuts
     set(CPACK_NSIS_CREATE_ICONS_EXTRA "
-        CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Dune Legacy.lnk\\\" \\\"$INSTDIR\\\\dunelegacy.exe\\\"
+        CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Dune City.lnk\\\" \\\"$INSTDIR\\\\dunecity.exe\\\"
         CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Release Notes.lnk\\\" \\\"$INSTDIR\\\\Release_Notes.md\\\"
         CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Readme.lnk\\\" \\\"$INSTDIR\\\\README\\\"
     ")
@@ -285,10 +285,10 @@ if(WIN32)
     )
 elseif(APPLE)
     set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_DMG_VOLUME_NAME "Dune Legacy ${PROJECT_VERSION}")
+    set(CPACK_DMG_VOLUME_NAME "Dune City ${PROJECT_VERSION}")
     set(CPACK_DMG_FORMAT "UDZO")  # Compressed
-    set(CPACK_PACKAGE_FILE_NAME "DuneLegacy-${PROJECT_VERSION}-macOS")
-    set(MACOSX_BUNDLE_ICON_FILE "dunelegacy.icns")
+    set(CPACK_PACKAGE_FILE_NAME "DuneCity-${PROJECT_VERSION}-macOS")
+    set(MACOSX_BUNDLE_ICON_FILE "dunecity.icns")
     
     # Install README and release notes to DMG root (not inside .app)
     install(FILES README DESTINATION . COMPONENT Runtime)
@@ -313,20 +313,20 @@ elseif(APPLE)
         COMMAND ${CMAKE_COMMAND} -E echo "Building binary..."
         COMMAND ${CMAKE_COMMAND} --build . --config Release
         COMMAND ${CMAKE_COMMAND} -E echo "Cleaning old DMG and staging..."
-        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/DuneLegacy-${PROJECT_VERSION}-macOS.dmg
-        COMMAND ${CMAKE_COMMAND} -E remove_directory /tmp/dunelegacy_dmg_staging
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/DuneCity-${PROJECT_VERSION}-macOS.dmg
+        COMMAND ${CMAKE_COMMAND} -E remove_directory /tmp/dunecity_dmg_staging
         COMMAND ${CMAKE_COMMAND} -E echo "Staging files for DMG..."
-        COMMAND ${CMAKE_COMMAND} -E make_directory /tmp/dunelegacy_dmg_staging
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/bin/dunelegacy.app /tmp/dunelegacy_dmg_staging/dunelegacy.app
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/README /tmp/dunelegacy_dmg_staging/README
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/release_notes/RELEASE_NOTES.md /tmp/dunelegacy_dmg_staging/Release\\ Notes.md
+        COMMAND ${CMAKE_COMMAND} -E make_directory /tmp/dunecity_dmg_staging
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/bin/dunecity.app /tmp/dunecity_dmg_staging/dunecity.app
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/README /tmp/dunecity_dmg_staging/README
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/release_notes/RELEASE_NOTES.md /tmp/dunecity_dmg_staging/Release\\ Notes.md
         COMMAND ${CMAKE_COMMAND} -E echo "Creating Applications symlink for drag-and-drop install..."
-        COMMAND ln -sf /Applications /tmp/dunelegacy_dmg_staging/Applications
+        COMMAND ln -sf /Applications /tmp/dunecity_dmg_staging/Applications
         COMMAND ${CMAKE_COMMAND} -E echo "Creating DMG with hdiutil..."
-        COMMAND hdiutil create -volname "Dune Legacy ${PROJECT_VERSION}" -srcfolder /tmp/dunelegacy_dmg_staging -ov -format UDZO ${CMAKE_BINARY_DIR}/DuneLegacy-${PROJECT_VERSION}-macOS.dmg
+        COMMAND hdiutil create -volname "Dune City ${PROJECT_VERSION}" -srcfolder /tmp/dunecity_dmg_staging -ov -format UDZO ${CMAKE_BINARY_DIR}/DuneCity-${PROJECT_VERSION}-macOS.dmg
         COMMAND ${CMAKE_COMMAND} -E echo "Cleaning up staging..."
-        COMMAND ${CMAKE_COMMAND} -E remove_directory /tmp/dunelegacy_dmg_staging
-        COMMAND ${CMAKE_COMMAND} -E echo "DMG created: DuneLegacy-${PROJECT_VERSION}-macOS.dmg"
+        COMMAND ${CMAKE_COMMAND} -E remove_directory /tmp/dunecity_dmg_staging
+        COMMAND ${CMAKE_COMMAND} -E echo "DMG created: DuneCity-${PROJECT_VERSION}-macOS.dmg"
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Building macOS DMG installer (manual hdiutil - bypasses CPack caching issues)..."
     )
@@ -337,7 +337,7 @@ else()
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Dune Legacy Team")
     set(CPACK_RPM_PACKAGE_LICENSE "GPL-2.0+")
     set(CPACK_RPM_PACKAGE_GROUP "Amusements/Games")
-    set(CPACK_PACKAGE_FILE_NAME "DuneLegacy-${PROJECT_VERSION}-Linux-x64")
+    set(CPACK_PACKAGE_FILE_NAME "DuneCity-${PROJECT_VERSION}-Linux-x64")
     
     # Add custom target for Linux packages
     add_custom_target(package

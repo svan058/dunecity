@@ -1,4 +1,4 @@
-AC_INIT(dunelegacy, 0.99.5, http://dunelegacy.sourceforge.net)
+AC_INIT(dunecity, 0.99.5, http://dunelegacy.sourceforge.net)
 
 AC_CANONICAL_BUILD
 
@@ -11,12 +11,12 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_CXX
 
 if test "$prefix" = "" ; then
-	dunelegacydatadir='data'
+	dunecitydatadir='data'
 else
-	dunelegacydatadir='${pkgdatadir}'
+	dunecitydatadir='${pkgdatadir}'
 fi
 
-AC_SUBST(dunelegacydatadir)
+AC_SUBST(dunecitydatadir)
 
 dnl Some flags for gcc
 CXXFLAGS="-std=c++14 -pthread -fPIC -O3 -pipe -pedantic -Wall -Wextra -Wno-unused-parameter -Wno-shift-negative-value -Wno-unknown-pragmas -D__STDC_FORMAT_MACROS -DNDEBUG"
@@ -80,10 +80,10 @@ AC_EGREP_HEADER(MSG_MAXIOVLEN, socket.h, AC_DEFINE(ENET_BUFFER_MAXIMUM, [MSG_MAX
 
 if test "${host}" = "i686-w64-mingw32" ; then
         LIBS="$LIBS -lws2_32 -lwinmm -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic resource.o"
-		dunelegacydatadir='.'
+		dunecitydatadir='.'
 elif test "${host}" = "x86_64-w64-mingw32" ; then
         LIBS="$LIBS -lws2_32 -lwinmm -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic resource.o"
-		dunelegacydatadir='.'
+		dunecitydatadir='.'
 fi
 
 AC_CONFIG_FILES(Makefile src/Makefile tests/Makefile)
