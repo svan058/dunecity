@@ -187,9 +187,10 @@ cmake --build . --target dunelegacy
 
 ---
 
-## Source Codebases
+## Repositories
 
-- **Dune Legacy:** `~/development/dune/dunelegacy/` — C++17, SDL2, CMake, vcpkg
-- **Micropolis:** `~/development/simcity/MicropolisCore/MicropolisEngine/src/` — C++, original SimCity algorithms
-- **Analysis docs:** `~/development/dunecity/analysis/` — architecture comparisons, porting notes
-- **Integration plan:** `~/.cursor/plans/dunecity_integration_plan_c90603b0.plan.md` — full 9-phase plan with file references
+- **DuneCity:** `~/development/dunecity/` — the canonical repo (git, `main` branch). Contains the full Dune Legacy engine with all DuneCity modifications.
+- **Dune Legacy (upstream):** `~/development/dune/dunelegacy/` — original fork, remote `ssh://sfgit/p/dunelegacy/code`. DuneCity changes exist as uncommitted modifications here too but the dunecity repo is the source of truth.
+- **Micropolis (reference):** `~/development/simcity/MicropolisCore/MicropolisEngine/src/` — C++, original SimCity algorithms used as porting source.
+- **Analysis docs:** `~/development/dunecity/analysis/` — architecture comparisons, porting notes, this file.
+- **Integration plan:** `~/.cursor/plans/dunecity_integration_plan_c90603b0.plan.md` — full 9-phase plan with file references.
