@@ -343,6 +343,44 @@ void Tile::blitGround(int xPos, int yPos) {
             SDL_RenderCopy(renderer, pGFXManager->getZoomedObjPic(ObjPic_SandDamage, currentZoomlevel), &source, &drawLocation);
         }
     }
+
+    // city zone overlay
+    if (hasCityZone()) {
+        Uint8 baseR = 0, baseG = 0, baseB = 0;
+        Uint8 borderR = 0, borderG = 0, borderB = 0;
+        
+        switch (cityZoneType_) {
+            case DuneCity::ZoneType::Residential:
+                baseR = 0; baseG = 200; baseB = 0;
+                borderR = 0; borderG = 255; borderB = 0;
+                break;
+            case DuneCity::ZoneType::Commercial:
+                baseR = 0; baseG = 0; baseB = 200;
+                borderR = 0; borderG = 100; borderB = 255;
+                break;
+            case DuneCity::ZoneType::Industrial:
+                baseR = 200; baseG = 200; baseB = 0;
+                borderR = 255; borderG = 255; borderB = 0;
+                break;
+            default:
+                break;
+        }
+        
+        Uint8 alpha = 80 + cityZoneDensity_ * 10;
+        
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, baseR, baseG, baseB, alpha);
+        SDL_RenderFillRect(renderer, &drawLocation);
+        
+        SDL_SetRenderDrawColor(renderer, borderR, borderG, borderB, 255);
+        for (int i = 0; i < 2; i++) {
+            SDL_Rect borderRect = { drawLocation.x + i, drawLocation.y + i, 
+                                     drawLocation.w - 2*i, drawLocation.h - 2*i };
+            SDL_RenderDrawRect(renderer, &borderRect);
+        }
+        
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
 }
 
 void Tile::blitStructures(int xPos, int yPos) const {
