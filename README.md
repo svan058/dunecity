@@ -2,7 +2,7 @@
 
 A hybrid RTS + city-builder: the Dune Legacy engine with Micropolis (SimCity) city simulation integrated into the game loop.
 
-**Status:** All 9 implementation phases complete. Compiles and links. No tests yet. No rendering for city features yet.
+**Status:** App renamed to DuneCity. City simulation compiles and runs. No rendering yet - see [GitHub issues](https://github.com/svan058/dunecity/issues) for roadmap.
 
 ---
 
@@ -27,6 +27,21 @@ git add . && git commit -m "feat: description" && git push -u origin feature/you
 
 ---
 
+## Multi-Agent Collaboration
+
+Hermes (Skroderider) and Cursor (RealClaw) both work on this repo.
+
+**Rules:**
+1. **Trunk-based** — work on `main` or short-lived branches (hours, not days)
+2. **Claim phases/features** — check FEATURES.md before starting, claim your work
+3. **Small PRs, squash merge** — fast review, less merge conflict risk
+4. **Must compile** — no broken builds pushed
+5. **Coordinate on high-traffic files** — CMakeLists.txt, Game.cpp, GameInterface.cpp
+
+**Keybinds:** See FEATURES.md for current hotkey assignments. Don't override existing gameplay keys.
+
+---
+
 ## Build
 
 ```bash
@@ -44,7 +59,7 @@ cmake -B build \
 cmake --build build -j$(sysctl -n hw.ncpu)
 
 # Run
-open build/bin/dunelegacy.app
+open build/bin/dunecity.app
 ```
 
 ---

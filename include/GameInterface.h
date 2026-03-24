@@ -89,8 +89,14 @@ public:
     */
     virtual void updateObjectInterface();
 
+    /**
+        Toggle the city stats HUD overlay
+    */
+    void toggleCityStatsOverlay() { showCityStatsOverlay = !showCityStatsOverlay; }
+
 private:
     void removeOldContainer();
+    void drawCityStatsOverlay();
 
 
     ObjectInterface*    pObjectContainer;       ///< The container holding information about the currently selected unit/structure
@@ -110,5 +116,7 @@ private:
 
     ChatManager         chatManager;            ///< Manages chat manages shown overlayed with the main map
     TextButton          ornithopterSelectButton;///< Button that selects all owned ornithopters
+
+    bool                showCityStatsOverlay;   ///< Whether to show the city stats overlay
 };
     #endif // GAMEINTERFACE_H
