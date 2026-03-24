@@ -237,13 +237,13 @@ Structure_Palace = 8,
 ```
 M include/Command.h           # Added city command types
 M include/Definitions.h
-M include/Game.h               # Added citySimulation_ member
+M include/Game.h              # Added citySimulation_ member
 M include/Map.h
-M include/Tile.h               # Zone fields
+M include/Tile.h              # Zone fields
 M include/players/QuantBot.h
 M src/CMakeLists.txt
-M src/Command.cpp              # City command handlers
-M src/Game.cpp                 # Added advancePhase() call
+M src/Command.cpp            # City command handlers
+M src/Game.cpp               # Added advancePhase() call
 M src/Tile.cpp
 M src/players/QuantBot.cpp
 M src/structures/WindTrap.cpp
@@ -256,7 +256,7 @@ M vcpkg.json
 ?? tests/DuneCityTestCase/
 ```
 
-**Last code change:** March 24, 2025 (6 days ago)
+**Last code change:** March 24, 2025 (5 days ago)
 
 ---
 

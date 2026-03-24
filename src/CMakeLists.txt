@@ -162,6 +162,7 @@ target_sources(dunecity
         GUI/TextView.cpp
         GUI/RadioButtonManager.cpp
         GUI/dune/ChatManager.cpp
+        GUI/dune/CityBudgetWindow.cpp
         GUI/dune/DuneStyle.cpp
         GUI/dune/GameOptionsWindow.cpp
         GUI/dune/LoadSaveWindow.cpp

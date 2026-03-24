@@ -331,13 +331,10 @@ void GameInterface::drawCityStatsOverlay() {
     }
 
     auto& budget = citySim->getCityBudget();
-    int income = budget.getTaxIncome();
-    int expenses = budget.getRoadFundingRequest() + budget.getPoliceFundingRequest() + budget.getFireFundingRequest();
-    int profit = income - expenses;
-    Uint32 profitColor = profit >= 0 ? COLOR_GREEN : COLOR_RED;
+    int32_t lastRevenue = budget.getLastTaxRevenue();
     
     drawText(fmt::sprintf("Treasury: %d", citySim->getTotalFunds()), 12);
-    drawText(fmt::sprintf("Income: %d  Expenses: %d", income, expenses), 10, profitColor);
+    drawText(fmt::sprintf("Tax Revenue: %d", lastRevenue), 10);
 
     int totalTiles = citySim->getMapWidth() * citySim->getMapHeight();
     int poweredTiles = 0;

@@ -3525,12 +3525,23 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         case SDLK_7:
         case SDLK_8:
         case SDLK_9: {
-            //for SDLK_1 to SDLK_9 select group with that number, if ctrl create group from selected obj
             int selectListIndex = keyboardEvent.keysym.sym - SDLK_1;
 
-            if(SDL_GetModState() & KMOD_CTRL) {
+            if(SDL_GetModState() & KMOD_SHIFT) {
+                switch(keyboardEvent.keysym.sym) {
+                    case SDLK_1: currentCityOverlay_ = DuneCity::CityOverlayMode::None; break;
+                    case SDLK_2: currentCityOverlay_ = DuneCity::CityOverlayMode::PowerGrid; break;
+                    case SDLK_3: currentCityOverlay_ = DuneCity::CityOverlayMode::TrafficDensity; break;
+                    case SDLK_4: currentCityOverlay_ = DuneCity::CityOverlayMode::Pollution; break;
+                    case SDLK_5: currentCityOverlay_ = DuneCity::CityOverlayMode::LandValue; break;
+                    case SDLK_6: currentCityOverlay_ = DuneCity::CityOverlayMode::CrimeRate; break;
+                    case SDLK_7: currentCityOverlay_ = DuneCity::CityOverlayMode::Population; break;
+                    default: break;
+                }
+            } else if (currentCursorMode == CursorMode_CityZone && selectListIndex < 3) {
+                selectedZoneType_ = static_cast<DuneCity::ZoneType>(selectListIndex + 1);
+            } else if(SDL_GetModState() & KMOD_CTRL) {
                 pLocalPlayer->setGroupList(selectListIndex, selectedList);
-
                 pInterface->updateObjectInterface();
             } else {
                 std::set<Uint32>& groupList = pLocalPlayer->getGroupList(selectListIndex);
@@ -3610,54 +3621,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                 pInterface->toggleCityStatsOverlay();
             } else {
                 setCursorMode(CursorMode_Capture);
-            }
-        } break;
-
-        case SDLK_1: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::None;
-            } else if (currentCursorMode == CursorMode_CityZone) {
-                selectedZoneType_ = DuneCity::ZoneType::Residential;
-            }
-        } break;
-
-        case SDLK_2: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::PowerGrid;
-            } else if (currentCursorMode == CursorMode_CityZone) {
-                selectedZoneType_ = DuneCity::ZoneType::Commercial;
-            }
-        } break;
-
-        case SDLK_3: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::TrafficDensity;
-            } else if (currentCursorMode == CursorMode_CityZone) {
-                selectedZoneType_ = DuneCity::ZoneType::Industrial;
-            }
-        } break;
-
-        case SDLK_4: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::Pollution;
-            }
-        } break;
-
-        case SDLK_5: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::LandValue;
-            }
-        } break;
-
-        case SDLK_6: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::CrimeRate;
-            }
-        } break;
-
-        case SDLK_7: {
-            if (SDL_GetModState() & KMOD_SHIFT) {
-                currentCityOverlay_ = DuneCity::CityOverlayMode::Population;
             }
         } break;
 
@@ -4167,32 +4130,6 @@ void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
         SDL_RenderFillRect(renderer, &overlayRect);
     };
 
-    auto drawOverlayBlockInt16 = [&](int tileX, int tileY, int blockSize, int16_t value,
-                                      int16_t minVal, int16_t maxVal,
-                                      uint8_t r1, uint8_t g1, uint8_t b1,
-                                      uint8_t r2, uint8_t g2, uint8_t b2) {
-        if (maxVal <= minVal) maxVal = minVal + 1;
-        float normalized = static_cast<float>(value - minVal) / (maxVal - minVal);
-        normalized = std::max(0.0f, std::min(1.0f, normalized));
-        
-        uint8_t r = static_cast<uint8_t>(r1 + (r2 - r1) * normalized);
-        uint8_t g = static_cast<uint8_t>(g1 + (g2 - g1) * normalized);
-        uint8_t b = static_cast<uint8_t>(b1 + (b2 - b1) * normalized);
-        uint8_t a = 120;
-
-        int zoomed_tilesize = world2zoomedWorld(TILESIZE);
-        int blockPixels = blockSize * zoomed_tilesize;
-
-        SDL_Rect overlayRect = {
-            screenborder->world2screenX(tileX * TILESIZE),
-            screenborder->world2screenY(tileY * TILESIZE),
-            blockPixels,
-            blockPixels
-        };
-
-        SDL_SetRenderDrawColor(renderer, r, g, b, a);
-        SDL_RenderFillRect(renderer, &overlayRect);
-    };
 
     switch (currentCityOverlay_) {
         case DuneCity::CityOverlayMode::PowerGrid: {

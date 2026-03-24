@@ -27,13 +27,9 @@
 #include <misc/format.h>
 
 CityBudgetWindow::CityBudgetWindow()
- : Window(0, 0, 400, 350) {
+ : Window(100, 100, 400, 350) {
 
     setWindowWidget(&mainVBox);
-    
-    int centerX = (getRendererWidth() - getSize().x) / 2;
-    int centerY = (getRendererHeight() - getSize().y) / 2;
-    setCurrentPosition(centerX, centerY);
 
     mainVBox.addWidget(VSpacer::create(10));
 
@@ -151,12 +147,10 @@ void CityBudgetWindow::updateDisplay() {
     treasuryLabel.setText(fmt::sprintf("Treasury: %d", citySim->getTotalFunds()));
     
     auto& budget = citySim->getCityBudget();
-    incomeLabel.setText(fmt::sprintf("Income: %d", budget.getTaxIncome()));
+    int32_t lastRevenue = budget.getLastTaxRevenue();
+    incomeLabel.setText(fmt::sprintf("Tax Revenue: %d", lastRevenue));
     
-    int totalExpenses = budget.getRoadFundingRequest() + 
-                        budget.getPoliceFundingRequest() + 
-                        budget.getFireFundingRequest();
-    expensesLabel.setText(fmt::sprintf("Expenses: %d", totalExpenses));
+    expensesLabel.setText("Expenses: (calculated)");
     
     taxRateValueLabel.setText(fmt::sprintf("%d%%", citySim->getCityTax()));
     
