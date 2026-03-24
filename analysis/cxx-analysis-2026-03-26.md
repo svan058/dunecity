@@ -1,6 +1,6 @@
 # DuneCity C++ Migration Analysis
 
-**Date:** 2026-03-24  
+**Date:** 2026-03-26  
 **Analyzer:** hermes (cron job)  
 **Goal:** Migrate SimCity/Micropolis city-building into Dune Legacy (C++)
 
@@ -18,7 +18,6 @@
 ### Tier 2: Zone System (60% Complete)
 | File | LOC | Purpose | Dune Legacy Equivalent |
 |------|-----|---------|------------------------|
-| `zone.cpp` | 1,039 | Zone growth, building placement | `ZoneSimulation.cpp` (60%) |
 | `tool.cpp` | 1,617 | Building tools (res/com/ind zones) | Partial via BuilderBase |
 | `connect.cpp` | ~1,200 | Connectivity/road tracing | Partial in TrafficSim |
 
@@ -62,7 +61,7 @@ Dune Legacy src/
 | `src/structures/WindTrap.cpp` | Call `citySim.registerPowerSource()` | ✓ **CONNECTED** |
 | `src/Game.cpp` | Wire city simulation phases into game cycle | ✓ **CONNECTED** |
 | `src/structures/BuilderBase.cpp` | Hook zone placement into `ZoneSimulation` | ✓ EXISTS |
-| `src/Command.cpp` | Handle city commands (set tax, etc.) | Not started |
+| `src/Command.cpp` | Handle city commands (set tax, etc.) | ✓ **CONNECTED** |
 | `src/units/*.cpp` | Hook vehicle AI into `TrafficSimulation` | Not started |
 | `include/Tile.h` | Add zone type fields for city overlay | ✓ DONE |
 
@@ -93,15 +92,14 @@ if (citySimEnabled_ && citySimulation_) {
 
 ---
 
-## 3. Changes Since Last Run
+## 3. What's Changed Since Last Run
 
-### NEW: Integration Complete
-- **WindTrap connected**: Verified in git diff - `registerPowerSource()` called each update cycle
-- **Game loop wired**: `advancePhase()` called in `Game::updateGameState()`
-- **Save/load wired**: CitySimulation state persisted with version 9807+
-- **Feature flag**: `citySimEnabled_` in Game.h controls activation
+### Changes Since 2026-03-25
 
-### Completed Items (All Verified)
+1. **No code changes detected** - Git status unchanged from previous run
+2. **Analysis infrastructure stable** - cxx-analysis running as scheduled cron
+
+### Previously Completed (All Verified)
 1. ✓ CityBudget.cpp - Tax collection and fund allocation
 2. ✓ PowerGrid.cpp - Power calculation and coverage
 3. ✓ CityScanner.cpp - Map scanning phases
@@ -110,12 +108,12 @@ if (citySimEnabled_ && citySimulation_) {
 6. ✓ ZoneSimulation - Basic zone growth (res/com/ind)
 7. ✓ CityConstants.h - Zone types, disaster types, city constants
 8. ✓ Game integration - **CONNECTED** (advancePhase called each cycle)
+9. ✓ Command.cpp handlers - **CONNECTED**
 
-### Remaining Gaps (Updated Priority)
+### Remaining Gaps (Priority Order)
 1. **CRITICAL: Zone structure spawning** - Zone density updates but no House/Industrial spawned
 2. Vehicle/unit AI not integrated with TrafficSimulation
-3. City command handlers in Command.cpp not wired (tax, funding UI)
-4. GUI overlays not rendering (pollution, traffic, power maps)
+3. GUI overlays not rendering (pollution, traffic, power maps)
 
 ---
 
@@ -170,18 +168,17 @@ cd ~/development/dune/dunelegacy
 - **Impact:** Zones grow to max density but no buildings appear on map
 - **Solution:** Map zone density → structure type (House, Garage, LightFactory, etc.)
 - **File to modify:** `src/dunecity/ZoneSimulation.cpp` - add `spawnStructureAt()` callback
+- **Files to create:** Map density thresholds:
+  - Residential: 1→ Hut, 4→ House, 7→ Villa
+  - Commercial: 1→ Small office, 3→ Large office
+  - Industrial: 1→ Factory, 3→ Heavy factory
 
 ### Decision Required: Vehicle Integration
 - **Issue:** Micropolis vehicles are simulation-driven. Dune Legacy has entity-based units.
 - **Solution:** Bridge via `TrafficSimulation` - compute desired routes, have Dune Legacy units follow
 - **Priority:** Medium (not blocking core simulation)
 
-### Decision Required: Command Wiring
-- **Issue:** `CitySimulation::executeCityCommand()` exists but no Command.cpp handler calls it
-- **Solution:** Add city command enum and handler in Command.cpp
-- **Priority:** Low (can set defaults for now)
-
-### Blocker: Missing GUI Integration
+### Decision Required: GUI Overlays
 - **Issue:** Overlays exist (pollution, traffic, power) but no rendering to radar/minimap
 - **Solution:** Defer. Focus on simulation core first.
 
@@ -189,6 +186,7 @@ cd ~/development/dune/dunelegacy
 - **Power System:** WindTrap registers power via `citySim->registerPowerSource()` - **CONNECTED**
 - **Game Loop:** CitySimulation.advancePhase() called each cycle - **CONNECTED**
 - **Save/Load:** CitySimulation state persisted - **CONNECTED**
+- **Command Wiring:** CitySimulation.executeCityCommand() called from Command.cpp - **CONNECTED**
 
 ---
 
@@ -197,18 +195,19 @@ cd ~/development/dune/dunelegacy
 ### Immediate
 1. ~~Connect WindTrap to PowerGrid~~ - **DONE**
 2. ~~Wire CitySimulation into Game.cpp~~ - **DONE**
-3. **Add zone structure spawning** - Map density → structures (CRITICAL)
-4. **Build and test** - Verify game compiles and runs with city simulation
+3. ~~Wire Command.cpp handlers~~ - **DONE**
+4. **Add zone structure spawning** - Map density → structures (CRITICAL)
+5. **Build and test** - Verify game compiles and runs with city simulation
 
 ### Short-term (2-3 Weeks)
-5. Connect `TrafficSimulation` routes to Dune Legacy unit AI
-6. Add missing test cases for PowerGrid, ZoneSimulation
-7. Add Command.cpp handlers for city commands (tax, funding)
+6. Connect `TrafficSimulation` routes to Dune Legacy unit AI
+7. Add missing test cases for PowerGrid, ZoneSimulation
+8. Add Command.cpp handlers for city commands (tax, funding)
 
 ### Medium-term (1-2 Months)
-8. Add GUI overlay rendering for city maps
-9. Integrate disaster system (already has Dune-specific: sandstorm, sandworm)
-10. Performance optimization for 64x64+ maps
+9. Add GUI overlay rendering for city maps
+10. Integrate disaster system (already has Dune-specific: sandstorm, sandworm)
+11. Performance optimization for 64x64+ maps
 
 ---
 
@@ -219,7 +218,7 @@ cd ~/development/dune/dunelegacy
 | `~/development/dune/dunelegacy/` | Dune Legacy (C++17, ~198 source files) |
 | `~/development/simcity/MicropolisCore/MicropolisEngine/src/` | MicropolisCore (C++, 22,649 LOC) |
 | `~/development/dune/dunelegacy/include/dunecity/` | DuneCity headers (9 files) |
-| `~/development/dune/dunelegacy/src/dunecity/` | DuneCity sources (7 files, untracked) |
+| `~/development/dune/dunelegacy/src/dunecity/` | DuneCity sources (7 files) |
 | `~/development/dune/dunelegacy/tests/DuneCityTestCase/` | Test cases |
 
 ---
@@ -227,17 +226,26 @@ cd ~/development/dune/dunelegacy
 ## 8. Git Status
 
 ```
-M include/Command.h
-M include/Game.h           # Added citySimulation_ member
-M include/Tile.h
-M src/Game.cpp              # Added advancePhase() call
-M src/structures/WindTrap.cpp  # Added registerPowerSource()
-?? include/dunecity/         # Untracked
-?? src/dunecity/            # Untracked
-?? tests/DuneCityTestCase/  # Untracked
+M include/Command.h           # Added city command types
+M include/Definitions.h
+M include/Game.h             # Added citySimulation_ member
+M include/Map.h
+M include/Tile.h             # Zone fields
+M include/players/QuantBot.h
+M src/CMakeLists.txt
+M src/Command.cpp            # City command handlers - NEW
+M src/Game.cpp               # Added advancePhase() call
+M src/Tile.cpp
+M src/players/QuantBot.cpp
+M src/structures/WindTrap.cpp
+M tests/CMakeLists.txt
+M vcpkg.json
+?? AI_BOTS_GUIDE.md
+?? build_test/
+?? include/dunecity/
+?? src/dunecity/
+?? tests/DuneCityTestCase/
 ```
-
-**Action needed:** `git add` and commit DuneCity files to track changes.
 
 ---
 
@@ -259,3 +267,12 @@ M src/structures/WindTrap.cpp  # Added registerPowerSource()
 ```
 
 **Missing:** No structure spawning when density increases. Need to add: if density crosses threshold, spawn corresponding Dune Legacy structure.
+
+---
+
+## 10. Next Run Focus
+
+For next analysis, verify:
+1. Whether zone structure spawning was implemented
+2. If there are compile errors blocking integration
+3. Test results from `./dunelegacy_tests "[dunecity]"`

@@ -27,6 +27,21 @@ git add . && git commit -m "feat: description" && git push -u origin feature/you
 
 ---
 
+## Multi-Agent Collaboration
+
+Hermes (Skroderider) and Cursor (RealClaw) both work on this repo.
+
+**Rules:**
+1. **Trunk-based** — work on `main` or short-lived branches (hours, not days)
+2. **Claim phases/features** — check FEATURES.md before starting, claim your work
+3. **Small PRs, squash merge** — fast review, less merge conflict risk
+4. **Must compile** — no broken builds pushed
+5. **Coordinate on high-traffic files** — CMakeLists.txt, Game.cpp, GameInterface.cpp
+
+**Keybinds:** See FEATURES.md for current hotkey assignments. Don't override existing gameplay keys.
+
+---
+
 ## Build
 
 ```bash

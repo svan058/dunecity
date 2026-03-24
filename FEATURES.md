@@ -1,5 +1,13 @@
 # DuneCity Feature Roadmap
 
+## Keybinds
+| Key | Action |
+|-----|--------|
+| `C` | Capture unit mode (existing) |
+| `Shift+C` | Toggle city stats HUD |
+
+---
+
 ## Phase 0: Foundation (DONE)
 - [x] Fork Dune Legacy codebase
 - [x] Integrate Micropolis city simulation engine
@@ -12,7 +20,7 @@
 - [x] Save/Load city state
 - [x] Economic victory condition
 
-## Phase 1: Identity & First UI
+## Phase 1: Identity & First UI (DONE)
 - [x] Rebrand: binary, window title, project name → DuneCity
 - [x] City Stats HUD overlay (population, budget, power, score)
 - [x] Feature tracking (this file)

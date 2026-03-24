@@ -3578,7 +3578,11 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_c: {
-            pInterface->toggleCityStatsOverlay();
+            if (SDL_GetModState() & KMOD_SHIFT) {
+                pInterface->toggleCityStatsOverlay();
+            } else {
+                setCursorMode(CursorMode_Capture);
+            }
         } break;
 
         case SDLK_a: {
