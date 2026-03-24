@@ -55,6 +55,7 @@ std::mutex Game::performanceLogMutex;
 
 #include <GUI/dune/InGameMenu.h>
 #include <GUI/dune/WaitingForOtherPlayers.h>
+#include <GUI/dune/CityBudgetWindow.h>
 #include <Menu/MentatHelp.h>
 #include <Menu/BriefingMenu.h>
 #include <Menu/MapChoice.h>
@@ -2775,6 +2776,14 @@ void Game::onMentat()
     pauseGame();
 }
 
+void Game::onCityBudget()
+{
+    if (!citySimulation_ || !citySimulation_->isInitialized()) {
+        return;
+    }
+    pInterface->openWindow(CityBudgetWindow::create());
+}
+
 
 GameInitSettings Game::getNextGameInitSettings()
 {
@@ -3587,6 +3596,12 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                 myINIFile.setIntValue("Game Options","Game Speed", settings.gameOptions.gameSpeed);
                 myINIFile.saveChangesTo(getConfigFilepath());
                 currentGame->addToNewsTicker(fmt::sprintf(_("Game speed") + ": %d", settings.gameOptions.gameSpeed));
+            }
+        } break;
+
+        case SDLK_b: {
+            if (SDL_GetModState() & KMOD_SHIFT) {
+                onCityBudget();
             }
         } break;
 

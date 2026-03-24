@@ -292,6 +292,11 @@ public:
     void onMentat();
 
     /**
+        This method opens the city budget window.
+    */
+    void onCityBudget();
+
+    /**
         This method selects all units/structures in the list aList.
         \param aList the list containing all the units/structures to be selected
     */
