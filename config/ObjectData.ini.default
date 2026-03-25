@@ -366,6 +366,41 @@ TechLevel(H) = 2
 Prerequisite = Windtrap, Radar, Barracks
 Prerequisite(H) = Windtrap, Radar
 
+### DuneCity zone structures ###
+
+[Residential Zone]
+Enabled = true
+HitPoints = 200
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 48
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 1
+
+[Commercial Zone]
+Enabled = true
+HitPoints = 200
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 48
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 1
+
+[Industrial Zone]
+Enabled = true
+HitPoints = 200
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 48
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 1
+
 ### default unit ###
 
 [default unit]

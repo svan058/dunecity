@@ -72,32 +72,35 @@ typedef enum {
     Structure_Wall = 17,
     Structure_WindTrap = 18,
     Structure_WOR = 19,
-    Structure_LastID = 19,
+    Structure_ZoneResidential = 20,  ///< DuneCity: Residential zone building (100 credits)
+    Structure_ZoneCommercial  = 21,  ///< DuneCity: Commercial zone building (100 credits)
+    Structure_ZoneIndustrial  = 22,  ///< DuneCity: Industrial zone building (100 credits)
+    Structure_LastID = 22,
 
-    Unit_FirstID = 20,
-    Unit_Carryall = 20,
-    Unit_Devastator = 21,
-    Unit_Deviator = 22,
-    Unit_Frigate = 23,
-    Unit_Harvester = 24,
-    Unit_Soldier = 25,
-    Unit_Launcher = 26,
-    Unit_MCV = 27,
-    Unit_Ornithopter = 28,
-    Unit_Quad = 29,
-    Unit_Saboteur = 30,
-    Unit_Sandworm = 31,
-    Unit_SiegeTank = 32,
-    Unit_SonicTank = 33,
-    Unit_Tank = 34,
-    Unit_Trike = 35,
-    Unit_RaiderTrike = 36,
-    Unit_Trooper = 37,
-    Unit_Special = 38,
-    Unit_Infantry = 39,
-    Unit_Troopers = 40,
-    Unit_LastID = 40,
-    ItemID_LastID = 40,
+    Unit_FirstID = 23,
+    Unit_Carryall = 23,
+    Unit_Devastator = 24,
+    Unit_Deviator = 25,
+    Unit_Frigate = 26,
+    Unit_Harvester = 27,
+    Unit_Soldier = 28,
+    Unit_Launcher = 29,
+    Unit_MCV = 30,
+    Unit_Ornithopter = 31,
+    Unit_Quad = 32,
+    Unit_Saboteur = 33,
+    Unit_Sandworm = 34,
+    Unit_SiegeTank = 35,
+    Unit_SonicTank = 36,
+    Unit_Tank = 37,
+    Unit_Trike = 38,
+    Unit_RaiderTrike = 39,
+    Unit_Trooper = 40,
+    Unit_Special = 41,
+    Unit_Infantry = 42,
+    Unit_Troopers = 43,
+    Unit_LastID = 43,
+    ItemID_LastID = 43,
 
     Num_ItemID
 } ItemID_enum;
@@ -146,6 +149,13 @@ inline bool isUnit(int itemID) { return (itemID >= Unit_FirstID && itemID <= Uni
     \return true if it is a structure, false otherwise
 */
 inline bool isStructure(int itemID) { return (itemID >= Structure_FirstID && itemID <= Structure_LastID); }
+
+/**
+    This function determines if the specified itemID is a DuneCity zone structure.
+    \param itemID   the ID of the item
+    \return true if it is a zone structure, false otherwise
+*/
+inline bool isZoneStructure(int itemID) { return (itemID == Structure_ZoneResidential || itemID == Structure_ZoneCommercial || itemID == Structure_ZoneIndustrial); }
 
 
 /**

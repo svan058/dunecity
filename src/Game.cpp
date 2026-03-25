@@ -1490,13 +1490,17 @@ void Game::drawScreen()
                         for(int j = yPos; j < (yPos + structuresize.y); j++) {
                             SDL_Texture* image;
 
-                            if(!withinRange || !currentGameMap->tileExists(i,j) || !currentGameMap->getTile(i,j)->isRock()
-                                || currentGameMap->getTile(i,j)->isMountain() || currentGameMap->getTile(i,j)->hasAGroundObject()
-                                || (((placeItem == Structure_Slab1) || (placeItem == Structure_Slab4)) && currentGameMap->getTile(i,j)->isConcrete())) {
-                                image = invalidPlace;
-                            } else {
-                                image = validPlace;
+                            bool tileValid = false;
+                            if(withinRange && currentGameMap->tileExists(i,j)) {
+                                Tile* pTile = currentGameMap->getTile(i,j);
+                                if(isZoneStructure(placeItem)) {
+                                    tileValid = !pTile->isMountain() && !pTile->hasAGroundObject();
+                                } else {
+                                    tileValid = pTile->isRock() && !pTile->isMountain() && !pTile->hasAGroundObject()
+                                        && !(((placeItem == Structure_Slab1) || (placeItem == Structure_Slab4)) && pTile->isConcrete());
+                                }
                             }
+                            image = tileValid ? validPlace : invalidPlace;
 
                             SDL_Rect drawLocation = calcDrawingRect(image, screenborder->world2screenX(i*TILESIZE), screenborder->world2screenY(j*TILESIZE));
                             SDL_RenderCopy(renderer, image, nullptr, &drawLocation);
@@ -1743,13 +1747,6 @@ void Game::doInput()
 
                                 } break;
 
-                                case CursorMode_CityZone: {
-
-                                    if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
-                                        handleCityZonePlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
-                                    }
-
-                                } break;
 
                                 case CursorMode_Normal:
                                 default: {
@@ -3538,8 +3535,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                     case SDLK_7: currentCityOverlay_ = DuneCity::CityOverlayMode::Population; break;
                     default: break;
                 }
-            } else if (currentCursorMode == CursorMode_CityZone && selectListIndex < 3) {
-                selectedZoneType_ = static_cast<DuneCity::ZoneType>(selectListIndex + 1);
             } else if(SDL_GetModState() & KMOD_CTRL) {
                 pLocalPlayer->setGroupList(selectListIndex, selectedList);
                 pInterface->updateObjectInterface();
@@ -3624,15 +3619,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
-        case SDLK_z: {
-            if (currentCursorMode == CursorMode_CityZone) {
-                setCursorMode(CursorMode_Normal);
-            } else {
-                setCursorMode(CursorMode_CityZone);
-                selectedZoneType_ = DuneCity::ZoneType::Residential;
-            }
-        } break;
-
         case SDLK_a: {
             //set object to attack
             setCursorMode(CursorMode_Attack);
@@ -3643,11 +3629,7 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_ESCAPE: {
-            if (currentCursorMode == CursorMode_CityZone) {
-                setCursorMode(CursorMode_Normal);
-            } else {
-                onOptions();
-            }
+            onOptions();
         } break;
 
         case SDLK_F1: {
@@ -3894,7 +3876,7 @@ bool Game::handlePlacementClick(int xPos, int yPos) {
             return false;
         }
     } else {
-        if(currentGameMap->okayToPlaceStructure(xPos, yPos, structuresize.x, structuresize.y, false, pBuilder->getOwner())) {
+        if(currentGameMap->okayToPlaceStructure(xPos, yPos, structuresize.x, structuresize.y, false, pBuilder->getOwner(), false, placeItem)) {
             getCommandManager().addCommand(Command(pLocalPlayer->getPlayerID(), CMD_PLACE_STRUCTURE,pBuilder->getObjectID(), xPos, yPos));
             //the user has tried to place and has been successful
             soundPlayer->playSound(Sound_PlaceStructure);
@@ -3906,7 +3888,7 @@ bool Game::handlePlacementClick(int xPos, int yPos) {
             soundPlayer->playSound(Sound_InvalidAction);    //can't place noise
 
             // is this building area only blocked by units?
-            if(currentGameMap->okayToPlaceStructure(xPos, yPos, structuresize.x, structuresize.y, false, pBuilder->getOwner(), true)) {
+            if(currentGameMap->okayToPlaceStructure(xPos, yPos, structuresize.x, structuresize.y, false, pBuilder->getOwner(), true, placeItem)) {
                 // then we try to move all units outside the building area
 
                 // generate a independent temporal random number generator as we are in input handling code (and outside game logic code)
@@ -4050,32 +4032,6 @@ bool Game::handleSelectedObjectsCaptureClick(int xPos, int yPos) {
 
     return false;
 }
-
-void Game::handleCityZonePlacementClick(int xPos, int yPos) {
-    Tile* pTile = currentGameMap->getTile(xPos, yPos);
-
-    if(pTile == nullptr) {
-        return;
-    }
-
-    if (!pTile->isRock() && pTile->getType() != Terrain_Slab) {
-        soundPlayer->playSound(Sound_InvalidAction);
-        return;
-    }
-
-    if (pTile->hasANonInfantryGroundObject()) {
-        soundPlayer->playSound(Sound_InvalidAction);
-        return;
-    }
-
-    cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_PLACE_ZONE,
-                                   static_cast<uint32_t>(xPos),
-                                   static_cast<uint32_t>(yPos),
-                                   static_cast<uint32_t>(selectedZoneType_)));
-
-    soundPlayer->playSound(Sound_PlaceStructure);
-}
-
 
 bool Game::handleSelectedObjectsActionClick(int xPos, int yPos) {
     //let unit handle right click on map or target

@@ -237,6 +237,7 @@ target_sources(dunecity
         structures/Wall.cpp
         structures/WindTrap.cpp
         structures/WOR.cpp
+        structures/ZoneStructure.cpp
 
         # Units
         units/UnitBase.cpp
