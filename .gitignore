@@ -89,3 +89,4 @@ documents/
 !.vscode/extensions.json
 dist/
 build0/
+analysis/
