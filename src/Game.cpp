@@ -55,6 +55,7 @@ std::mutex Game::performanceLogMutex;
 
 #include <GUI/dune/InGameMenu.h>
 #include <GUI/dune/WaitingForOtherPlayers.h>
+#include <GUI/dune/CityBudgetWindow.h>
 #include <Menu/MentatHelp.h>
 #include <Menu/BriefingMenu.h>
 #include <Menu/MapChoice.h>
@@ -1304,6 +1305,11 @@ void Game::drawScreen()
                 screenborder->world2screenY(t.getLocation().y*TILESIZE));
         });
 
+    /* draw city overlay */
+    if (currentCityOverlay_ != DuneCity::CityOverlayMode::None && citySimulation_) {
+        drawCityOverlay(x1, y1, x2, y2);
+    }
+
     /* draw structures */
     currentGameMap->for_each(x1, y1, x2, y2,
         [](Tile& t) {
@@ -1733,6 +1739,14 @@ void Game::doInput()
 
                                     if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
                                         handleSelectedObjectsCaptureClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
+                                    }
+
+                                } break;
+
+                                case CursorMode_CityZone: {
+
+                                    if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
+                                        handleCityZonePlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
                                     }
 
                                 } break;
@@ -2762,6 +2776,14 @@ void Game::onMentat()
     pauseGame();
 }
 
+void Game::onCityBudget()
+{
+    if (!citySimulation_ || !citySimulation_->isInitialized()) {
+        return;
+    }
+    pInterface->openWindow(CityBudgetWindow::create());
+}
+
 
 GameInitSettings Game::getNextGameInitSettings()
 {
@@ -3503,12 +3525,23 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         case SDLK_7:
         case SDLK_8:
         case SDLK_9: {
-            //for SDLK_1 to SDLK_9 select group with that number, if ctrl create group from selected obj
             int selectListIndex = keyboardEvent.keysym.sym - SDLK_1;
 
-            if(SDL_GetModState() & KMOD_CTRL) {
+            if(SDL_GetModState() & KMOD_SHIFT) {
+                switch(keyboardEvent.keysym.sym) {
+                    case SDLK_1: currentCityOverlay_ = DuneCity::CityOverlayMode::None; break;
+                    case SDLK_2: currentCityOverlay_ = DuneCity::CityOverlayMode::PowerGrid; break;
+                    case SDLK_3: currentCityOverlay_ = DuneCity::CityOverlayMode::TrafficDensity; break;
+                    case SDLK_4: currentCityOverlay_ = DuneCity::CityOverlayMode::Pollution; break;
+                    case SDLK_5: currentCityOverlay_ = DuneCity::CityOverlayMode::LandValue; break;
+                    case SDLK_6: currentCityOverlay_ = DuneCity::CityOverlayMode::CrimeRate; break;
+                    case SDLK_7: currentCityOverlay_ = DuneCity::CityOverlayMode::Population; break;
+                    default: break;
+                }
+            } else if (currentCursorMode == CursorMode_CityZone && selectListIndex < 3) {
+                selectedZoneType_ = static_cast<DuneCity::ZoneType>(selectListIndex + 1);
+            } else if(SDL_GetModState() & KMOD_CTRL) {
                 pLocalPlayer->setGroupList(selectListIndex, selectedList);
-
                 pInterface->updateObjectInterface();
             } else {
                 std::set<Uint32>& groupList = pLocalPlayer->getGroupList(selectListIndex);
@@ -3577,11 +3610,26 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
+        case SDLK_b: {
+            if (SDL_GetModState() & KMOD_SHIFT) {
+                onCityBudget();
+            }
+        } break;
+
         case SDLK_c: {
             if (SDL_GetModState() & KMOD_SHIFT) {
                 pInterface->toggleCityStatsOverlay();
             } else {
                 setCursorMode(CursorMode_Capture);
+            }
+        } break;
+
+        case SDLK_z: {
+            if (currentCursorMode == CursorMode_CityZone) {
+                setCursorMode(CursorMode_Normal);
+            } else {
+                setCursorMode(CursorMode_CityZone);
+                selectedZoneType_ = DuneCity::ZoneType::Residential;
             }
         } break;
 
@@ -3595,7 +3643,11 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_ESCAPE: {
-            onOptions();
+            if (currentCursorMode == CursorMode_CityZone) {
+                setCursorMode(CursorMode_Normal);
+            } else {
+                onOptions();
+            }
         } break;
 
         case SDLK_F1: {
@@ -3999,6 +4051,31 @@ bool Game::handleSelectedObjectsCaptureClick(int xPos, int yPos) {
     return false;
 }
 
+void Game::handleCityZonePlacementClick(int xPos, int yPos) {
+    Tile* pTile = currentGameMap->getTile(xPos, yPos);
+
+    if(pTile == nullptr) {
+        return;
+    }
+
+    if (!pTile->isRock() && pTile->getType() != Terrain_Slab) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    if (pTile->hasANonInfantryGroundObject()) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_PLACE_ZONE,
+                                   static_cast<uint32_t>(xPos),
+                                   static_cast<uint32_t>(yPos),
+                                   static_cast<uint32_t>(selectedZoneType_)));
+
+    soundPlayer->playSound(Sound_PlaceStructure);
+}
+
 
 bool Game::handleSelectedObjectsActionClick(int xPos, int yPos) {
     //let unit handle right click on map or target
@@ -4022,6 +4099,123 @@ bool Game::handleSelectedObjectsActionClick(int xPos, int yPos) {
     }
 }
 
+
+void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
+    if (!citySimulation_ || currentCityOverlay_ == DuneCity::CityOverlayMode::None) {
+        return;
+    }
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    auto drawOverlayBlock = [&](int tileX, int tileY, int blockSize, uint8_t value, 
+                                 uint8_t r1, uint8_t g1, uint8_t b1, 
+                                 uint8_t r2, uint8_t g2, uint8_t b2) {
+        float normalized = value / 255.0f;
+        uint8_t r = static_cast<uint8_t>(r1 + (r2 - r1) * normalized);
+        uint8_t g = static_cast<uint8_t>(g1 + (g2 - g1) * normalized);
+        uint8_t b = static_cast<uint8_t>(b1 + (b2 - b1) * normalized);
+        uint8_t a = 120;
+
+        int zoomed_tilesize = world2zoomedWorld(TILESIZE);
+        int blockPixels = blockSize * zoomed_tilesize;
+
+        SDL_Rect overlayRect = {
+            screenborder->world2screenX(tileX * TILESIZE),
+            screenborder->world2screenY(tileY * TILESIZE),
+            blockPixels,
+            blockPixels
+        };
+
+        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+        SDL_RenderFillRect(renderer, &overlayRect);
+    };
+
+
+    switch (currentCityOverlay_) {
+        case DuneCity::CityOverlayMode::PowerGrid: {
+            const auto& powerMap = citySimulation_->getPowerGridMap();
+            int blockSize = powerMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t powered = powerMap.worldGet(x, y);
+                    if (powered > 0) {
+                        drawOverlayBlock(x, y, blockSize, powered, 200, 0, 0, 0, 255, 0);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::TrafficDensity: {
+            const auto& trafficMap = citySimulation_->getTrafficDensityMap();
+            int blockSize = trafficMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t traffic = trafficMap.worldGet(x, y);
+                    if (traffic > 0) {
+                        drawOverlayBlock(x, y, blockSize, traffic, 0, 255, 0, 255, 0, 0);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::Pollution: {
+            const auto& pollutionMap = citySimulation_->getPollutionDensityMap();
+            int blockSize = pollutionMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t pollution = pollutionMap.worldGet(x, y);
+                    if (pollution > 0) {
+                        drawOverlayBlock(x, y, blockSize, pollution, 0, 255, 0, 150, 0, 200);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::LandValue: {
+            const auto& landValueMap = citySimulation_->getLandValueMap();
+            int blockSize = landValueMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t landValue = landValueMap.worldGet(x, y);
+                    if (landValue > 0) {
+                        drawOverlayBlock(x, y, blockSize, landValue, 255, 0, 0, 0, 255, 0);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::CrimeRate: {
+            const auto& crimeMap = citySimulation_->getCrimeRateMap();
+            int blockSize = crimeMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t crime = crimeMap.worldGet(x, y);
+                    if (crime > 0) {
+                        drawOverlayBlock(x, y, blockSize, crime, 0, 255, 0, 255, 0, 0);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::Population: {
+            const auto& popMap = citySimulation_->getPopulationDensityMap();
+            int blockSize = popMap.getBlockSize();
+            for (int x = x1; x < x2; x += blockSize) {
+                for (int y = y1; y < y2; y += blockSize) {
+                    uint8_t pop = popMap.worldGet(x, y);
+                    if (pop > 0) {
+                        drawOverlayBlock(x, y, blockSize, pop, 50, 50, 50, 255, 255, 255);
+                    }
+                }
+            }
+        } break;
+
+        default:
+            break;
+    }
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
 
 void Game::takeScreenshot() const {
     std::string screenshotFilename;

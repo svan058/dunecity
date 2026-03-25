@@ -88,3 +88,5 @@ documents/
 !.vscode/settings.json
 !.vscode/extensions.json
 dist/
+build0/
+analysis/

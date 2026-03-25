@@ -256,12 +256,13 @@ void GameInterface::drawCityStatsOverlay() {
         return;
     }
 
-    const int overlayWidth = 220;
-    const int overlayHeight = 160;
+    const int overlayWidth = 250;
+    const int overlayHeight = 220;
     const int overlayX = getRendererWidth() - overlayWidth - 10;
     const int overlayY = 10;
     const int padding = 8;
     const int lineHeight = 16;
+    const int barHeight = 12;
 
     SDL_Rect bgRect = { overlayX, overlayY, overlayWidth, overlayHeight };
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -274,8 +275,8 @@ void GameInterface::drawCityStatsOverlay() {
     int textX = overlayX + padding;
     int textY = overlayY + padding;
 
-    auto drawText = [&](const std::string& text, unsigned int fontSize) {
-        sdl2::texture_ptr textTexture = pFontManager->createTextureWithText(text, COLOR_WHITE, fontSize);
+    auto drawText = [&](const std::string& text, unsigned int fontSize, Uint32 color = COLOR_WHITE) {
+        sdl2::texture_ptr textTexture = pFontManager->createTextureWithText(text, color, fontSize);
         if(textTexture) {
             SDL_Rect destRect = { textX, textY, 0, 0 };
             SDL_QueryTexture(textTexture.get(), nullptr, nullptr, &destRect.w, &destRect.h);
@@ -284,14 +285,56 @@ void GameInterface::drawCityStatsOverlay() {
         textY += lineHeight;
     };
 
+    auto drawBar = [&](int value, int maxValue, uint8_t r, uint8_t g, uint8_t b) {
+        int barWidth = overlayWidth - 2 * padding;
+        int fillWidth = maxValue > 0 ? (value * barWidth) / maxValue : 0;
+        
+        SDL_Rect barBg = { textX, textY, barWidth, barHeight };
+        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+        SDL_RenderFillRect(renderer, &barBg);
+        
+        if (fillWidth > 0) {
+            SDL_Rect barFill = { textX, textY, fillWidth, barHeight };
+            SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+            SDL_RenderFillRect(renderer, &barFill);
+        }
+        
+        SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+        SDL_RenderDrawRect(renderer, &barBg);
+        
+        textY += barHeight + 4;
+    };
+
     drawText("=== CITY STATS ===", 12);
     textY += 4;
 
-    drawText(fmt::sprintf("Population: %d", citySim->getTotalPop()), 12);
+    int resPop = citySim->getResPop();
+    int comPop = citySim->getComPop();
+    int indPop = citySim->getIndPop();
+    int totalPop = citySim->getTotalPop();
+    
+    int16_t resValve = citySim->getResValve();
+    int16_t comValve = citySim->getComValve();
+    int16_t indValve = citySim->getIndValve();
+    
+    const char* resArrow = resValve > 100 ? " ↑" : (resValve < -100 ? " ↓" : "");
+    const char* comArrow = comValve > 100 ? " ↑" : (comValve < -100 ? " ↓" : "");
+    const char* indArrow = indValve > 100 ? " ↑" : (indValve < -100 ? " ↓" : "");
+    
+    drawText(fmt::sprintf("Population: %d", totalPop), 12);
+    drawText(fmt::sprintf("  R: %d%s  C: %d%s  I: %d%s", resPop, resArrow, comPop, comArrow, indPop, indArrow), 10);
+    
+    if (totalPop > 0) {
+        drawBar(resPop, totalPop, 0, 200, 0);
+        drawBar(comPop, totalPop, 0, 100, 255);
+        drawBar(indPop, totalPop, 200, 200, 0);
+    }
 
+    auto& budget = citySim->getCityBudget();
+    int32_t lastRevenue = budget.getLastTaxRevenue();
+    
     drawText(fmt::sprintf("Treasury: %d", citySim->getTotalFunds()), 12);
-
-    drawText(fmt::sprintf("Tax Rate: %d%%", citySim->getCityTax()), 12);
+    drawText(fmt::sprintf("Tax Revenue: %d", lastRevenue), 10);
 
     int totalTiles = citySim->getMapWidth() * citySim->getMapHeight();
     int poweredTiles = 0;
@@ -304,11 +347,26 @@ void GameInterface::drawCityStatsOverlay() {
         }
     }
     int powerPercent = totalTiles > 0 ? (poweredTiles * 100) / totalTiles : 0;
-    drawText(fmt::sprintf("Power Coverage: %d%%", powerPercent), 12);
-
-    drawText(fmt::sprintf("City Score: %d", citySim->getCityEvaluation().getCityScore()), 12);
+    const char* powerIcon = powerPercent >= 80 ? "✓" : (powerPercent >= 50 ? "!" : "✗");
+    Uint32 powerColor = powerPercent >= 80 ? COLOR_GREEN : (powerPercent >= 50 ? COLOR_YELLOW : COLOR_RED);
+    drawText(fmt::sprintf("Power: %d%% %s", powerPercent, powerIcon), 12, powerColor);
 
     drawText(fmt::sprintf("Year: %d", citySim->getCityYear()), 12);
+
+    auto overlayMode = currentGame->getCityOverlayMode();
+    if (overlayMode != DuneCity::CityOverlayMode::None) {
+        const char* overlayName = "Unknown";
+        switch (overlayMode) {
+            case DuneCity::CityOverlayMode::PowerGrid:      overlayName = "Power Grid"; break;
+            case DuneCity::CityOverlayMode::TrafficDensity: overlayName = "Traffic"; break;
+            case DuneCity::CityOverlayMode::Pollution:      overlayName = "Pollution"; break;
+            case DuneCity::CityOverlayMode::LandValue:      overlayName = "Land Value"; break;
+            case DuneCity::CityOverlayMode::CrimeRate:      overlayName = "Crime"; break;
+            case DuneCity::CityOverlayMode::Population:     overlayName = "Population"; break;
+            default: break;
+        }
+        drawText(fmt::sprintf("Overlay: %s", overlayName), 10);
+    }
 
     textY += 4;
     drawText("Press C to toggle", 10);

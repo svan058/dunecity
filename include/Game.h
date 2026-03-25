@@ -34,6 +34,7 @@
 #include <misc/SDL2pp.h>
 #include <CursorManager.h>
 #include <dunecity/CitySimulation.h>
+#include <dunecity/CityOverlay.h>
 
 #include <DataTypes.h>
 
@@ -244,6 +245,8 @@ public:
     inline ObjectManager& getObjectManager() { return objectManager; };
     inline GameInterface& getGameInterface() { return *pInterface; };
     DuneCity::CitySimulation* getCitySimulation() { return citySimulation_.get(); }
+    DuneCity::CityOverlayMode getCityOverlayMode() const { return currentCityOverlay_; }
+    void setCityOverlayMode(DuneCity::CityOverlayMode mode) { currentCityOverlay_ = mode; }
     void queueTargetRequest(Uint32 objectId);
     void queuePathRequest(Uint32 objectId);
     inline size_t getPathRequestQueueSize() const { return pathRequestQueue.size(); }
@@ -287,6 +290,11 @@ public:
         It pauses the game and loads the mentat help screen.
     */
     void onMentat();
+
+    /**
+        This method opens the city budget window.
+    */
+    void onCityBudget();
 
     /**
         This method selects all units/structures in the list aList.
@@ -446,6 +454,11 @@ public:
     */
     void takeScreenshot() const;
 
+    /**
+        Draw the city data overlay for the visible map area
+    */
+    void drawCityOverlay(int x1, int y1, int x2, int y2);
+
 private:
 
     /**
@@ -500,6 +513,12 @@ private:
     */
     bool handleSelectedObjectsCaptureClick(int xPos, int yPos);
 
+    /**
+        Handles a city zone placement click.
+        \param  xPos    x-coordinate in map coordinates
+        \param  yPos    y-coordinate in map coordinates
+    */
+    void handleCityZonePlacementClick(int xPos, int yPos);
 
     /**
         Performs a request carryall click for the currently selected units.
@@ -540,10 +559,12 @@ public:
         CursorMode_Move,
         CursorMode_Capture,
         CursorMode_CarryallDrop,
-        CursorMode_Placing
+        CursorMode_Placing,
+        CursorMode_CityZone
     };
 
     int         currentCursorMode = CursorMode_Normal;
+    DuneCity::ZoneType selectedZoneType_ = DuneCity::ZoneType::Residential;
 
     GameType    gameType = GameType::Campaign;
     int         techLevel = 0;
@@ -795,6 +816,7 @@ private:
     std::unique_ptr<SpatialGrid>    spatialGrid;            ///< Spatial partition for fast proximity queries
     std::unique_ptr<DuneCity::CitySimulation> citySimulation_; ///< City-building simulation layer
     bool                citySimEnabled_ = true;              ///< Feature flag for city simulation
+    DuneCity::CityOverlayMode currentCityOverlay_ = DuneCity::CityOverlayMode::None; ///< Current city data overlay mode
 
     ObjectManager       objectManager;          ///< This manages all the object and maps object ids to the actual objects
 

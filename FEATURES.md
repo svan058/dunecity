@@ -5,6 +5,19 @@
 |-----|--------|
 | `C` | Capture unit mode (existing) |
 | `Shift+C` | Toggle city stats HUD |
+| `Shift+B` | Open city budget screen |
+| `Z` | Enter/exit zone placement mode |
+| `1` (in zone mode) | Select Residential zone |
+| `2` (in zone mode) | Select Commercial zone |
+| `3` (in zone mode) | Select Industrial zone |
+| `Shift+1` | Toggle overlay: None (default) |
+| `Shift+2` | Toggle overlay: Power Grid |
+| `Shift+3` | Toggle overlay: Traffic Density |
+| `Shift+4` | Toggle overlay: Pollution |
+| `Shift+5` | Toggle overlay: Land Value |
+| `Shift+6` | Toggle overlay: Crime Rate |
+| `Shift+7` | Toggle overlay: Population Density |
+| `Escape` (in zone mode) | Exit zone placement mode |
 
 ---
 
@@ -25,13 +38,14 @@
 - [x] City Stats HUD overlay (population, budget, power, score)
 - [x] Feature tracking (this file)
 
-## Phase 2: Zoning UI
-- [ ] Zone placement tool (R/C/I zones on map tiles)
-- [ ] Visual zone indicators on map (colored overlays or tile borders)
+## Phase 2: Zoning UI (DONE)
+- [x] Zone placement tool (R/C/I zones on map tiles)
+- [x] Visual zone indicators on map (colored overlays or tile borders)
 - [ ] Zone info tooltip on hover
 
-## Phase 3: Power Grid Visualization
-- [ ] Power grid overlay mode (show powered/unpowered areas)
+## Phase 3: Power Grid Visualization (DONE)
+- [x] Power grid overlay mode (show powered/unpowered areas)
+- [x] Power coverage percentage in city stats HUD
 - [ ] Wind Trap radius visualization
 - [ ] Power shortage warnings
 
@@ -40,20 +54,20 @@
 - [ ] City-specific structures (roads, power lines, zone markers)
 - [ ] Build cost integration with city budget
 
-## Phase 5: Economy Integration
-- [ ] Dual economy display (Spice credits + City tax revenue)
-- [ ] City budget management screen
-- [ ] Tax rate adjustment UI
+## Phase 5: Economy Integration (DONE)
+- [x] Dual economy display (Spice credits + City tax revenue)
+- [x] City budget management screen
+- [x] Tax rate adjustment UI
 - [ ] Funding allocation sliders (police, fire, transport)
 
-## Phase 6: Traffic & Roads
+## Phase 6: Traffic & Roads (PARTIAL)
 - [ ] Road placement tool
-- [ ] Traffic density visualization overlay
+- [x] Traffic density visualization overlay
 - [ ] Road network affecting zone growth rates
 
-## Phase 7: Map Overlays
-- [ ] Data layer toggles: crime, pollution, land value, population density
-- [ ] Color-coded overlay rendering on game map
+## Phase 7: Map Overlays (DONE)
+- [x] Data layer toggles: crime, pollution, land value, population density, traffic, power
+- [x] Color-coded overlay rendering on game map
 - [ ] Legend/key for overlay values
 
 ## Phase 8: Disasters & Events
