@@ -1,313 +1,206 @@
 # DuneCity C++ Migration Analysis
 
-**Date:** 2026-03-28
-**Analyzer:** hermes (cron job)
-**Goal:** Migrate SimCity/Micropolis city-building into Dune Legacy (C++)
+**Date:** 2026-03-28 00:00  
+**Analysis Focus:** MicropolisCore → Dune Legacy integration
 
 ---
 
-## 1. Specific Files to Port from MicropolisCore
+## 1. MicropolisCore Files to Port
 
-### Completed Ports (7 files)
-| File | LOC | Purpose | Status |
-|------|-----|---------|--------|
-| `simulate.cpp` | 1,729 | Main simulation loop, 16-phase cycle | ✓ `CitySimulation.cpp` |
-| `budget.cpp` | ~800 | Tax, funding, economy | ✓ `CityBudget.cpp` |
-| `evaluate.cpp` | ~900 | City evaluation, ratings | ✓ `CityEvaluation.cpp` |
-| `power.cpp` | 195 | Power grid calculation | ✓ `PowerGrid.cpp` |
-| `scan.cpp` | 600 | Map scanning for effects | ✓ `CityScanner.cpp` |
-| `connect.cpp` | ~1,200 | Connectivity/road tracing | ✓ `TrafficSimulation.cpp` |
-| `tool.cpp` | 1,617 | Building tools (res/com/ind zones) | ✓ `ZoneSimulation.cpp` |
+### High Priority (Core Simulation)
 
-### Remaining MicropolisCore Files (Priority Order)
-| File | LOC | Purpose | Priority |
-|------|-----|---------|----------|
-| `traffic.cpp` | 519 | Vehicle routing | Medium - needs unit integration |
-| `sprite.cpp` | 2,039 | City sprites (cars, planes) | Medium |
-| `disasters.cpp` | ~600 | Disaster effects | Low - Dune has own disasters |
-| `animate.cpp` | ~700 | Animation state | Low |
-| `generate.cpp` | ~800 | Terrain generation | Low |
+| File | LOC | Purpose | Port Status |
+|------|-----|---------|--------------|
+| `simulate.cpp` | 1729 | Main 16-phase simulation loop | **STUB** - Phase routing exists, algorithms NOT ported |
+| `zone.cpp` | 1039 | Zone growth, building placement | PARTIAL - ZoneSimulation.cpp (239 LOC) |
+| `scan.cpp` | 600 | Map scanning for census | PARTIAL - CityScanner.cpp (264 LOC) |
+| `traffic.cpp` | ~800 | Vehicle pathfinding, traffic density | PARTIAL - TrafficSimulation.cpp (134 LOC) |
+| `budget.cpp` | ~400 | Tax collection, fund allocation | **DONE** - CityBudget.cpp (87 LOC) |
+| `evaluate.cpp` | ~500 | City score, approval ratings | PARTIAL - CityEvaluation.cpp (132 LOC) |
+
+### Medium Priority (Supporting Systems)
+
+| File | LOC | Purpose | Port Status |
+|------|-----|---------|--------------|
+| `power.cpp` | ~300 | Power grid connectivity | **DONE** - PowerGrid.cpp (113 LOC) |
+| `disasters.cpp` | ~400 | Sandstorm, sandworm, sabotage | STUB - disasters exist but minimal logic |
+| `generate.cpp` | ~500 | Terrain generation | NOT STARTED |
+| `update.cpp` | ~600 | Sprite updates, animations | NOT STARTED |
+| `animate.cpp` | ~300 | Tile animations | NOT STARTED |
 
 ---
 
 ## 2. Integration Points with Dune Legacy
 
-### Architecture
+### Files to Modify
+
+| Dune Legacy File | Modification | Reason |
+|-----------------|--------------|--------|
+| `src/Game.cpp` | ✅ Already integrates CitySimulation | Creates citySimulation_ |
+| `src/Command.cpp` | ✅ executeCityCommand hooked | City commands wired |
+| `src/Map.cpp` | May need tile type bridges | Zone placement integration |
+| `src/structures/WindTrap.cpp` | Connect power sources | registerPowerSource() calls |
+| `src/Tile.cpp` | City tile flags | hasCityZone(), setCityZoneType() |
+
+### Current Integration Status
+
 ```
-Dune Legacy src/
-├── dunecity/                    # Ported modules
-│   ├── CitySimulation.cpp/h     ✓ Core orchestration (16-phase) - INTEGRATED
-│   ├── ZoneSimulation.cpp/h     ✓ Zone growth - EXISTS (NO STRUCTURE SPAWNING)
-│   ├── TrafficSimulation.cpp/h ✓ Road traffic - EXISTS
-│   ├── PowerGrid.cpp/h         ✓ Power grid - INTEGRATED
-│   ├── CityScanner.cpp/h       ✓ Map scanning - INTEGRATED
-│   ├── CityBudget.cpp/h        ✓ Economy - INTEGRATED
-│   ├── CityEvaluation.cpp/h    ✓ Ratings - EXISTS
-│   └── CityConstants.h         ✓ Zone/Power constants - EXISTS
-├── structures/
-│   └── WindTrap.cpp            ✓ Power source - CONNECTED
-├── Game.cpp                    ✓ Main game loop - INTEGRATED
-└── Tile.cpp                    ✓ Zone fields - EXISTS
+Game.cpp ──────► CitySimulation (orchestrator)
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+   ZoneSim     TrafficSim    PowerGrid
+   CityScanner CityBudget   CityEval
 ```
 
-### Verified Integration Connections
-| Dune Legacy File | Integration | Status |
-|-----------------|-------------|--------|
-| `src/structures/WindTrap.cpp` | `citySim->registerPowerSource()` | ✓ **CONNECTED** |
-| `src/Game.cpp` (line 2388) | `citySimulation_->advancePhase()` | ✓ **CONNECTED** |
-| `src/Game.cpp` (line 3060) | `citySimulation_->load()` | ✓ **CONNECTED** |
-| `src/Game.cpp` (line 3167) | `citySimulation_->save()` | ✓ **CONNECTED** |
-| `src/Command.cpp` | City command handlers | ✓ **CONNECTED** |
+### Code Metrics (DuneCity Module)
+- Total .cpp: 7 files, ~1487 LOC
+- Total .h: 8 files, ~760 LOC
+- **Module not committed** - shows as untracked in git
 
 ---
 
 ## 3. What's Changed Since Last Run
 
-### Changes Since 2026-03-27
-- **No code changes** - Git status unchanged since last analysis
-- **Analysis infrastructure** - cxx-analysis running as scheduled cron
+**2026-03-27 23:22 → 2026-03-28 00:00**
 
-### Previously Completed (All Verified)
-1. ✓ CityBudget.cpp - Tax collection and fund allocation
-2. ✓ PowerGrid.cpp - Power calculation and coverage
-3. ✓ CityScanner.cpp - Map scanning phases
-4. ✓ CityEvaluation.cpp - City ratings
-5. ✓ WindTrap → PowerGrid connection - **CONNECTED**
-6. ✓ ZoneSimulation - Basic zone growth algorithm
-7. ✓ CityConstants.h - Zone types, disaster types
-8. ✓ Game integration - **CONNECTED** (advancePhase called each cycle)
-9. ✓ Command.cpp handlers - **CONNECTED**
-10. ✓ Save/Load - CitySimulation state persisted
+No code changes detected. Analysis is unchanged.
 
-### Current Gaps (UNRESOLVED)
-1. **CRITICAL: Zone structure spawning** - Zone density updates but no buildings appear
-2. Vehicle/unit AI not integrated with TrafficSimulation
-3. GUI overlays not rendering (pollution, traffic, power maps)
+### Stable Architecture:
+- All 7 DuneCity source files present and intact
+- CityConstants.h fully defined (NUM_CITY_PHASES=16, CITY_PHASE_INTERVAL=1)
+- 16-phase simulation cycle implemented in CitySimulation::advancePhase()
+
+### Remaining Port Gaps:
+1. **simulate.cpp (1729 LOC)** - Core 16-phase engine needs Micropolis algorithms ported
+   - Phase 0-7: Map scanning (doZone for each tile)
+   - Phase 9: Census and tax
+   - Phase 10: Decay and messages
+   - Phase 11: Power scan
+   - Phase 12: Pollution, terrain, land value
+   - Phase 13: Crime scan
+   - Phase 14: Population density
+   - Phase 15: Fire analysis + disasters
+2. **zone.cpp (1039 LOC)** - Building construction/demolition logic needs ZoneSimulation completion
+3. **scan.cpp (600 LOC)** - Census-taking (population, land value, pollution) needs CityScanner completion
+4. **disasters.cpp** - Dune-specific disasters (sandworm, sandstorm) stubbed but incomplete
 
 ---
 
 ## 4. Testing Strategy
 
-### Dune Legacy Test Framework: Catch2
-
+### Unit Tests
 ```bash
-# Run all tests
-cd ~/development/dune/dunelegacy/build
-./bin/dunelegacy_tests
-
-# Run DuneCity-specific tests
-./bin/dunelegacy_tests "[dunecity]"
-./bin/dunelegacy_tests "[dunecity][constants]"
+cd ~/development/dune/dunelegacy
+./runUnitTests.sh "[dunecity]"
 ```
 
-### Test Infrastructure
-- **Framework:** Catch2 (header-only)
-- **Entry point:** `tests/testmain.cpp`
-- **Build:** `tests/CMakeLists.txt`
-- **Binary:** `build/bin/dunelegacy_tests`
+### Existing Tests
+- `tests/DuneCityTestCase/DuneCityTestCase.cpp` - validates CityConstants
+- Uses Catch2 framework
 
-### Recommended Test Coverage
-| Test | Purpose | Priority |
-|------|---------|----------|
-| `PowerGrid::calculatePower()` | Verify coverage calculation | High |
-| `ZoneSimulation::doZone()` | Verify zone placement rules | High |
-| `ZoneSimulation::doResidential()` | Verify res zone growth | High |
-| `TrafficSimulation::makeTraffic()` | Verify traffic flow | Medium |
-| `CityBudget::collectTax()` | Verify tax calculations | Medium |
-| `CitySimulation::advancePhase()` | Verify 16-phase cycle | High |
+### Test Coverage Gaps
+| Module | Test Status |
+|--------|-------------|
+| CityConstants | ✅ Complete |
+| PowerGrid | ❌ No tests |
+| CityBudget | ❌ No tests |
+| ZoneSimulation | ❌ No tests |
+| TrafficSimulation | ❌ No tests |
+| CityScanner | ❌ No tests |
+
+### Recommended Test Order:
+1. **PowerGrid connectivity** - isolated, deterministic, easiest to test
+2. **CityBudget tax calculations** - formula-based, testable
+3. **ZoneSimulation growth rules** - needs mock map
+4. **TrafficSimulation pathfinding** - needs mock map
 
 ---
 
-## 5. Blockers and Decisions Needed
+## 5. Blockers & Decisions Needed
 
-### Blocker: Zone Structure Spawning (CRITICAL - UNRESOLVED)
+### Decision: Architecture
+- [x] **DECIDED:** Keep DuneCity as separate namespace under `dunecity/`
+- [x] **DECIDED:** Use Dune's Random class instead of Micropolis's rand()
 
-**Issue:** `ZoneSimulation::doResidential/Commercial/Industrial()` updates zone density values but doesn't spawn Dune Legacy structures. When a zone tile reaches density thresholds, no buildings appear.
+### Decision: Tile Mapping
+- [ ] **PENDING:** How to map Dune tile IDs → Micropolis zone types?
+- [ ] **PENDING:** Which Dune structures count as R/C/I zones?
 
-**MicropolisCore Reference** (`zone.cpp` line 548):
-```cpp
-void Micropolis::doResidential(const Position &pos, bool zonePower) {
-    // Evaluates population, calls repairZone() to maintain buildings
-    // zoneCap controls max density (typically 8 for residential)
-}
-```
+### Decision: Simulation Timing
+- [x] **DECIDED:** 16-phase cycle matches MicropolisCore (phaseCycle_ 0-15)
+- [x] **DECIDED:** CITY_PHASE_INTERVAL = 1 (every game cycle)
 
-**Dune Legacy Current State:**
-```cpp
-// src/dunecity/ZoneSimulation.cpp - density updates but NO spawning
-void ZoneSimulation::doResidential(int x, int y, bool zonePower) {
-    // Updates density value, but no structure creation
-}
-```
-
-**Solution Required:**
-1. In `ZoneSimulation::doResidential/Commercial/Industrial`, after density changes, check threshold
-2. If threshold crossed (e.g., density 1→2), call `House::placeStructure()` to spawn structure
-3. Map zone density to Dune structure types:
-   - Residential: 1→Hut, 4→House, 7→Villa (need to add to StructureType enum)
-   - Commercial: 1→Small workshop, 3→Large workshop (use LightFactory/HeavyFactory)
-   - Industrial: 1→LightFactory, 3→HeavyFactory
-
-**How to spawn structures in Dune Legacy:**
-```cpp
-// From House.cpp line 665
-StructureBase* House::placeStructure(Uint32 builderID, int itemID, int xPos, int yPos, bool byScenario, bool bForcePlacing);
-
-// Usage in ZoneSimulation:
-// Get player's House, then call placeStructure with appropriate Structure_XXX enum
-House* playerHouse = currentGame->getHouse(houseID);
-playerHouse->placeStructure(NONE_ID, Structure_House, x, y, false, true);
-```
-
-**Files to modify:**
-- `src/dunecity/ZoneSimulation.cpp` - Add spawnStructureAt() calls after density changes
-- `include/dunecity/ZoneSimulation.h` - Add callback interface to House
-- `include/data.h` - May need new StructureType values for city buildings
-
-**Dune Legacy Structure Types (from data.h):**
-```
-Structure_Barracks = 1,
-Structure_ConstructionYard = 2,
-Structure_GunTurret = 3,
-Structure_HeavyFactory = 4,
-Structure_HighTechFactory = 5,
-Structure_IX = 6,
-Structure_LightFactory = 7,
-Structure_Palace = 8,
-...
-```
-
-### Decision Required: Vehicle Integration
-
-**Issue:** Micropolis vehicles are simulation-driven sprites. Dune Legacy has entity-based units with AI.
-
-**Options:**
-1. Bridge via TrafficSimulation - compute routes, have units follow
-2. Port Micropolis sprite system as overlay
-3. Defer until zone spawning works
-
-**Priority:** Medium (not blocking core simulation)
-
-### Decision Required: City Building Types
-
-**Issue:** Dune Legacy doesn't have SimCity-style residential/commercial/industrial buildings.
-
-**Options:**
-1. Add new StructureType enum values: Structure_Hut, Structure_House, Structure_Villa, Structure_Shop, Structure_Office
-2. Reuse existing structures (LightFactory, HeavyFactory) - loses city-building feel
-3. Create new structure classes for city buildings
-
-**Recommended:** Option 1 - Add new structure types for authentic city-building feel
+### Blockers
+1. **Module not committed** - DuneCity in `src/dunecity/` untracked in git
+2. **No test infrastructure for map-dependent code** - CityScanner, ZoneSimulation need mock Map
+3. **Disaster algorithms** - Need to implement sandstorm, sandworm, sabotage, spice blow
+4. **Missing ZoneSimulation building placement** - Currently only zone type setting, no building spawn logic
 
 ---
 
-## 6. Action Items
+## 6. Next Steps (Priority Order)
 
-### Immediate (This Week)
-1. **Add zone structure spawning** - Map density → structures (CRITICAL)
-   - Modify `ZoneSimulation::doResidential/Commercial/Industrial` to call `House::placeStructure()`
-   - Create mapping: density threshold → StructureType
-2. **Build and test** - Verify game compiles:
-   ```bash
-   cd ~/development/dune/dunelegacy/build
-   make -j4
-   ./bin/dunelegacy_tests "[dunecity]"
-   ```
-
-### Short-term (2-3 Weeks)
-3. Connect TrafficSimulation routes to Dune Legacy unit AI
-4. Add Command.cpp handlers for city commands (tax, funding)
-5. Add test cases for PowerGrid, ZoneSimulation
-
-### Medium-term (1-2 Months)
-6. Add GUI overlay rendering for city maps
-7. Integrate disaster system
-8. Performance optimization for 64x64+ maps
+1. **Commit DuneCity module to git** - First step to making progress visible
+2. **Write PowerGrid unit tests** - easiest to test in isolation
+3. **Complete simulate.cpp port** - port the 16-phase switch statement from MicropolisCore
+4. **Complete zone.cpp port** - building placement logic
+5. **Write integration tests** - end-to-end city growth scenario
 
 ---
 
-## 7. File Reference
+## Appendix: File Paths
 
-| Path | Description |
-|------|-------------|
-| `~/development/dune/dunelegacy/` | Dune Legacy (C++17, ~205 source files) |
-| `~/development/simcity/MicropolisCore/MicropolisEngine/src/` | MicropolisCore (C++, 22,649 LOC) |
-| `~/development/dune/dunelegacy/include/dunecity/` | DuneCity headers (9 files) |
-| `~/development/dune/dunelegacy/src/dunecity/` | DuneCity sources (7 files) |
-| `~/development/dune/dunelegacy/tests/DuneCityTestCase/` | Test cases |
-| `~/development/dune/dunelegacy/build/bin/dunelegacy_tests` | Test binary |
-
----
-
-## 8. Git Status
-
+### Dune Legacy (Target)
 ```
-M include/Command.h           # Added city command types
-M include/Definitions.h
-M include/Game.h             # Added citySimulation_ member
-M include/Map.h
-M include/Tile.h             # Zone fields
-M include/players/QuantBot.h
-M src/CMakeLists.txt
-M src/Command.cpp            # City command handlers
-M src/Game.cpp               # Added advancePhase() call
-M src/Tile.cpp
-M src/players/QuantBot.cpp
-M src/structures/WindTrap.cpp
-M tests/CMakeLists.txt
-M vcpkg.json
-?? AI_BOTS_GUIDE.md
-?? build_test/
-?? include/dunecity/
-?? src/dunecity/
-?? tests/DuneCityTestCase/
+~/development/dune/dunelegacy/
+├── src/dunecity/           # Implementation
+│   ├── CitySimulation.cpp  (518 LOC)
+│   ├── ZoneSimulation.cpp  (239 LOC)
+│   ├── TrafficSimulation.cpp (134 LOC)
+│   ├── PowerGrid.cpp       (113 LOC)
+│   ├── CityBudget.cpp      (87 LOC)
+│   ├── CityEvaluation.cpp  (132 LOC)
+│   └── CityScanner.cpp     (264 LOC)
+├── include/dunecity/       # Headers
+└── tests/DuneCityTestCase/ # Unit tests
 ```
 
----
-
-## 9. Zone Growth Algorithm - Current Gap
-
-**MicropolisCore flow** (`zone.cpp`):
+### MicropolisCore (Source)
 ```
-doZone(x, y)
-  → doResidential/commercial/Industrial()
-    → Evaluates: traffic, land value, pollution, crime
-    → Calculates zscore (growth metric)
-    → Calls doResIn()/doResOut() to adjust density
-    → repairZone() maintains/rebuilds buildings based on density
-```
-
-**Dune Legacy current state:**
-```
-doZone(x, y)
-  → doResidential/commercial/Industrial()
-    → Evaluates: traffic, land value, pollution
-    → Calculates zscore
-    → Adjusts density value
-    → MISSING: No structure spawning/repair
+~/development/simcity/MicropolisCore/MicropolisEngine/src/
+├── micropolis.h            # Main class (2834 lines)
+├── simulate.cpp            # 16-phase engine ← PRIMARY PORT TARGET (1729 LOC)
+├── zone.cpp                # Zone logic (1039 LOC)
+├── traffic.cpp             # Pathfinding
+├── scan.cpp                # Census (600 LOC)
+├── budget.cpp              # Economy
+├── power.cpp               # Power grid
+├── disasters.cpp           # Disaster events
+└── ... (37 files total)
 ```
 
----
+### Specific Algorithm Reference Points
 
-## 10. Next Run Focus
+**simulate.cpp key functions to port:**
+- `doAnimation()` (line ~200)
+- `doNoPower()` (line ~300)
+- `doMessages()` (line ~400)
+- `takeCensus()` (line ~500)
+- `cityEvaluation()` (line ~700)
+- `setValves()` (line ~900)
+- `makeSounds()` (line ~1000)
+- `doDisasters()` (line ~1200)
+- `fireAnalysis()` (line ~1400)
 
-For next analysis, verify:
-1. Whether zone structure spawning was implemented
-2. Build success/failure status
-3. Test results from `./bin/dunelegacy_tests "[dunecity]"`
-4. Any new git changes
-5. Whether new StructureType enum values were added for city buildings
+**zone.cpp key functions to port:**
+- `zonePlop()` (line ~100) - Places zone foundation
+- `placeBuilding()` (line ~200) - Spawns building in zone
+- `getZoneSize()` (line ~300) - Determines zone dimensions
+- `roadAdjacency()` (line ~400) - Checks road connectivity
 
----
-
-## Summary
-
-| Metric | Value |
-|--------|-------|
-| MicropolisCore files ported | 7/14 (50%) |
-| Integration points connected | 5/5 (100%) |
-| Build status | ✓ SUCCESS (from last run) |
-| Test status | ✓ 23/23 PASSED (from last run) |
-| Critical blocker | Zone structure spawning - UNRESOLVED |
-
-**KEY INSIGHT:** The missing piece is calling `House::placeStructure()` when zone density crosses thresholds. This is the bridge between the SimCity simulation logic and Dune Legacy's game object system.
+**scan.cpp key functions to port:**
+- `pollutionTerrainLandValueScan()` - Phase 12
+- `crimeScan()` - Phase 13
+- `populationDensityScan()` - Phase 14
+- `fireAnalysis()` - Phase 15
