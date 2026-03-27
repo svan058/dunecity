@@ -68,7 +68,7 @@
 ## Phase 6: Traffic & Roads (PARTIAL)
 - [x] Road placement tool
 - [x] Traffic density visualization overlay
-- [ ] Road network affecting zone growth rates
+- [x] Road network affecting zone growth rates
 
 ## Phase 7: Map Overlays (DONE)
 - [x] Data layer toggles: crime, pollution, land value, population density, traffic, power
