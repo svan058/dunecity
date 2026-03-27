@@ -82,7 +82,7 @@
 - [x] Disaster notification system
 
 ## Phase 9: Polish & Balance
-- [ ] Balance city growth rates with RTS pacing
+- [WIP] Balance city growth rates with RTS pacing
 - [ ] Tutorial/tooltip for city mechanics
 - [ ] City milestone notifications
 - [ ] Sound effects for city events

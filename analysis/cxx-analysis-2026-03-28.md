@@ -1,6 +1,6 @@
 # DuneCity C++ Migration Analysis
 
-**Date:** 2026-03-28 00:13  
+**Date:** 2026-03-28  
 **Analyzer:** hermes (cron job)  
 **Goal:** Migrate SimCity/Micropolis city-building into Dune Legacy (C++)
 
@@ -39,18 +39,18 @@
 ### Architecture
 
 ```
-DuneLegacy src/
+Dune Legacy src/
 ├── include/dunecity/              # Headers (~887 LOC)
 │   ├── CitySimulation.h         ✓ Core orchestration (16-phase)
 │   ├── ZoneSimulation.h         ✓ Zone growth
 │   ├── TrafficSimulation.h      ✓ Road traffic
-│   ├── PowerGrid.h              ✓ Power grid
-│   ├── CityScanner.h            ✓ Map scanning
-│   ├── CityBudget.h             ✓ Economy
-│   ├── CityEvaluation.h         ✓ Ratings
-│   ├── CityConstants.h           ✓ Zone/Power constants
+│   ├── PowerGrid.h               ✓ Power grid
+│   ├── CityScanner.h             ✓ Map scanning
+│   ├── CityBudget.h              ✓ Economy
+│   ├── CityEvaluation.h          ✓ Ratings
+│   ├── CityConstants.h            ✓ Zone/Power constants
 │   └── CityMapLayer.h            ✓ Data layers
-├── src/dunecity/                  # Implementation (~1,360 LOC)
+├── src/dunecity/                  # Implementation (~1,487 LOC)
 │   ├── CitySimulation.cpp       ✓
 │   ├── ZoneSimulation.cpp       ✓
 │   ├── TrafficSimulation.cpp    ✓
@@ -76,19 +76,19 @@ DuneLegacy src/
 ### Git Status
 ```
 M include/Command.h
- M include/Definitions.h
- M include/Game.h
- M include/Map.h
- M include/Tile.h
- M include/players/QuantBot.h
- M src/CMakeLists.txt
- M src/Command.cpp
- M src/Game.cpp
- M src/Tile.cpp
- M src/players/QuantBot.cpp
- M src/structures/WindTrap.cpp
- M tests/CMakeLists.txt
- M vcpkg.json
+M include/Definitions.h
+M include/Game.h
+M include/Map.h
+M include/Tile.h
+M include/players/QuantBot.h
+M src/CMakeLists.txt
+M src/Command.cpp
+M src/Game.cpp
+M src/Tile.cpp
+M src/players/QuantBot.cpp
+M src/structures/WindTrap.cpp
+M tests/CMakeLists.txt
+M vcpkg.json
 ?? AI_BOTS_GUIDE.md
 ?? build_test/
 ?? include/dunecity/    # UNTRACKED - 4+ weeks
@@ -99,9 +99,9 @@ M include/Command.h
 
 ---
 
-## 3. What's Changed Since Last Run (2026-03-28 00:12)
+## 3. What's Changed Since Last Run
 
-- **No code changes detected** - Static analysis, same git state
+- **No code changes detected** - Static analysis shows same git state
 - **Dunecity module remains untracked** - 4+ weeks outstanding
 - All 8 core simulation files remain ported and integrated
 
@@ -148,31 +148,47 @@ cmake --build build
 
 ---
 
-## 5. Blockers & Decisions Needed
+## 5. Blockers and Decisions Needed
 
-### Blockers
+### Critical Blockers
 
-| Blocker | Severity | Status |
-|---------|----------|--------|
-| **All dunecity files uncommitted** | CRITICAL | UNCHANGED - 4+ weeks |
-| Dune Legacy build system changes | LOW | Complete |
-| No runtime verification of simulation | MEDIUM | Needs manual testing |
+| Blocker | Impact | Resolution |
+|---------|--------|------------|
+| **Untracked dunecity files** | Code not versioned | Commit to dune/dunelegacy repo |
 
-### Decisions Required
+### Decisions Needed
 
-| Decision | Options | Recommended |
-|----------|---------|-------------|
-| Git commit strategy | a) Commit all, b) Staged | a) Commit all at once |
-| Runtime testing | Manual playtest vs automated | Automated tests first |
-| Module organization | Keep in dunelegacy vs separate repo | Keep in dunelegacy |
+| Decision | Options | Recommendation |
+|----------|---------|----------------|
+| Traffic/vehicle integration | Port traffic.cpp OR use existing Dune vehicle system | **Use existing Dune vehicles** - Harvester, Trike, Tank already exist |
+| Sprite rendering | Port sprite.cpp OR use Dune's unit rendering | **Use Dune's unit rendering** - consistent with game art |
+| Commit strategy | Commit dunecity as a branch OR commit directly to main | **Branch + PR** - allows review |
+| Test framework | Continue with Catch2 OR migrate to gtest | **Keep Catch2** - already integrated |
+
+### Immediate Next Steps
+1. **Commit dunecity code** to Dune Legacy repo (pending user action)
+2. **Add more Catch2 test cases** to DuneCityTestCase/ for simulation coverage
+3. **Verify WindTrap power** integration works in actual gameplay
+4. **Decide on vehicle system** - integrate Dune's existing vehicles or use Micropolis-style traffic density
 
 ---
 
-## Summary
+## 6. File Reference
 
-- **8/8 MicropolisCore simulation systems ported**
-- **Integration points complete** - Game.cpp, Tile.h, WindTrap.cpp
-- **Testing infrastructure ready** - Catch2 tests exist
-- **CRITICAL BLOCKER: Git commit required** - All dunecity code untracked for 4+ weeks
+### MicropolisCore Source Files
+- Path: `~/development/simcity/MicropolisCore/MicropolisEngine/src/`
+- Total: ~22,649 LOC across 22 .cpp files
+- Key files: `micropolis.h` (66,023 bytes), `simulate.cpp` (46,487 bytes), `tool.cpp` (47,263 bytes)
 
-**Next actionable step:** Run `git add` on dunecity files and commit to enable CI testing.
+### Dune Legacy dunecity Module
+- Headers: `~/development/dune/dunelegacy/include/dunecity/`
+- Source: `~/development/dune/dunelegacy/src/dunecity/`
+- Integration: `~/development/dune/dunelegacy/src/Game.cpp` (citySimulation_)
+
+### Test Infrastructure
+- Test case: `~/development/dune/dunelegacy/tests/DuneCityTestCase/DuneCityTestCase.cpp`
+- Build: `./build/dunelegacy_tests "[dunecity]"`
+
+---
+
+*Generated by hermes cron job - DuneCity C++ Migration Analyzer*
