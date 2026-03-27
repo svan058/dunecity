@@ -72,6 +72,7 @@ std::mutex Game::performanceLogMutex;
 
 #include <structures/StructureBase.h>
 #include <structures/ConstructionYard.h>
+#include <structures/ZoneStructure.h>
 #include <units/UnitBase.h>
 #include <structures/BuilderBase.h>
 #include <structures/Palace.h>
@@ -4455,7 +4456,121 @@ void Game::triggerFireDisaster() {
 }
 
 void Game::triggerSandstormDisaster() {
-    addToNewsTicker("Sandstorm approaching! (Test notification)");
+    // Sandstorm damages city zones in its path
+    if (structureList.empty()) {
+        addToNewsTicker(_("A sandstorm approaches..."));
+        return;
+    }
+
+    // Find all city zone structures
+    std::vector<StructureBase*> cityZones;
+    for (StructureBase* pStructure : structureList) {
+        if (dynamic_cast<ResidentialZone*>(pStructure) ||
+            dynamic_cast<CommercialZone*>(pStructure) ||
+            dynamic_cast<IndustrialZone*>(pStructure)) {
+            cityZones.push_back(pStructure);
+        }
+    }
+
+    if (cityZones.empty()) {
+        addToNewsTicker(_("A sandstorm passes over the map..."));
+        return;
+    }
+
+    // Use simple random generation
+    static int seed = 12345;
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    int randomValue = seed;
+
+    int mapWidth = currentGameMap->getSizeX();
+    int mapHeight = currentGameMap->getSizeY();
+    int startX, startY, dirX, dirY;
+
+    int edge = (randomValue % 4);
+    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+    switch (edge) {
+        case 0: // top
+            startX = randomValue % mapWidth;
+            startY = 0;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            dirX = (randomValue % 3) - 1;
+            dirY = 1;
+            break;
+        case 1: // right
+            startX = mapWidth - 1;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            startY = randomValue % mapHeight;
+            dirX = -1;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            dirY = (randomValue % 3) - 1;
+            break;
+        case 2: // bottom
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            startX = randomValue % mapWidth;
+            startY = mapHeight - 1;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            dirX = (randomValue % 3) - 1;
+            dirY = -1;
+            break;
+        default: // left
+            startX = 0;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            startY = randomValue % mapHeight;
+            dirX = 1;
+            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+            dirY = (randomValue % 3) - 1;
+            break;
+    }
+
+    // Normalize direction
+    if (dirX != 0) dirX = dirX > 0 ? 1 : -1;
+    if (dirY != 0) dirY = dirY > 0 ? 1 : -1;
+
+    // Storm width (in tiles)
+    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+    int stormWidth = 3 + (randomValue % 4); // 3-6
+
+    // Damage zones along the storm path
+    int affectedCount = 0;
+    int currentX = startX;
+    int currentY = startY;
+
+    for (int step = 0; step < std::max(mapWidth, mapHeight) + stormWidth; step++) {
+        // Check all structures within storm width
+        for (StructureBase* pStructure : cityZones) {
+            int sx = pStructure->getLocation().x;
+            int sy = pStructure->getLocation().y;
+
+            // Check if structure is within storm path
+            for (int dx = -stormWidth/2; dx <= stormWidth/2; dx++) {
+                for (int dy = -stormWidth/2; dy <= stormWidth/2; dy++) {
+                    if (sx == currentX + dx && sy == currentY + dy) {
+                        // Apply damage (50% of max health)
+                        int damage = pStructure->getMaxHealth() / 2;
+                        pStructure->handleDamage(damage, 0, nullptr);
+                        affectedCount++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        currentX += dirX;
+        currentY += dirY;
+
+        // Stop if we're well outside the map
+        if (currentX < -stormWidth || currentX > mapWidth + stormWidth ||
+            currentY < -stormWidth || currentY > mapHeight + stormWidth) {
+            break;
+        }
+    }
+
+    // Show notification
+    std::string msg = _("Sandstorm devastates city zones!");
+    if (affectedCount > 0) {
+        msg += " (" + std::to_string(affectedCount) + " zones)";
+    }
+    addToNewsTicker(msg);
 }
 
 void Game::triggerSandwormDisaster() {
