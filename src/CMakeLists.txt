@@ -393,6 +393,7 @@ if(NOT miniupnpc_FOUND)
         set_target_properties(miniupnpc::miniupnpc PROPERTIES
             IMPORTED_LOCATION "${MINIUPNPC_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${MINIUPNPC_INCLUDE_DIR}")
+
     endif()
 endif()
 

@@ -36,7 +36,6 @@ std::mutex Game::performanceLogMutex;
 #include <FileClasses/music/MusicPlayer.h>
 #include <FileClasses/LoadSavePNG.h>
 #include <SoundPlayer.h>
-#include <audio/sounds.h>
 #include <misc/IFileStream.h>
 #include <misc/OFileStream.h>
 #include <misc/IMemoryStream.h>
@@ -73,7 +72,6 @@ std::mutex Game::performanceLogMutex;
 
 #include <structures/StructureBase.h>
 #include <structures/ConstructionYard.h>
-#include <structures/ZoneStructure.h>
 #include <units/UnitBase.h>
 #include <structures/BuilderBase.h>
 #include <structures/Palace.h>
@@ -84,6 +82,40 @@ std::mutex Game::performanceLogMutex;
 #include <exception>
 #include <sstream>
 #include <iomanip>
+
+namespace {
+
+DuneCity::CityTilePlacementState makeCityTilePlacementState(const Tile& tile) {
+    return DuneCity::makeCityTilePlacementState(
+        tile.isRock(),
+        tile.isMountain(),
+        tile.hasAGroundObject(),
+        tile.hasCityZone(),
+        tile.isCityConductive());
+}
+
+bool hasVisibleRoadNeighbor(int x, int y) {
+    constexpr int dx[] = {0, 1, 0, -1};
+    constexpr int dy[] = {-1, 0, 1, 0};
+
+    for (int i = 0; i < 4; ++i) {
+        const int nx = x + dx[i];
+        const int ny = y + dy[i];
+
+        if (!currentGameMap->tileExists(nx, ny)) {
+            continue;
+        }
+
+        const Tile* neighbor = currentGameMap->getTile(nx, ny);
+        if (neighbor->isCityConductive() && !neighbor->hasCityZone()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+} // namespace
 
 Game::Game() {
     currentZoomlevel = settings.video.preferredZoomLevel;
@@ -1312,7 +1344,10 @@ void Game::drawScreen()
         drawCityOverlay(x1, y1, x2, y2);
     }
 
-    /* draw zone tooltip on hover */
+    /* draw placeholder road visuals */
+    drawCityRoads(x1, y1, x2, y2);
+
+    /* draw zone / road tooltip on hover */
     drawZoneTooltip();
     /* draw structures */
     currentGameMap->for_each(x1, y1, x2, y2,
@@ -1515,6 +1550,42 @@ void Game::drawScreen()
         }
     }
 
+    if(currentCursorMode == CursorMode_CityRoad) {
+        if(screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
+            int xPos = screenborder->screen2MapX(drawnMouseX);
+            int yPos = screenborder->screen2MapY(drawnMouseY);
+
+            SDL_Texture* validPlace = nullptr;
+            SDL_Texture* invalidPlace = nullptr;
+
+            switch(currentZoomlevel) {
+                case 0:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel0);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel0);
+                    break;
+                case 1:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel1);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel1);
+                    break;
+                case 2:
+                default:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel2);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel2);
+                    break;
+            }
+
+            if(currentGameMap->tileExists(xPos, yPos)) {
+                Tile* pTile = currentGameMap->getTile(xPos, yPos);
+                const bool tileValid = DuneCity::canPlaceRoad(makeCityTilePlacementState(*pTile));
+                SDL_Texture* image = tileValid ? validPlace : invalidPlace;
+                SDL_Rect drawLocation = calcDrawingRect(image,
+                    screenborder->world2screenX(xPos * TILESIZE),
+                    screenborder->world2screenY(yPos * TILESIZE));
+                SDL_RenderCopy(renderer, image, nullptr, &drawLocation);
+            }
+        }
+    }
+
 ///////////draw game selection rectangle
     if(selectionMode) {
 
@@ -1557,6 +1628,7 @@ void Game::drawScreen()
 ///////////draw game bar
     pInterface->draw(Point(0,0));
     pInterface->drawOverlay(Point(0,0));
+    drawCityPlacementHint();
 
     // draw chat message currently typed
     if(chatMode) {
@@ -1792,9 +1864,6 @@ void Game::doInput()
                             if(currentCursorMode != CursorMode_Normal) {
                                 //cancel special cursor mode
                                 setCursorMode(CursorMode_Normal);
-                                // Reset road drag state
-                                lastRoadTileX = -1;
-                                lastRoadTileY = -1;
                             } else if((!selectedList.empty()
                                             && (((objectManager.getObject(*selectedList.begin()))->getOwner() == pLocalHouse))
                                             && (((objectManager.getObject(*selectedList.begin()))->isRespondable())) ) )
@@ -2423,23 +2492,7 @@ void Game::updateGameState() {
         // Power shortage warning: notify player when zones lose power
         if (citySimulation_->isPowerShortageJustStarted()) {
             int32_t unpowered = citySimulation_->getUnpoweredZoneCount();
-            DuneCitySounds::Sound_PowerOutage();
             currentGame->addToNewsTicker(fmt::sprintf(_("WARNING: Power shortage! %d zones unpowered"), unpowered));
-        }
-
-        // DuneCity: Check for milestone achievements (after census updates population counts)
-        // Phase 9 (census) runs at phaseCycle = 9, so we check after that
-        if (citySimulation_->getPhaseCycle() == 9) {
-            // For now, assume roads exist if any zones exist
-            bool hasRoads = (citySimulation_->getResPop() > 0 || citySimulation_->getComPop() > 0 || citySimulation_->getIndPop() > 0);
-            citySimulation_->checkAndTriggerMilestones(
-                citySimulation_->getTotalPop(),
-                citySimulation_->getTotalFunds(),
-                citySimulation_->getResPop(),
-                citySimulation_->getComPop(),
-                citySimulation_->getIndPop(),
-                hasRoads
-            );
         }
 
         if ((winFlags & WINLOSEFLAGS_ECONOMIC) && !finished) {
@@ -2448,11 +2501,6 @@ void Game::updateGameState() {
                 setGameWon();
             }
         }
-    }
-
-    // Fire spread from combat: check every 300 cycles
-    if ((gameCycleCount % 300) == 0) {
-        updateFireSpread();
     }
 
     if((indicatorFrame != NONE_ID) && (--indicatorTimer <= 0)) {
@@ -3680,19 +3728,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
-        case SDLK_r: {
-            // Toggle road placement mode
-            if (currentCursorMode == CursorMode_CityRoad) {
-                setCursorMode(CursorMode_Normal);
-                lastRoadTileX = -1;
-                lastRoadTileY = -1;
-            } else {
-                setCursorMode(CursorMode_CityRoad);
-                lastRoadTileX = -1;
-                lastRoadTileY = -1;
-            }
-        } break;
-
         case SDLK_a: {
             //set object to attack
             setCursorMode(CursorMode_Attack);
@@ -3705,8 +3740,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         case SDLK_ESCAPE: {
             if (currentCursorMode == CursorMode_CityZone || currentCursorMode == CursorMode_CityRoad) {
                 setCursorMode(CursorMode_Normal);
-                lastRoadTileX = -1;
-                lastRoadTileY = -1;
             } else {
                 onOptions();
             }
@@ -3752,21 +3785,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             if(gameType != GameType::CustomMultiplayer || bReplay) {
                 skipToGameCycle = gameCycleCount + (120*1000)/GAMESPEED_DEFAULT;
             }
-        } break;
-
-        case SDLK_F7: {
-            // Test: Fire disaster notification
-            triggerFireDisaster();
-        } break;
-
-        case SDLK_F8: {
-            // Test: Sandstorm disaster notification
-            triggerSandstormDisaster();
-        } break;
-
-        case SDLK_F9: {
-            // Test: Sandworm disaster notification
-            triggerSandwormDisaster();
         } break;
 
         case SDLK_F10: {
@@ -3846,6 +3864,27 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                 ObjectBase* pObject = objectManager.getObject(objectID);
                 if(pObject->getItemID() == Unit_Harvester) {
                     static_cast<Harvester*>(pObject)->handleReturnClick();
+                }
+            }
+        } break;
+
+
+        case SDLK_r: {
+            if (SDL_GetModState() & KMOD_SHIFT) {
+                if (currentCursorMode == CursorMode_CityRoad) {
+                    setCursorMode(CursorMode_Normal);
+                } else {
+                    setCursorMode(CursorMode_CityRoad);
+                    addToNewsTicker(_("Road tool selected: click rock or slab tiles to place roads."));
+                }
+            } else {
+                for(Uint32 objectID : selectedList) {
+                    ObjectBase* pObject = objectManager.getObject(objectID);
+                    if(pObject->isAStructure()) {
+                        static_cast<StructureBase*>(pObject)->handleRepairClick();
+                    } else if(pObject->isAGroundUnit() && pObject->getHealth() < pObject->getMaxHealth()) {
+                        static_cast<GroundUnit*>(pObject)->handleSendToRepairClick();
+                    }
                 }
             }
         } break;
@@ -4139,54 +4178,36 @@ void Game::handleCityZonePlacementClick(int xPos, int yPos) {
                                    static_cast<uint32_t>(selectedZoneType_)));
 
     soundPlayer->playSound(Sound_PlaceStructure);
-    DuneCitySounds::Sound_ZoneBuilt();
 }
 
 void Game::handleCityRoadPlacementClick(int xPos, int yPos) {
-    // Skip if same tile as last placement (for drag handling)
-    if (xPos == lastRoadTileX && yPos == lastRoadTileY) {
-        return;
-    }
-
     Tile* pTile = currentGameMap->getTile(xPos, yPos);
 
     if(pTile == nullptr) {
         return;
     }
 
-    // Check valid terrain (can build on sand, rock, or slab)
-    if (pTile->getType() == Terrain_Mountain) {
+    if(pTile->isMountain()) {
+        addToNewsTicker(_("Cannot place road on mountain."));
         soundPlayer->playSound(Sound_InvalidAction);
         return;
     }
 
-    // Check for blocking objects
-    if (pTile->hasANonInfantryGroundObject()) {
+    if(pTile->hasAStructure()) {
+        addToNewsTicker(_("Cannot place road on structure."));
         soundPlayer->playSound(Sound_InvalidAction);
         return;
     }
 
-    // Check city budget for road cost
-    auto* citySim = getCitySimulation();
-    if (!citySim) {
-        return;
-    }
-
-    int roadCost = 25; // From ObjectData
-    if (!citySim->spendCityFunds(roadCost)) {
+    if(pTile->isCityConductive()) {
         soundPlayer->playSound(Sound_InvalidAction);
         return;
     }
 
-    // Place road via city command
     cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_TOOL,
                                    static_cast<uint32_t>(xPos),
                                    static_cast<uint32_t>(yPos),
-                                   1)); // 1 = road tool type
-
-    // Update last position for drag tracking
-    lastRoadTileX = xPos;
-    lastRoadTileY = yPos;
+                                   static_cast<uint32_t>(DuneCity::CityTool_Road)));
 
     soundPlayer->playSound(Sound_PlaceStructure);
 }
@@ -4364,108 +4385,129 @@ void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
-void Game::drawZoneTooltip() {
-    // Only show tooltip if cursor is on the map and we have city simulation
-    if (!citySimulation_ || !screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
+void Game::drawCityRoads(int x1, int y1, int x2, int y2) {
+    if (!citySimulation_) {
         return;
     }
 
-    // Convert screen coordinates to map tile coordinates
-    int mapX = screenborder->screen2MapX(drawnMouseX);
-    int mapY = screenborder->screen2MapY(drawnMouseY);
+    const int zoomedTileSize = world2zoomedWorld(TILESIZE);
+    const int centerInset = std::max(2, zoomedTileSize / 3);
+    const int laneHalfWidth = std::max(1, zoomedTileSize / 10);
 
-    // Check if the tile is valid and has a zone
-    if (!currentGameMap->tileExists(mapX, mapY)) {
-        return;
-    }
-
-    Tile* pTile = currentGameMap->getTile(mapX, mapY);
-    DuneCity::ZoneType zoneType = pTile->getCityZoneType();
-
-    // Only show tooltip for R/C/I zones
-    if (zoneType == DuneCity::ZoneType::None) {
-        // Show help tooltip for empty tiles when city is active
-        drawCityHelpTooltip(mapX, mapY);
-        return;
-    }
-
-    // Build tooltip text based on zone type
-    std::string zoneName;
-    std::string zoneTip;
-
-    switch (zoneType) {
-        case DuneCity::ZoneType::Residential:
-            zoneName = "Residential Zone";
-            zoneTip = "Housing for your citizens. Grows with power & roads.";
-            break;
-        case DuneCity::ZoneType::Commercial:
-            zoneName = "Commercial Zone";
-            zoneTip = "Generates tax income. Needs population nearby.";
-            break;
-        case DuneCity::ZoneType::Industrial:
-            zoneName = "Industrial Zone";
-            zoneTip = "Jobs & exports. Causes pollution - keep away from residential.";
-            break;
-        default:
-            return;
-    }
-
-    // Get zone density (population level)
-    uint8_t density = pTile->getCityZoneDensity();
-    bool powered = pTile->isCityPowered();
-
-    // Get additional stats from city simulation
-    std::string statsLine = "Density: " + std::to_string(density) + "/8";
-    if (powered) {
-        statsLine += " | Powered";
-    } else {
-        statsLine += " | UNPOWERED";
-    }
-
-    // Build multi-line tooltip
-    std::string tooltipText = zoneName + "\n" + zoneTip + "\n" + statsLine;
-
-    sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
-        tooltipText.c_str(), COLOR_WHITE, 12, true);
-
-    if (!pTooltipTexture) {
-        return;
-    }
-
-    int texW, texH;
-    SDL_QueryTexture(pTooltipTexture.get(), nullptr, nullptr, &texW, &texH);
-
-    // Position tooltip near cursor, offset to avoid cursor overlap
-    int tooltipX = drawnMouseX + 15;
-    int tooltipY = drawnMouseY + 15;
-
-    // Keep tooltip within screen bounds
-    int screenW = getRendererWidth();
-    int screenH = getRendererHeight();
-    if (tooltipX + texW + 10 > screenW) {
-        tooltipX = drawnMouseX - texW - 15;
-    }
-    if (tooltipY + texH + 10 > screenH) {
-        tooltipY = drawnMouseY - texH - 15;
-    }
-
-    // Draw tooltip background (semi-transparent dark)
-    SDL_Rect bgRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_RenderFillRect(renderer, &bgRect);
 
-    // Draw tooltip border
-    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 200);
-    SDL_Rect borderRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
-    SDL_RenderDrawRect(renderer, &borderRect);
+    auto drawRoadStub = [&](int tileX, int tileY, int dx, int dy) {
+        SDL_Rect stubRect{};
+        const int centerX = screenborder->world2screenX(tileX * TILESIZE) + zoomedTileSize / 2;
+        const int centerY = screenborder->world2screenY(tileY * TILESIZE) + zoomedTileSize / 2;
 
-    // Draw tooltip text
-    SDL_Rect textRect = {tooltipX, tooltipY, texW, texH};
-    SDL_RenderCopy(renderer, pTooltipTexture.get(), nullptr, &textRect);
+        if (dx != 0) {
+            stubRect.y = centerY - laneHalfWidth;
+            stubRect.h = laneHalfWidth * 2;
+            if (dx < 0) {
+                stubRect.x = centerX - centerInset;
+                stubRect.w = centerInset;
+            } else {
+                stubRect.x = centerX;
+                stubRect.w = centerInset;
+            }
+        } else {
+            stubRect.x = centerX - laneHalfWidth;
+            stubRect.w = laneHalfWidth * 2;
+            if (dy < 0) {
+                stubRect.y = centerY - centerInset;
+                stubRect.h = centerInset;
+            } else {
+                stubRect.y = centerY;
+                stubRect.h = centerInset;
+            }
+        }
+
+        SDL_RenderFillRect(renderer, &stubRect);
+    };
+
+    currentGameMap->for_each(x1, y1, x2, y2, [&](Tile& tile) {
+        if (!tile.isCityConductive() || tile.hasCityZone()) {
+            return;
+        }
+
+        if (!debug && !tile.isExploredByTeam(pLocalHouse->getTeamID())) {
+            return;
+        }
+
+        const int tileX = tile.getLocation().x;
+        const int tileY = tile.getLocation().y;
+        const int screenX = screenborder->world2screenX(tileX * TILESIZE);
+        const int screenY = screenborder->world2screenY(tileY * TILESIZE);
+
+        SDL_SetRenderDrawColor(renderer, 120, 92, 56, 210);
+        SDL_Rect centerRect = {
+            screenX + centerInset,
+            screenY + centerInset,
+            zoomedTileSize - 2 * centerInset,
+            zoomedTileSize - 2 * centerInset
+        };
+        SDL_RenderFillRect(renderer, &centerRect);
+
+        SDL_SetRenderDrawColor(renderer, 196, 168, 120, 210);
+        if (currentGameMap->tileExists(tileX, tileY - 1) && currentGameMap->getTile(tileX, tileY - 1)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 0, -1);
+        }
+        if (currentGameMap->tileExists(tileX + 1, tileY) && currentGameMap->getTile(tileX + 1, tileY)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 1, 0);
+        }
+        if (currentGameMap->tileExists(tileX, tileY + 1) && currentGameMap->getTile(tileX, tileY + 1)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 0, 1);
+        }
+        if (currentGameMap->tileExists(tileX - 1, tileY) && currentGameMap->getTile(tileX - 1, tileY)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, -1, 0);
+        }
+
+        if (!hasVisibleRoadNeighbor(tileX, tileY)) {
+            SDL_SetRenderDrawColor(renderer, 196, 168, 120, 210);
+            SDL_Rect fallbackRect = {
+                screenX + zoomedTileSize / 2 - laneHalfWidth,
+                screenY + centerInset,
+                laneHalfWidth * 2,
+                zoomedTileSize - 2 * centerInset
+            };
+            SDL_RenderFillRect(renderer, &fallbackRect);
+        }
+    });
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
+
+void Game::drawCityPlacementHint() {
+    if (currentCursorMode != CursorMode_CityRoad) {
+        return;
+    }
+
+    const std::string hint = std::string(DuneCity::getRoadPlacementModeLabel()) + "\nShift+R toggle · Click to place · Esc cancels";
+    sdl2::texture_ptr hintTexture = pFontManager->createTextureWithMultilineText(hint, COLOR_WHITE, 12, true);
+    if (!hintTexture) {
+        return;
+    }
+
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(hintTexture.get(), nullptr, nullptr, &texW, &texH);
+
+    const int hintX = 20;
+    const int hintY = std::max(90, topBarPos.h + 18);
+    SDL_Rect bgRect = {hintX - 6, hintY - 6, texW + 12, texH + 12};
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_RenderFillRect(renderer, &bgRect);
+    SDL_SetRenderDrawColor(renderer, 196, 168, 120, 220);
+    SDL_RenderDrawRect(renderer, &bgRect);
+
+    SDL_Rect textRect = {hintX, hintY, texW, texH};
+    SDL_RenderCopy(renderer, hintTexture.get(), nullptr, &textRect);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
 
 void Game::drawCityHelpTooltip(int mapX, int mapY) {
     // Show helpful hints about city mechanics when hovering over empty tiles
@@ -4536,7 +4578,7 @@ void Game::drawCityHelpTooltip(int mapX, int mapY) {
     }
 
     // Create tooltip texture
-    std::string tooltipText = helpTitle + "\n" + helpText;
+    std::string tooltipText = helpTitle + "\\n" + helpText;
     sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
         tooltipText.c_str(), COLOR_WHITE, 12, true);
 
@@ -4579,6 +4621,108 @@ void Game::drawCityHelpTooltip(int mapX, int mapY) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
+void Game::drawZoneTooltip() {
+    // Only show tooltip if cursor is on the map and we have city simulation
+    if (!citySimulation_ || !screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
+        return;
+    }
+
+    // Convert screen coordinates to map tile coordinates
+    int mapX = screenborder->screen2MapX(drawnMouseX);
+    int mapY = screenborder->screen2MapY(drawnMouseY);
+
+    // Check if the tile is valid and has a zone
+    if (!currentGameMap->tileExists(mapX, mapY)) {
+        return;
+    }
+
+    Tile* pTile = currentGameMap->getTile(mapX, mapY);
+    DuneCity::ZoneType zoneType = pTile->getCityZoneType();
+
+    // Build tooltip text based on city content
+    std::string zoneName;
+    std::string zoneInfo;
+
+    if (zoneType == DuneCity::ZoneType::None) {
+        if (!pTile->isCityConductive()) {
+            drawCityHelpTooltip(mapX, mapY);
+            return;
+        }
+
+        zoneName = "Road";
+        zoneInfo = "Conductive city tile";
+    } else {
+        switch (zoneType) {
+            case DuneCity::ZoneType::Residential:
+                zoneName = "Residential Zone";
+                break;
+            case DuneCity::ZoneType::Commercial:
+                zoneName = "Commercial Zone";
+                break;
+            case DuneCity::ZoneType::Industrial:
+                zoneName = "Industrial Zone";
+                break;
+            default:
+                return;
+        }
+
+        // Get zone density (population level)
+        uint8_t density = pTile->getCityZoneDensity();
+        bool powered = pTile->isCityPowered();
+
+        zoneInfo = "Density: " + std::to_string(density) + "/8";
+        if (powered) {
+            zoneInfo += " | Powered";
+        } else {
+            zoneInfo += " | UNPOWERED";
+        }
+    }
+
+    // Create tooltip texture with zone name and info
+    std::string tooltipText = zoneName + "\n" + zoneInfo;
+
+    sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
+        tooltipText.c_str(), COLOR_WHITE, 12, true);
+
+    if (!pTooltipTexture) {
+        return;
+    }
+
+    int texW, texH;
+    SDL_QueryTexture(pTooltipTexture.get(), nullptr, nullptr, &texW, &texH);
+
+    // Position tooltip near cursor, offset to avoid cursor overlap
+    int tooltipX = drawnMouseX + 15;
+    int tooltipY = drawnMouseY + 15;
+
+    // Keep tooltip within screen bounds
+    int screenW = getRendererWidth();
+    int screenH = getRendererHeight();
+    if (tooltipX + texW + 10 > screenW) {
+        tooltipX = drawnMouseX - texW - 15;
+    }
+    if (tooltipY + texH + 10 > screenH) {
+        tooltipY = drawnMouseY - texH - 15;
+    }
+
+    // Draw tooltip background (semi-transparent dark)
+    SDL_Rect bgRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Draw tooltip border
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 200);
+    SDL_Rect borderRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_RenderDrawRect(renderer, &borderRect);
+
+    // Draw tooltip text
+    SDL_Rect textRect = {tooltipX, tooltipY, texW, texH};
+    SDL_RenderCopy(renderer, pTooltipTexture.get(), nullptr, &textRect);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
 void Game::takeScreenshot() const {
     std::string screenshotFilename;
     int i = 1;
@@ -4590,403 +4734,6 @@ void Game::takeScreenshot() const {
     sdl2::surface_ptr pCurrentScreen = renderReadSurface(renderer);
     SavePNG(pCurrentScreen.get(), screenshotFilename.c_str());
     currentGame->addToNewsTicker(_("Screenshot saved") + ": '" + screenshotFilename + "'");
-}
-
-void Game::triggerFireDisaster() {
-    // Fire spread from combat: scan explosions near city zones and ignite them
-    if (structureList.empty()) {
-        addToNewsTicker(_("Explosions rock the desert..."));
-        return;
-    }
-
-    // Find all city zone structures
-    std::vector<StructureBase*> cityZones;
-    for (StructureBase* pStructure : structureList) {
-        if (dynamic_cast<ResidentialZone*>(pStructure) ||
-            dynamic_cast<CommercialZone*>(pStructure) ||
-            dynamic_cast<IndustrialZone*>(pStructure)) {
-            cityZones.push_back(pStructure);
-        }
-    }
-
-    if (cityZones.empty()) {
-        addToNewsTicker(_("Explosions rock the desert..."));
-        return;
-    }
-
-    // Find explosions near city zones (combat ignition)
-    std::vector<Coord> ignitedTiles;
-    for (const Explosion* pExplosion : explosionList) {
-        int ex = pExplosion->getPosition().x / TILESIZE;
-        int ey = pExplosion->getPosition().y / TILESIZE;
-        for (StructureBase* pZone : cityZones) {
-            int zx = pZone->getLocation().x;
-            int zy = pZone->getLocation().y;
-            int dist = std::abs(ex - zx) + std::abs(ey - zy);
-            if (dist <= 3) {
-                Coord fireTile(zx, zy);
-                if (fireLocations_.find(fireTile) == fireLocations_.end()) {
-                    fireLocations_[fireTile] = gameCycleCount;
-                    ignitedTiles.push_back(fireTile);
-                }
-            }
-        }
-    }
-
-    if (!ignitedTiles.empty()) {
-        std::string msg = _("Combat ignites city zones!");
-        msg += " (" + std::to_string(ignitedTiles.size()) + " zones ablaze)";
-        addToNewsTicker(msg);
-    } else {
-        addToNewsTicker(_("Explosions rock the battlefield..."));
-    }
-}
-
-void Game::updateFireSpread() {
-    if (structureList.empty()) {
-        return;
-    }
-
-    // Find all city zone structures
-    std::vector<StructureBase*> cityZones;
-    for (StructureBase* pStructure : structureList) {
-        if (dynamic_cast<ResidentialZone*>(pStructure) ||
-            dynamic_cast<CommercialZone*>(pStructure) ||
-            dynamic_cast<IndustrialZone*>(pStructure)) {
-            cityZones.push_back(pStructure);
-        }
-    }
-
-    if (cityZones.empty() && fireLocations_.empty()) {
-        return;
-    }
-
-    // Check explosions near zones to ignite new fires
-    std::vector<Coord> newFires;
-    for (const Explosion* pExplosion : explosionList) {
-        int ex = pExplosion->getPosition().x / TILESIZE;
-        int ey = pExplosion->getPosition().y / TILESIZE;
-        for (StructureBase* pZone : cityZones) {
-            int zx = pZone->getLocation().x;
-            int zy = pZone->getLocation().y;
-            int dist = std::abs(ex - zx) + std::abs(ey - zy);
-            if (dist <= 3) {
-                Coord fireTile(zx, zy);
-                if (fireLocations_.find(fireTile) == fireLocations_.end()) {
-                    fireLocations_[fireTile] = gameCycleCount;
-                    newFires.push_back(fireTile);
-                }
-            }
-        }
-    }
-
-    if (!newFires.empty()) {
-        std::string msg = _("Combat ignites city zones!");
-        msg += " (" + std::to_string(newFires.size()) + " zones ablaze)";
-        addToNewsTicker(msg);
-    }
-
-    // Spread fire to adjacent zones every 500 cycles
-    static constexpr int FIRE_SPREAD_INTERVAL = 500;
-    std::vector<Coord> spreadTargets;
-    std::vector<Coord> spreadSources;
-
-    for (const auto& fire : fireLocations_) {
-        const Coord& tile = fire.first;
-        Uint32 lastSpread = fire.second;
-
-        if (gameCycleCount - lastSpread < FIRE_SPREAD_INTERVAL) {
-            continue;
-        }
-
-        // Damage structure at this fire location
-        for (StructureBase* pZone : cityZones) {
-            if (pZone->getLocation() == tile) {
-                int damage = pZone->getMaxHealth() / 4;  // 25% damage per spread
-                pZone->handleDamage(damage, 0, nullptr);
-                break;
-            }
-        }
-
-        // Spread fire to adjacent tiles (4-directional)
-        const Coord adjacent[] = {
-            Coord(tile.x - 1, tile.y),
-            Coord(tile.x + 1, tile.y),
-            Coord(tile.x, tile.y - 1),
-            Coord(tile.x, tile.y + 1)
-        };
-
-        for (const Coord& adj : adjacent) {
-            // Check if there's a zone at this adjacent tile
-            for (StructureBase* pZone : cityZones) {
-                if (pZone->getLocation() == adj) {
-                    if (fireLocations_.find(adj) == fireLocations_.end()) {
-                        spreadTargets.push_back(adj);
-                    }
-                }
-            }
-        }
-
-        // Mark this tile as having just spread (reset its timer)
-        spreadSources.push_back(tile);
-    }
-
-    // Apply spread timer resets and add new fire targets
-    for (const Coord& src : spreadSources) {
-        fireLocations_[src] = gameCycleCount;
-    }
-    for (const Coord& tgt : spreadTargets) {
-        fireLocations_[tgt] = gameCycleCount;
-    }
-
-    if (!spreadTargets.empty()) {
-        std::string msg = _("Fire spreads through the city!");
-        msg += " (+" + std::to_string(spreadTargets.size()) + " zones)";
-        addToNewsTicker(msg);
-    }
-}
-
-void Game::triggerSandstormDisaster() {
-    // Sandstorm damages city zones in its path
-    if (structureList.empty()) {
-        addToNewsTicker(_("A sandstorm approaches..."));
-        return;
-    }
-
-    // Find all city zone structures
-    std::vector<StructureBase*> cityZones;
-    for (StructureBase* pStructure : structureList) {
-        if (dynamic_cast<ResidentialZone*>(pStructure) ||
-            dynamic_cast<CommercialZone*>(pStructure) ||
-            dynamic_cast<IndustrialZone*>(pStructure)) {
-            cityZones.push_back(pStructure);
-        }
-    }
-
-    if (cityZones.empty()) {
-        addToNewsTicker(_("A sandstorm passes over the map..."));
-        return;
-    }
-
-    // Use simple random generation
-    static int seed = 12345;
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    int randomValue = seed;
-
-    int mapWidth = currentGameMap->getSizeX();
-    int mapHeight = currentGameMap->getSizeY();
-    int startX, startY, dirX, dirY;
-
-    int edge = (randomValue % 4);
-    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-    switch (edge) {
-        case 0: // top
-            startX = randomValue % mapWidth;
-            startY = 0;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            dirX = (randomValue % 3) - 1;
-            dirY = 1;
-            break;
-        case 1: // right
-            startX = mapWidth - 1;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            startY = randomValue % mapHeight;
-            dirX = -1;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            dirY = (randomValue % 3) - 1;
-            break;
-        case 2: // bottom
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            startX = randomValue % mapWidth;
-            startY = mapHeight - 1;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            dirX = (randomValue % 3) - 1;
-            dirY = -1;
-            break;
-        default: // left
-            startX = 0;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            startY = randomValue % mapHeight;
-            dirX = 1;
-            randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-            dirY = (randomValue % 3) - 1;
-            break;
-    }
-
-    // Normalize direction
-    if (dirX != 0) dirX = dirX > 0 ? 1 : -1;
-    if (dirY != 0) dirY = dirY > 0 ? 1 : -1;
-
-    // Storm width (in tiles)
-    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-    int stormWidth = 3 + (randomValue % 4); // 3-6
-
-    // Damage zones along the storm path
-    int affectedCount = 0;
-    int currentX = startX;
-    int currentY = startY;
-
-    for (int step = 0; step < std::max(mapWidth, mapHeight) + stormWidth; step++) {
-        // Check all structures within storm width
-        for (StructureBase* pStructure : cityZones) {
-            int sx = pStructure->getLocation().x;
-            int sy = pStructure->getLocation().y;
-
-            // Check if structure is within storm path
-            for (int dx = -stormWidth/2; dx <= stormWidth/2; dx++) {
-                for (int dy = -stormWidth/2; dy <= stormWidth/2; dy++) {
-                    if (sx == currentX + dx && sy == currentY + dy) {
-                        // Apply damage (50% of max health)
-                        int damage = pStructure->getMaxHealth() / 2;
-                        pStructure->handleDamage(damage, 0, nullptr);
-                        affectedCount++;
-                        break;
-                    }
-                }
-            }
-        }
-
-        currentX += dirX;
-        currentY += dirY;
-
-        // Stop if we're well outside the map
-        if (currentX < -stormWidth || currentX > mapWidth + stormWidth ||
-            currentY < -stormWidth || currentY > mapHeight + stormWidth) {
-            break;
-        }
-    }
-
-    // Show notification
-    std::string msg = _("Sandstorm devastates city zones!");
-    if (affectedCount > 0) {
-        msg += " (" + std::to_string(affectedCount) + " zones)";
-    }
-    addToNewsTicker(msg);
-}
-
-void Game::triggerSandwormDisaster() {
-    // Sandworm attacks populated areas in the city
-    if (structureList.empty()) {
-        addToNewsTicker(_("A Sandworm approaches the city..."));
-        return;
-    }
-
-    // Find all city zone structures with population
-    std::vector<StructureBase*> populatedZones;
-    for (StructureBase* pStructure : structureList) {
-        ZoneStructure* pZone = dynamic_cast<ZoneStructure*>(pStructure);
-        if (pZone) {
-            // Check zone population (higher population = more attractive target)
-            int population = 0;
-            switch (pZone->getZoneType()) {
-                case DuneCity::ZoneType::Residential:
-                    population = 10; // Residential zones always have some population
-                    break;
-                case DuneCity::ZoneType::Commercial:
-                    population = 5;
-                    break;
-                case DuneCity::ZoneType::Industrial:
-                    population = 8;
-                    break;
-                default:
-                    break;
-            }
-            if (population > 0) {
-                populatedZones.push_back(pStructure);
-            }
-        }
-    }
-
-    if (populatedZones.empty()) {
-        addToNewsTicker(_("A Sandworm passes through the desert..."));
-        return;
-    }
-
-    // Use simple random generation
-    static int seed = 54321;
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    int randomValue = seed;
-
-    int mapWidth = currentGameMap->getSizeX();
-    int mapHeight = currentGameMap->getSizeY();
-
-    // Pick a random populated zone to attack
-    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-    int targetIndex = randomValue % populatedZones.size();
-    StructureBase* pTarget = populatedZones[targetIndex];
-    int targetX = pTarget->getLocation().x;
-    int targetY = pTarget->getLocation().y;
-
-    // Calculate approach direction (from map edge toward target)
-    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-    int edge = randomValue % 4;
-    int startX, startY;
-    switch (edge) {
-        case 0: startX = 0; startY = randomValue % mapHeight; break;
-        case 1: startX = mapWidth - 1; startY = randomValue % mapHeight; break;
-        case 2: startX = randomValue % mapWidth; startY = 0; break;
-        default: startX = randomValue % mapWidth; startY = mapHeight - 1; break;
-    }
-
-    // Direction toward target
-    int dirX = (targetX > startX) ? 1 : ((targetX < startX) ? -1 : 0);
-    int dirY = (targetY > startY) ? 1 : ((targetY < startY) ? -1 : 0);
-    if (dirX == 0 && dirY == 0) { dirX = 1; }
-
-    // Sandworm attack radius
-    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
-    int attackRadius = 2 + (randomValue % 3); // 2-4 tiles
-
-    // Damage zones along the sandworm path
-    int affectedCount = 0;
-    int currentX = startX;
-    int currentY = startY;
-    int maxSteps = std::max(std::abs(targetX - startX), std::abs(targetY - startY)) + attackRadius + 5;
-
-    for (int step = 0; step < maxSteps; step++) {
-        // Check all structures within attack radius
-        for (StructureBase* pStructure : populatedZones) {
-            int sx = pStructure->getLocation().x;
-            int sy = pStructure->getLocation().y;
-
-            // Check if structure is within sandworm path
-            for (int dx = -attackRadius; dx <= attackRadius; dx++) {
-                for (int dy = -attackRadius; dy <= attackRadius; dy++) {
-                    if (sx == currentX + dx && sy == currentY + dy) {
-                        // Apply heavy damage (80% of max health - may destroy)
-                        int damage = pStructure->getMaxHealth() * 4 / 5;
-                        pStructure->handleDamage(damage, 0, nullptr);
-                        affectedCount++;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Move toward target
-        if (currentX < targetX) currentX++;
-        else if (currentX > targetX) currentX--;
-        if (currentY < targetY) currentY++;
-        else if (currentY > targetY) currentY--;
-
-        // Stop if we reached the target area
-        if (std::abs(currentX - targetX) <= attackRadius && std::abs(currentY - targetY) <= attackRadius) {
-            break;
-        }
-
-        // Stop if we're well outside the map
-        if (currentX < -attackRadius || currentX > mapWidth + attackRadius ||
-            currentY < -attackRadius || currentY > mapHeight + attackRadius) {
-            break;
-        }
-    }
-
-    // Show notification
-    std::string msg = _("SANDWORM ATTACK! A sandworm devours city structures!");
-    if (affectedCount > 0) {
-        msg += " (" + std::to_string(affectedCount) + " zones)";
-    }
-    addToNewsTicker(msg);
 }
 
 

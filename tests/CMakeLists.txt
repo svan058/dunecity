@@ -16,7 +16,9 @@ target_sources(dunelegacy_tests
         RoadPlacementTestCase/RoadPlacementTestCase.cpp
         CityBudgetIntegrationTestCase/CityBudgetIntegrationTestCase.cpp
         BudgetAllocationTestCase/BudgetAllocationTestCase.cpp
+        CityBuildLogicTestCase/CityBuildLogicTestCase.cpp
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
+        CityRoadTestCase/CityRoadTestCase.cpp
         MilestoneTestCase/MilestoneTestCase.cpp
         # DuneCity core sources (needed for CitySimulation tests)
         ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
@@ -54,8 +56,6 @@ target_include_directories(dunelegacy_tests
 )
 
 # Link libraries
-# Only SDL2 is needed for ENet types (Uint32, etc.)
-# SDL2_mixer and SDL2_ttf are NOT needed for these tests
 target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain

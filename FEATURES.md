@@ -18,7 +18,8 @@
 | `Shift+6` | Toggle overlay: Crime Rate |
 | `Shift+7` | Toggle overlay: Population Density |
 | `Shift+8` | Toggle overlay: Wind Trap Radius |
-| `Escape` (in zone mode) | Exit zone placement mode |
+| `Shift+R` | Enter/exit road placement mode |
+| `Escape` (in zone/road mode) | Exit placement mode |
 
 ---
 
