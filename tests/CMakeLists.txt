@@ -19,7 +19,6 @@ target_sources(dunelegacy_tests
         MilestoneTestCase/MilestoneTestCase.cpp
         FactionCityBonusTestCase/FactionCityBonusTestCase.cpp
         # DuneCity core sources (needed for CitySimulation tests)
-        ${CMAKE_SOURCE_DIR}/src/CityScore.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/PowerGrid.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/ZoneSimulation.cpp
