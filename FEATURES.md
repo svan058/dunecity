@@ -91,4 +91,4 @@
 - [ ] Multiplayer city comparison (competitive city scores)
 - [x] Faction-specific city bonuses (Atreides = higher approval, Harkonnen = cheaper industry)
 - [ ] Inter-city trade routes between allied players
-- [ ] City-produced units (militia from population)
+- [x] City-produced units (militia from population)

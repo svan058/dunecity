@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.10)
+
 # Find Catch2 package
 find_package(Catch2 3 REQUIRED)
 
