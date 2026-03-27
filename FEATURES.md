@@ -79,7 +79,7 @@
 - [ ] Sandstorm damage to city zones
 - [ ] Sandworm attacks on populated areas
 - [ ] Fire spread from combat into city zones
-- [ ] Disaster notification system
+- [x] Disaster notification system
 
 ## Phase 9: Polish & Balance
 - [ ] Balance city growth rates with RTS pacing
