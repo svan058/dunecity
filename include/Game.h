@@ -477,6 +477,11 @@ public:
         Draw zone info tooltip on hover (Phase 2 feature)
     */
     void drawZoneTooltip();
+
+    /**
+        Draw city help tooltip for empty tiles (Phase 9 feature)
+    */
+    void drawCityHelpTooltip(int mapX, int mapY);
 private:
 
     /**

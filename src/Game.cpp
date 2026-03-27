@@ -4366,22 +4366,27 @@ void Game::drawZoneTooltip() {
 
     // Only show tooltip for R/C/I zones
     if (zoneType == DuneCity::ZoneType::None) {
+        // Show help tooltip for empty tiles when city is active
+        drawCityHelpTooltip(mapX, mapY);
         return;
     }
 
     // Build tooltip text based on zone type
     std::string zoneName;
-    std::string zoneInfo;
+    std::string zoneTip;
 
     switch (zoneType) {
         case DuneCity::ZoneType::Residential:
             zoneName = "Residential Zone";
+            zoneTip = "Housing for your citizens. Grows with power & roads.";
             break;
         case DuneCity::ZoneType::Commercial:
             zoneName = "Commercial Zone";
+            zoneTip = "Generates tax income. Needs population nearby.";
             break;
         case DuneCity::ZoneType::Industrial:
             zoneName = "Industrial Zone";
+            zoneTip = "Jobs & exports. Causes pollution - keep away from residential.";
             break;
         default:
             return;
@@ -4391,15 +4396,16 @@ void Game::drawZoneTooltip() {
     uint8_t density = pTile->getCityZoneDensity();
     bool powered = pTile->isCityPowered();
 
-    zoneInfo = "Density: " + std::to_string(density) + "/8";
+    // Get additional stats from city simulation
+    std::string statsLine = "Density: " + std::to_string(density) + "/8";
     if (powered) {
-        zoneInfo += " | Powered";
+        statsLine += " | Powered";
     } else {
-        zoneInfo += " | UNPOWERED";
+        statsLine += " | UNPOWERED";
     }
 
-    // Create tooltip texture with zone name and info
-    std::string tooltipText = zoneName + "\n" + zoneInfo;
+    // Build multi-line tooltip
+    std::string tooltipText = zoneName + "\n" + zoneTip + "\n" + statsLine;
 
     sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
         tooltipText.c_str(), COLOR_WHITE, 12, true);
@@ -4433,6 +4439,118 @@ void Game::drawZoneTooltip() {
 
     // Draw tooltip border
     SDL_SetRenderDrawColor(renderer, 150, 150, 150, 200);
+    SDL_Rect borderRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_RenderDrawRect(renderer, &borderRect);
+
+    // Draw tooltip text
+    SDL_Rect textRect = {tooltipX, tooltipY, texW, texH};
+    SDL_RenderCopy(renderer, pTooltipTexture.get(), nullptr, &textRect);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+void Game::drawCityHelpTooltip(int mapX, int mapY) {
+    // Show helpful hints about city mechanics when hovering over empty tiles
+    if (!currentGameMap->tileExists(mapX, mapY)) {
+        return;
+    }
+
+    Tile* pTile = currentGameMap->getTile(mapX, mapY);
+
+    // Determine what hint to show based on tile context
+    std::string helpText;
+    std::string helpTitle = "City Building Tips";
+
+    // Check neighboring tiles for context
+    bool hasZoneNearby = false;
+    bool hasPowerNearby = false;
+    bool isNearEdge = (mapX < 3 || mapX >= currentGameMap->getSizeX() - 3 ||
+                       mapY < 3 || mapY >= currentGameMap->getSizeY() - 3);
+    bool isDeveloped = pTile->isRock() || pTile->getType() == Terrain_Slab;
+
+    // Check for nearby zones and power using power grid map
+    const auto& powerGridMap = citySimulation_->getPowerGridMap();
+    int blockSize = powerGridMap.getBlockSize();
+
+    for (int dx = -2; dx <= 2; dx++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            if (dx == 0 && dy == 0) continue;
+            int nx = mapX + dx;
+            int ny = mapY + dy;
+            if (currentGameMap->tileExists(nx, ny)) {
+                Tile* nTile = currentGameMap->getTile(nx, ny);
+                if (nTile->getCityZoneType() != DuneCity::ZoneType::None) hasZoneNearby = true;
+                // Check power grid (powered tiles have value > 0)
+                int bx = nx / blockSize;
+                int by = ny / blockSize;
+                if (powerGridMap.worldGet(bx, by) > 0) hasPowerNearby = true;
+            }
+        }
+    }
+
+    // Select appropriate hint based on context
+    if (isNearEdge) {
+        helpText = "Place zones near edges for expansion room. Roads help connect zones.";
+    } else if (hasZoneNearby && !hasPowerNearby) {
+        helpText = "Build WIND TRAPS to power your city. Unpowered zones decay!";
+    } else if (!isDeveloped) {
+        // Tile is natural sand - encourage development
+        helpText = "Build R/C/I ZONES on sand. Zones grow faster when connected by roads!";
+    } else {
+        // General tips - rotate through based on time
+        Uint32 tick = SDL_GetTicks();
+        int tipIndex = (tick / 5000) % 4;  // Change every 5 seconds
+        switch (tipIndex) {
+            case 0:
+                helpText = "Residential zones grow with power & nearby roads. Start there!";
+                break;
+            case 1:
+                helpText = "Commercial zones generate tax but need residential nearby.";
+                break;
+            case 2:
+                helpText = "Industrial zones create jobs but cause pollution. Keep away from residential!";
+                break;
+            case 3:
+            default:
+                helpText = "Use Shift+1-8 to view city overlays: power, pollution, traffic, and more.";
+                break;
+        }
+    }
+
+    // Create tooltip texture
+    std::string tooltipText = helpTitle + "\n" + helpText;
+    sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
+        tooltipText.c_str(), COLOR_WHITE, 12, true);
+
+    if (!pTooltipTexture) {
+        return;
+    }
+
+    int texW, texH;
+    SDL_QueryTexture(pTooltipTexture.get(), nullptr, nullptr, &texW, &texH);
+
+    // Position tooltip near cursor
+    int tooltipX = drawnMouseX + 15;
+    int tooltipY = drawnMouseY + 15;
+
+    // Keep tooltip within screen bounds
+    int screenW = getRendererWidth();
+    int screenH = getRendererHeight();
+    if (tooltipX + texW + 10 > screenW) {
+        tooltipX = drawnMouseX - texW - 15;
+    }
+    if (tooltipY + texH + 10 > screenH) {
+        tooltipY = drawnMouseY - texH - 15;
+    }
+
+    // Draw tooltip background (semi-transparent dark)
+    SDL_Rect bgRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Draw tooltip border (cyan for help)
+    SDL_SetRenderDrawColor(renderer, 0, 200, 200, 200);
     SDL_Rect borderRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
     SDL_RenderDrawRect(renderer, &borderRect);
 
