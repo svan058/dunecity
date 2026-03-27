@@ -37,6 +37,7 @@ const int BuilderBase::itemOrder[] = {    Structure_Slab4, Structure_Slab1, Stru
                                            Structure_Silo, Structure_Radar, Structure_Refinery, Structure_WindTrap,
                                            Structure_Palace,
                                            Structure_ZoneResidential, Structure_ZoneCommercial, Structure_ZoneIndustrial,
+                                           Structure_Road, Structure_PowerLine,
                                            Unit_SonicTank, Unit_Devastator, Unit_Deviator, Unit_Special,
                                            Unit_Launcher, Unit_SiegeTank, Unit_Tank, Unit_MCV, Unit_Harvester,
                                            Unit_Ornithopter, Unit_Carryall, Unit_Quad, Unit_RaiderTrike,

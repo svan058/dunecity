@@ -291,6 +291,8 @@ std::string getItemNameByID(Uint32 itemID) {
         case Structure_ZoneResidential:     return "Residential Zone";  break;
         case Structure_ZoneCommercial:      return "Commercial Zone";   break;
         case Structure_ZoneIndustrial:      return "Industrial Zone";   break;
+        case Structure_Road:                return "Road";              break;
+        case Structure_PowerLine:           return "Power Line";        break;
 
         case Unit_Carryall:                 return "Carryall";          break;
         case Unit_Devastator:               return "Devastator";        break;

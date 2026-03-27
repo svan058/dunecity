@@ -401,6 +401,28 @@ InfSpawnProp = 0
 Builder = Construction Yard
 TechLevel = 1
 
+[Road]
+Enabled = true
+HitPoints = 1
+Price = 25
+Power = 0
+ViewRange = 0
+BuildTime = 8
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 1
+
+[Power Line]
+Enabled = true
+HitPoints = 1
+Price = 15
+Power = 0
+ViewRange = 0
+BuildTime = 4
+InfSpawnProp = 0
+Builder = Construction Yard
+TechLevel = 1
+
 ### default unit ###
 
 [default unit]

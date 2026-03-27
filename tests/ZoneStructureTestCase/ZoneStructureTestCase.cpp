@@ -16,17 +16,19 @@ TEST_CASE("ZoneStructure: Structure IDs are correctly assigned", "[zone][ids]") 
     REQUIRE(Structure_ZoneResidential == 20);
     REQUIRE(Structure_ZoneCommercial == 21);
     REQUIRE(Structure_ZoneIndustrial == 22);
+    REQUIRE(Structure_Road == 23);
+    REQUIRE(Structure_PowerLine == 24);
 }
 
-TEST_CASE("ZoneStructure: Structure_LastID includes zone structures", "[zone][ids]") {
-    REQUIRE(Structure_LastID == 22);
-    REQUIRE(Structure_ZoneIndustrial == Structure_LastID);
+TEST_CASE("ZoneStructure: Structure_LastID includes city structures", "[zone][ids]") {
+    REQUIRE(Structure_LastID == 24);
+    REQUIRE(Structure_PowerLine == Structure_LastID);
 }
 
-TEST_CASE("ZoneStructure: Unit IDs shifted above zone structures", "[zone][ids]") {
-    REQUIRE(Unit_FirstID == 23);
+TEST_CASE("ZoneStructure: Unit IDs shifted above city structures", "[zone][ids]") {
+    REQUIRE(Unit_FirstID == 25);
     REQUIRE(Unit_FirstID == Structure_LastID + 1);
-    REQUIRE(Unit_Carryall == 23);
+    REQUIRE(Unit_Carryall == 25);
 }
 
 TEST_CASE("ZoneStructure: ItemID bounds are consistent", "[zone][ids]") {
@@ -119,7 +121,7 @@ TEST_CASE("ZoneStructure: No ID gap between structures and units", "[zone][ids]"
 
 TEST_CASE("ZoneStructure: Structure range is contiguous", "[zone][ids]") {
     int count = Structure_LastID - Structure_FirstID + 1;
-    REQUIRE(count == 22);
+    REQUIRE(count == 24);
 }
 
 TEST_CASE("ZoneStructure: Zone structures are at end of structure range", "[zone][ids]") {
