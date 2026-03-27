@@ -88,7 +88,7 @@
 - [ ] Sound effects for city events
 
 ## Future Ideas
-- [ ] Multiplayer city comparison (competitive city scores)
+- [WIP] Multiplayer city comparison (competitive city scores)
 - [ ] Faction-specific city bonuses (Atreides = higher approval, Harkonnen = cheaper industry)
 - [ ] Inter-city trade routes between allied players
 - [ ] City-produced units (militia from population)

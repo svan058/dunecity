@@ -12,7 +12,22 @@ target_sources(dunelegacy_tests
         NetworkManagerTestCase/NetworkManagerTestCase.cpp
         ZoneStructureTestCase/ZoneStructureTestCase.cpp
         RoadPlacementTestCase/RoadPlacementTestCase.cpp
+        CityBudgetIntegrationTestCase/CityBudgetIntegrationTestCase.cpp
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
+        MilestoneTestCase/MilestoneTestCase.cpp
+        CityScoreTestCase/CityScoreTestCase.cpp
+        # DuneCity core sources (needed for CitySimulation tests)
+        ${CMAKE_SOURCE_DIR}/src/CityScore.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/PowerGrid.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/ZoneSimulation.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/TrafficSimulation.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/CityBudget.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/CityScanner.cpp
+        ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
+        ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
+        globals_test_stub.cpp
+        TextManager_stub.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -34,15 +49,16 @@ target_include_directories(dunelegacy_tests
         ${CMAKE_BINARY_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/src/enet  # For enet headers
+        ${CMAKE_SOURCE_DIR}/src      # For audio/sounds.h and other src-level headers
 )
 
 # Link libraries
-# Only SDL2 is needed for ENet types (Uint32, etc.)
-# SDL2_mixer and SDL2_ttf are NOT needed for these tests
+# SDL2 for ENet types; SDL2_mixer-static for sounds.cpp in test build
 target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
+        SDL2_mixer::SDL2_mixer-static
 )
 
 if(WIN32)

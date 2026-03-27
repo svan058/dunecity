@@ -92,6 +92,7 @@ target_sources(dunecity
         Choam.cpp
         Command.cpp
         CommandManager.cpp
+        CityScore.cpp
         CrashHandler.cpp
         CursorManager.cpp
         Explosion.cpp
