@@ -37,7 +37,7 @@
 ## Phase 2: Zoning UI (DONE)
 - [x] Zone placement tool (R/C/I zones on map tiles)
 - [x] Visual zone indicators on map (colored overlays or tile borders)
-- [ ] Zone info tooltip on hover
+- [x] Zone info tooltip on hover
 - [x] Zones buildable as structures via Construction Yard (Phase 3 upgrade)
 
 ## Phase 3: Power Grid Visualization (DONE)
