@@ -39,6 +39,8 @@ public:
 
     void update();
 
+    const Coord& getPosition() const { return position; }
+
 private:
     Uint32 explosionID;
     Coord position;

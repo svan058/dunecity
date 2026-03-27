@@ -369,6 +369,15 @@ public:
     void triggerSandstormDisaster();
     void triggerSandwormDisaster();
 
+    // Fire spread from combat
+    void updateFireSpread();
+    struct CoordLess {
+        bool operator()(const Coord& a, const Coord& b) const {
+            return (a.x < b.x) || (a.x == b.x && a.y < b.y);
+        }
+    };
+    std::map<Coord, Uint32, CoordLess> fireLocations_;  ///< Active fire locations: tile coord -> last spread cycle
+
     /**
         This method returns wether the game is currently paused
         \return true, if paused, false otherwise

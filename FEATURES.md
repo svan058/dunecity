@@ -77,8 +77,8 @@
 
 ## Phase 8: Disasters & Events
 - [x] Sandstorm damage to city zones
-- [WIP] Sandworm attacks on populated areas
-- [ ] Fire spread from combat into city zones
+- [x] Sandworm attacks on populated areas
+- [WIP] Fire spread from combat into city zones
 - [x] Disaster notification system
 
 ## Phase 9: Polish & Balance

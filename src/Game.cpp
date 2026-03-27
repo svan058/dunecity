@@ -2433,6 +2433,11 @@ void Game::updateGameState() {
         }
     }
 
+    // Fire spread from combat: check every 300 cycles
+    if ((gameCycleCount % 300) == 0) {
+        updateFireSpread();
+    }
+
     if((indicatorFrame != NONE_ID) && (--indicatorTimer <= 0)) {
         indicatorTimer = indicatorTime;
         if(++indicatorFrame > 2) {
@@ -4452,7 +4457,157 @@ void Game::takeScreenshot() const {
 }
 
 void Game::triggerFireDisaster() {
-    addToNewsTicker("FIRE! Fire detected in city! (Test notification)");
+    // Fire spread from combat: scan explosions near city zones and ignite them
+    if (structureList.empty()) {
+        addToNewsTicker(_("Explosions rock the desert..."));
+        return;
+    }
+
+    // Find all city zone structures
+    std::vector<StructureBase*> cityZones;
+    for (StructureBase* pStructure : structureList) {
+        if (dynamic_cast<ResidentialZone*>(pStructure) ||
+            dynamic_cast<CommercialZone*>(pStructure) ||
+            dynamic_cast<IndustrialZone*>(pStructure)) {
+            cityZones.push_back(pStructure);
+        }
+    }
+
+    if (cityZones.empty()) {
+        addToNewsTicker(_("Explosions rock the desert..."));
+        return;
+    }
+
+    // Find explosions near city zones (combat ignition)
+    std::vector<Coord> ignitedTiles;
+    for (const Explosion* pExplosion : explosionList) {
+        int ex = pExplosion->getPosition().x / TILESIZE;
+        int ey = pExplosion->getPosition().y / TILESIZE;
+        for (StructureBase* pZone : cityZones) {
+            int zx = pZone->getLocation().x;
+            int zy = pZone->getLocation().y;
+            int dist = std::abs(ex - zx) + std::abs(ey - zy);
+            if (dist <= 3) {
+                Coord fireTile(zx, zy);
+                if (fireLocations_.find(fireTile) == fireLocations_.end()) {
+                    fireLocations_[fireTile] = gameCycleCount;
+                    ignitedTiles.push_back(fireTile);
+                }
+            }
+        }
+    }
+
+    if (!ignitedTiles.empty()) {
+        std::string msg = _("Combat ignites city zones!");
+        msg += " (" + std::to_string(ignitedTiles.size()) + " zones ablaze)";
+        addToNewsTicker(msg);
+    } else {
+        addToNewsTicker(_("Explosions rock the battlefield..."));
+    }
+}
+
+void Game::updateFireSpread() {
+    if (structureList.empty()) {
+        return;
+    }
+
+    // Find all city zone structures
+    std::vector<StructureBase*> cityZones;
+    for (StructureBase* pStructure : structureList) {
+        if (dynamic_cast<ResidentialZone*>(pStructure) ||
+            dynamic_cast<CommercialZone*>(pStructure) ||
+            dynamic_cast<IndustrialZone*>(pStructure)) {
+            cityZones.push_back(pStructure);
+        }
+    }
+
+    if (cityZones.empty() && fireLocations_.empty()) {
+        return;
+    }
+
+    // Check explosions near zones to ignite new fires
+    std::vector<Coord> newFires;
+    for (const Explosion* pExplosion : explosionList) {
+        int ex = pExplosion->getPosition().x / TILESIZE;
+        int ey = pExplosion->getPosition().y / TILESIZE;
+        for (StructureBase* pZone : cityZones) {
+            int zx = pZone->getLocation().x;
+            int zy = pZone->getLocation().y;
+            int dist = std::abs(ex - zx) + std::abs(ey - zy);
+            if (dist <= 3) {
+                Coord fireTile(zx, zy);
+                if (fireLocations_.find(fireTile) == fireLocations_.end()) {
+                    fireLocations_[fireTile] = gameCycleCount;
+                    newFires.push_back(fireTile);
+                }
+            }
+        }
+    }
+
+    if (!newFires.empty()) {
+        std::string msg = _("Combat ignites city zones!");
+        msg += " (" + std::to_string(newFires.size()) + " zones ablaze)";
+        addToNewsTicker(msg);
+    }
+
+    // Spread fire to adjacent zones every 500 cycles
+    static constexpr int FIRE_SPREAD_INTERVAL = 500;
+    std::vector<Coord> spreadTargets;
+    std::vector<Coord> spreadSources;
+
+    for (const auto& fire : fireLocations_) {
+        const Coord& tile = fire.first;
+        Uint32 lastSpread = fire.second;
+
+        if (gameCycleCount - lastSpread < FIRE_SPREAD_INTERVAL) {
+            continue;
+        }
+
+        // Damage structure at this fire location
+        for (StructureBase* pZone : cityZones) {
+            if (pZone->getLocation() == tile) {
+                int damage = pZone->getMaxHealth() / 4;  // 25% damage per spread
+                pZone->handleDamage(damage, 0, nullptr);
+                break;
+            }
+        }
+
+        // Spread fire to adjacent tiles (4-directional)
+        const Coord adjacent[] = {
+            Coord(tile.x - 1, tile.y),
+            Coord(tile.x + 1, tile.y),
+            Coord(tile.x, tile.y - 1),
+            Coord(tile.x, tile.y + 1)
+        };
+
+        for (const Coord& adj : adjacent) {
+            // Check if there's a zone at this adjacent tile
+            for (StructureBase* pZone : cityZones) {
+                if (pZone->getLocation() == adj) {
+                    if (fireLocations_.find(adj) == fireLocations_.end()) {
+                        spreadTargets.push_back(adj);
+                    }
+                }
+            }
+        }
+
+        // Mark this tile as having just spread (reset its timer)
+        spreadSources.push_back(tile);
+    }
+
+    // Apply spread timer resets and add new fire targets
+    for (const Coord& src : spreadSources) {
+        fireLocations_[src] = gameCycleCount;
+    }
+    for (const Coord& tgt : spreadTargets) {
+        fireLocations_[tgt] = gameCycleCount;
+    }
+
+    if (!spreadTargets.empty()) {
+        std::string msg = _("Fire spreads through the city!");
+        msg += " (+" + std::to_string(spreadTargets.size()) + " zones)";
+        addToNewsTicker(msg);
+    }
 }
 
 void Game::triggerSandstormDisaster() {
