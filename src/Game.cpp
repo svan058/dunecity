@@ -4574,7 +4574,128 @@ void Game::triggerSandstormDisaster() {
 }
 
 void Game::triggerSandwormDisaster() {
-    addToNewsTicker("Sandworm spotted! (Test notification)");
+    // Sandworm attacks populated areas in the city
+    if (structureList.empty()) {
+        addToNewsTicker(_("A Sandworm approaches the city..."));
+        return;
+    }
+
+    // Find all city zone structures with population
+    std::vector<StructureBase*> populatedZones;
+    for (StructureBase* pStructure : structureList) {
+        ZoneStructure* pZone = dynamic_cast<ZoneStructure*>(pStructure);
+        if (pZone) {
+            // Check zone population (higher population = more attractive target)
+            int population = 0;
+            switch (pZone->getZoneType()) {
+                case DuneCity::ZoneType::Residential:
+                    population = 10; // Residential zones always have some population
+                    break;
+                case DuneCity::ZoneType::Commercial:
+                    population = 5;
+                    break;
+                case DuneCity::ZoneType::Industrial:
+                    population = 8;
+                    break;
+                default:
+                    break;
+            }
+            if (population > 0) {
+                populatedZones.push_back(pStructure);
+            }
+        }
+    }
+
+    if (populatedZones.empty()) {
+        addToNewsTicker(_("A Sandworm passes through the desert..."));
+        return;
+    }
+
+    // Use simple random generation
+    static int seed = 54321;
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    int randomValue = seed;
+
+    int mapWidth = currentGameMap->getSizeX();
+    int mapHeight = currentGameMap->getSizeY();
+
+    // Pick a random populated zone to attack
+    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+    int targetIndex = randomValue % populatedZones.size();
+    StructureBase* pTarget = populatedZones[targetIndex];
+    int targetX = pTarget->getLocation().x;
+    int targetY = pTarget->getLocation().y;
+
+    // Calculate approach direction (from map edge toward target)
+    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+    int edge = randomValue % 4;
+    int startX, startY;
+    switch (edge) {
+        case 0: startX = 0; startY = randomValue % mapHeight; break;
+        case 1: startX = mapWidth - 1; startY = randomValue % mapHeight; break;
+        case 2: startX = randomValue % mapWidth; startY = 0; break;
+        default: startX = randomValue % mapWidth; startY = mapHeight - 1; break;
+    }
+
+    // Direction toward target
+    int dirX = (targetX > startX) ? 1 : ((targetX < startX) ? -1 : 0);
+    int dirY = (targetY > startY) ? 1 : ((targetY < startY) ? -1 : 0);
+    if (dirX == 0 && dirY == 0) { dirX = 1; }
+
+    // Sandworm attack radius
+    randomValue = (randomValue * 1103515245 + 12345) & 0x7fffffff;
+    int attackRadius = 2 + (randomValue % 3); // 2-4 tiles
+
+    // Damage zones along the sandworm path
+    int affectedCount = 0;
+    int currentX = startX;
+    int currentY = startY;
+    int maxSteps = std::max(std::abs(targetX - startX), std::abs(targetY - startY)) + attackRadius + 5;
+
+    for (int step = 0; step < maxSteps; step++) {
+        // Check all structures within attack radius
+        for (StructureBase* pStructure : populatedZones) {
+            int sx = pStructure->getLocation().x;
+            int sy = pStructure->getLocation().y;
+
+            // Check if structure is within sandworm path
+            for (int dx = -attackRadius; dx <= attackRadius; dx++) {
+                for (int dy = -attackRadius; dy <= attackRadius; dy++) {
+                    if (sx == currentX + dx && sy == currentY + dy) {
+                        // Apply heavy damage (80% of max health - may destroy)
+                        int damage = pStructure->getMaxHealth() * 4 / 5;
+                        pStructure->handleDamage(damage, 0, nullptr);
+                        affectedCount++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Move toward target
+        if (currentX < targetX) currentX++;
+        else if (currentX > targetX) currentX--;
+        if (currentY < targetY) currentY++;
+        else if (currentY > targetY) currentY--;
+
+        // Stop if we reached the target area
+        if (std::abs(currentX - targetX) <= attackRadius && std::abs(currentY - targetY) <= attackRadius) {
+            break;
+        }
+
+        // Stop if we're well outside the map
+        if (currentX < -attackRadius || currentX > mapWidth + attackRadius ||
+            currentY < -attackRadius || currentY > mapHeight + attackRadius) {
+            break;
+        }
+    }
+
+    // Show notification
+    std::string msg = _("SANDWORM ATTACK! A sandworm devours city structures!");
+    if (affectedCount > 0) {
+        msg += " (" + std::to_string(affectedCount) + " zones)";
+    }
+    addToNewsTicker(msg);
 }
 
 

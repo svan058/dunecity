@@ -77,7 +77,7 @@
 
 ## Phase 8: Disasters & Events
 - [x] Sandstorm damage to city zones
-- [ ] Sandworm attacks on populated areas
+- [WIP] Sandworm attacks on populated areas
 - [ ] Fire spread from combat into city zones
 - [x] Disaster notification system
 
