@@ -22,6 +22,7 @@ class TextManager {
 public:
     std::string getLocalized(const std::istream&) const { return ""; }
     std::string getLocalized(const std::string& msgid) const { return msgid; }
+    std::string postProcessString(const std::string& s) const { return s; }
 };
 class NetworkManager {};
 

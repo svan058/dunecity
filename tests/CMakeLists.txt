@@ -16,6 +16,7 @@ target_sources(dunelegacy_tests
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
         MilestoneTestCase/MilestoneTestCase.cpp
         # DuneCity core sources (needed for CitySimulation tests)
+        ${CMAKE_SOURCE_DIR}/src/CityScore.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/PowerGrid.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/ZoneSimulation.cpp
@@ -25,6 +26,7 @@ target_sources(dunelegacy_tests
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
         ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
         globals_test_stub.cpp
+        TextManager_stub.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -56,7 +58,7 @@ target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
-        SDL2_mixer::SDL2_mixer
+        SDL2_mixer::SDL2_mixer-static
 )
 
 if(WIN32)
