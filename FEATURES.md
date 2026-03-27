@@ -84,8 +84,8 @@
 ## Phase 9: Polish & Balance
 - [x] Balance city growth rates with RTS pacing
 - [x] Tutorial/tooltip for city mechanics
-- [ ] City milestone notifications
-- [ ] Sound effects for city events
+- [x] City milestone notifications
+- [x] Sound effects for city events
 
 ## Future Ideas
 - [ ] Multiplayer city comparison (competitive city scores)

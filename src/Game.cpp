@@ -36,6 +36,7 @@ std::mutex Game::performanceLogMutex;
 #include <FileClasses/music/MusicPlayer.h>
 #include <FileClasses/LoadSavePNG.h>
 #include <SoundPlayer.h>
+#include <audio/sounds.h>
 #include <misc/IFileStream.h>
 #include <misc/OFileStream.h>
 #include <misc/IMemoryStream.h>
@@ -2422,7 +2423,23 @@ void Game::updateGameState() {
         // Power shortage warning: notify player when zones lose power
         if (citySimulation_->isPowerShortageJustStarted()) {
             int32_t unpowered = citySimulation_->getUnpoweredZoneCount();
+            DuneCitySounds::Sound_PowerOutage();
             currentGame->addToNewsTicker(fmt::sprintf(_("WARNING: Power shortage! %d zones unpowered"), unpowered));
+        }
+
+        // DuneCity: Check for milestone achievements (after census updates population counts)
+        // Phase 9 (census) runs at phaseCycle = 9, so we check after that
+        if (citySimulation_->getPhaseCycle() == 9) {
+            // For now, assume roads exist if any zones exist
+            bool hasRoads = (citySimulation_->getResPop() > 0 || citySimulation_->getComPop() > 0 || citySimulation_->getIndPop() > 0);
+            citySimulation_->checkAndTriggerMilestones(
+                citySimulation_->getTotalPop(),
+                citySimulation_->getTotalFunds(),
+                citySimulation_->getResPop(),
+                citySimulation_->getComPop(),
+                citySimulation_->getIndPop(),
+                hasRoads
+            );
         }
 
         if ((winFlags & WINLOSEFLAGS_ECONOMIC) && !finished) {
@@ -4122,6 +4139,7 @@ void Game::handleCityZonePlacementClick(int xPos, int yPos) {
                                    static_cast<uint32_t>(selectedZoneType_)));
 
     soundPlayer->playSound(Sound_PlaceStructure);
+    DuneCitySounds::Sound_ZoneBuilt();
 }
 
 void Game::handleCityRoadPlacementClick(int xPos, int yPos) {

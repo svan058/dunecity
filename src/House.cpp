@@ -35,6 +35,7 @@
 
 #include <structures/StructureBase.h>
 #include <structures/BuilderBase.h>
+#include <structures/ZoneStructure.h>
 #include <structures/Refinery.h>
 #include <structures/ConstructionYard.h>
 #include <units/Carryall.h>
@@ -789,6 +790,18 @@ StructureBase* House::placeStructure(Uint32 builderID, int itemID, int xPos, int
                         currentGame->setCursorMode(Game::CursorMode_Normal);
                     }
                     pLocalPlayer->onPlaceStructure(newStructure);
+
+                    // DuneCity: Check for first zone milestone
+                    if (newStructure != nullptr && currentGame != nullptr) {
+                        auto* citySim = currentGame->getCitySimulation();
+                        if (citySim != nullptr && !citySim->wasFirstZoneMilestoneTriggered()) {
+                            // Check if this is a zone structure (R/C/I)
+                            ZoneStructure* pZone = dynamic_cast<ZoneStructure*>(newStructure);
+                            if (pZone != nullptr) {
+                                citySim->onFirstZoneBuilt();
+                            }
+                        }
+                    }
                 }
 
                 // only if we were constructed by construction yard

@@ -27,6 +27,7 @@
 #include <Bullet.h>
 #include <ScreenBorder.h>
 #include <House.h>
+#include <audio/sounds.h>
 
 #include <players/HumanPlayer.h>
 

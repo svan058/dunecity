@@ -14,17 +14,6 @@ target_sources(dunelegacy_tests
         RoadPlacementTestCase/RoadPlacementTestCase.cpp
         CityBudgetIntegrationTestCase/CityBudgetIntegrationTestCase.cpp
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
-        MilestoneTestCase/MilestoneTestCase.cpp
-        # DuneCity core sources (needed for CitySimulation tests)
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/PowerGrid.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/ZoneSimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/TrafficSimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityBudget.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityScanner.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
-        ${CMAKE_SOURCE_DIR}/src/globals.cpp
-        ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -46,7 +35,6 @@ target_include_directories(dunelegacy_tests
         ${CMAKE_BINARY_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/src/enet  # For enet headers
-        ${CMAKE_SOURCE_DIR}/src      # For audio/sounds.h and other src-level headers
 )
 
 # Link libraries

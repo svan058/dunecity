@@ -21,60 +21,52 @@
 #include <structures/StructureBase.h>
 #include <dunecity/CityConstants.h>
 
-/**
- * Base class for DuneCity zone structures (Residential, Commercial, Industrial).
- * These are 2x2 structures that can be placed on sand (unlike normal structures)
- * and register their zone type with the city simulation.
- */
+// Forward declarations
+class House;
+class Game;
+
+/// A base class for city zone structures (Residential, Commercial, Industrial)
 class ZoneStructure : public StructureBase {
 public:
-    explicit ZoneStructure(House* newOwner);
+    explicit ZoneStructure(House* newOwner, DuneCity::ZoneType zoneType);
     explicit ZoneStructure(InputStream& stream);
-    virtual ~ZoneStructure();
+    virtual ~ZoneStructure() override;
 
     void save(OutputStream& stream) const override;
 
+    /// Enables placement on sand tiles
+    bool canBePlacedAt(int x, int y, bool torch = false) const;
+
+    DuneCity::ZoneType getZoneType() const { return zoneType_; }
+
     void destroy() override;
-    void setLocation(int xPos, int yPos) override;
 
-    virtual DuneCity::ZoneType getZoneType() const = 0;
-
-    bool canBeCaptured() const override { return false; }
-
-protected:
-    void initZoneStructure();
-    void registerZoneWithCity();
-    void unregisterZoneFromCity();
+private:
+    DuneCity::ZoneType zoneType_;  // The type of zone this structure represents
 };
 
-class ResidentialZone final : public ZoneStructure {
+/// A residential zone structure
+class ResidentialZone : public ZoneStructure {
 public:
     explicit ResidentialZone(House* newOwner);
     explicit ResidentialZone(InputStream& stream);
-    void init();
-    virtual ~ResidentialZone();
-
-    DuneCity::ZoneType getZoneType() const override { return DuneCity::ZoneType::Residential; }
+    virtual ~ResidentialZone() override = default;
 };
 
-class CommercialZone final : public ZoneStructure {
+/// A commercial zone structure
+class CommercialZone : public ZoneStructure {
 public:
     explicit CommercialZone(House* newOwner);
     explicit CommercialZone(InputStream& stream);
-    void init();
-    virtual ~CommercialZone();
-
-    DuneCity::ZoneType getZoneType() const override { return DuneCity::ZoneType::Commercial; }
+    virtual ~CommercialZone() override = default;
 };
 
-class IndustrialZone final : public ZoneStructure {
+/// An industrial zone structure
+class IndustrialZone : public ZoneStructure {
 public:
     explicit IndustrialZone(House* newOwner);
     explicit IndustrialZone(InputStream& stream);
-    void init();
-    virtual ~IndustrialZone();
-
-    DuneCity::ZoneType getZoneType() const override { return DuneCity::ZoneType::Industrial; }
+    virtual ~IndustrialZone() override = default;
 };
 
 #endif // ZONESTRUCTURE_H
