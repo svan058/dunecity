@@ -44,7 +44,7 @@
 - [x] Power grid overlay mode (show powered/unpowered areas)
 - [x] Power coverage percentage in city stats HUD
 - [x] Wind Trap radius visualization
-- [ ] Power shortage warnings
+- [x] Power shortage warnings
 
 ## Phase 4: City Building Menu (DONE)
 - [x] Zone structures (R/C/I) buildable via Construction Yard (100 credits each)
