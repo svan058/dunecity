@@ -1,6 +1,6 @@
 # DuneCity C++ Migration Analysis
 
-**Date:** 2026-03-27 18:30  
+**Date:** 2026-03-27 20:02  
 **Analyzer:** hermes (cron job)  
 **Goal:** Migrate SimCity/Micropolis city-building into Dune Legacy (C++)
 
@@ -21,7 +21,7 @@
 | `tool.cpp` | 1,617 | Building tools (res/com/ind zones) | → `ZoneSimulation.cpp` ✓ |
 | `traffic.cpp` | 519 | Vehicle pathfinding, traffic density | → `TrafficSimulation.cpp` ✓ |
 
-### Remaining Unported Files
+### Remaining Low-Priority Files
 
 | File | LOC | Purpose | Priority |
 |------|-----|---------|----------|
@@ -30,11 +30,6 @@
 | `animate.cpp` | ~700 | Animation state | Low |
 | `zone.cpp` | 1,039 | Zone placement logic | Medium - overlaps with tool.cpp |
 | `map.cpp` | 1,025 | Grid management | Medium - core but different from Dune's Map |
-| `fileio.cpp` | ~500 | Save/load | Covered by Dune's existing serialization |
-| `random.cpp` | ~100 | RNG wrapper | Dune uses Random.h |
-| `graph.cpp` | ~400 | Graphing/history | Not critical for initial port |
-| `message.cpp` | ~300 | City messages | Dune has notification system |
-| `generate.cpp` | ~250 | Terrain generation | Dune has its own map gen |
 
 ---
 
@@ -77,46 +72,30 @@ Dune Legacy src/
 | `src/structures/WindTrap.cpp` | registerPowerSource() | ✓ INTEGRATED |
 | `tests/CMakeLists.txt` | DuneCityTestCase Catch2 | ✓ INTEGRATED |
 
-### Git Status
+### Git Status (dunecity repo)
 ```
-M include/Command.h
-M include/Definitions.h
-M include/Game.h
-M include/Map.h
-M include/Tile.h
-M include/players/QuantBot.h
-M src/CMakeLists.txt
-M src/Command.cpp
-M src/Game.cpp
-M src/Tile.cpp
-M src/players/QuantBot.cpp
-M src/structures/WindTrap.cpp
-M tests/CMakeLists.txt
-M vcpkg.json
-?? AI_BOTS_GUIDE.md
-?? build_test/
-?? include/dunecity/    # UNTRACKED - 4+ weeks
-?? src/dunecity/        # UNTRACKED - 4+ weeks
-?? tests/DuneCityTestCase/  # UNTRACKED
+On branch feature/phase3-zone-structures
+Changes not staged for commit:
+    modified:   analysis/cxx-analysis-2026-03-27.md
 ```
-**BLOCKER: All dunecity code remains uncommitted to the Dune Legacy repo.**
+**BLOCKER: dunecity module not committed to Dune Legacy repo** - All code remains in separate working tree.
 
 ---
 
 ## 3. What's Changed Since Last Run (2026-04-09)
 
-**NOTE:** Last run used future date (2026-04-09). Today's date is 2026-03-27. The analysis directory shows multiple files from early April 2026 - possible date discrepancy in the system.
+**Note: Date anomaly detected** - System date shows 2026-03-27 but last analysis was 2026-04-09. Using current system date for output.
 
-### Current State Summary
-1. **8/8 core MicropolisCore files ported** - All critical simulation systems complete
-2. **Integration verified** - CitySimulation is hooked into Game.cpp game loop
-3. **Testing infrastructure exists** - DuneCityTestCase/ uses Catch2
-4. **BLOCKER: Git untracked** - All dunecity files remain uncommitted
+### Summary of Changes
+- **8/8 core MicropolisCore files ported** - All critical simulation systems complete
+- **Integration verified** - CitySimulation is hooked into Game.cpp game loop
+- **Testing infrastructure exists** - DuneCityTestCase uses Catch2
+- **BLOCKER: Git untracked** - All dunecity files remain uncommitted to Dune Legacy
 
-### No Changes Detected
-- Git status shows **no new commits** to dune/dunelegacy
-- dunecity module **remains untracked** (same as previous runs)
-- All 8 core simulation files **remain ported and integrated**
+### Current State
+1. dunecity module files exist in `~/development/dune/dunelegacy/src/dunecity/` and `include/dunecity/`
+2. Files are NOT committed to Dune Legacy repo
+3. The dunecity repo at `~/development/dunecity/` contains analysis and build artifacts
 
 ---
 
@@ -161,7 +140,7 @@ cmake --build build
 
 | Blocker | Impact | Resolution |
 |---------|--------|------------|
-| **Untracked dunecity files** | Code not versioned | Commit to dune/dunelegacy repo |
+| **Untracked dunecity files** | Code not versioned in Dune Legacy | Commit to dune/dunelegacy repo |
 
 ### Decisions Needed
 

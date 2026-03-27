@@ -13,6 +13,7 @@
 | `Shift+5` | Toggle overlay: Land Value |
 | `Shift+6` | Toggle overlay: Crime Rate |
 | `Shift+7` | Toggle overlay: Population Density |
+| `Shift+8` | Toggle overlay: Wind Trap Radius |
 
 ---
 
@@ -42,7 +43,7 @@
 ## Phase 3: Power Grid Visualization (DONE)
 - [x] Power grid overlay mode (show powered/unpowered areas)
 - [x] Power coverage percentage in city stats HUD
-- [ ] Wind Trap radius visualization
+- [x] Wind Trap radius visualization
 - [ ] Power shortage warnings
 
 ## Phase 4: City Building Menu (DONE)

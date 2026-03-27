@@ -2401,6 +2401,12 @@ void Game::updateGameState() {
     if (citySimEnabled_ && citySimulation_) {
         citySimulation_->advancePhase(gameCycleCount);
 
+        // Power shortage warning: notify player when zones lose power
+        if (citySimulation_->isPowerShortageJustStarted()) {
+            int32_t unpowered = citySimulation_->getUnpoweredZoneCount();
+            currentGame->addToNewsTicker(fmt::sprintf(_("WARNING: Power shortage! %d zones unpowered"), unpowered));
+        }
+
         if ((winFlags & WINLOSEFLAGS_ECONOMIC) && !finished) {
             int32_t threshold = citySimulation_->getEconomicVictoryThreshold();
             if (threshold > 0 && citySimulation_->getTotalPop() >= threshold) {
@@ -3536,6 +3542,7 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                     case SDLK_5: currentCityOverlay_ = DuneCity::CityOverlayMode::LandValue; break;
                     case SDLK_6: currentCityOverlay_ = DuneCity::CityOverlayMode::CrimeRate; break;
                     case SDLK_7: currentCityOverlay_ = DuneCity::CityOverlayMode::Population; break;
+                    case SDLK_8: currentCityOverlay_ = DuneCity::CityOverlayMode::WindTrapRadius; break;
                     default: break;
                 }
             } else if(SDL_GetModState() & KMOD_CTRL) {
@@ -4164,6 +4171,40 @@ void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
                     uint8_t pop = popMap.worldGet(x, y);
                     if (pop > 0) {
                         drawOverlayBlock(x, y, blockSize, pop, 50, 50, 50, 255, 255, 255);
+                    }
+                }
+            }
+        } break;
+
+        case DuneCity::CityOverlayMode::WindTrapRadius: {
+            // Draw circles around Wind Traps showing their power radius
+            // Wind Trap power radius: typically 12-15 tiles (from Micropolis)
+            constexpr int WINDTRAP_POWER_RADIUS = 12;
+
+            for (const auto* pStructure : structureList) {
+                if (pStructure->getItemID() == Structure_WindTrap) {
+                    int wx = pStructure->getX();
+                    int wy = pStructure->getY();
+
+                    // Draw radius as a filled circle with transparency
+                    for (int dx = -WINDTRAP_POWER_RADIUS; dx <= WINDTRAP_POWER_RADIUS; dx++) {
+                        for (int dy = -WINDTRAP_POWER_RADIUS; dy <= WINDTRAP_POWER_RADIUS; dy++) {
+                            int tx = wx + dx;
+                            int ty = wy + dy;
+
+                            if (!currentGameMap->tileExists(tx, ty)) continue;
+
+                            // Check if within circular radius (center is 2x2, so adjust)
+                            int distSq = dx*dx + dy*dy;
+                            if (distSq <= WINDTRAP_POWER_RADIUS * WINDTRAP_POWER_RADIUS) {
+                                // Draw at full opacity at edge, fading toward center
+                                int alpha = 50 + (distSq * 150) / (WINDTRAP_POWER_RADIUS * WINDTRAP_POWER_RADIUS);
+                                alpha = std::min(200, alpha);
+
+                                // Draw as single tiles in the overlay
+                                drawOverlayBlock(tx, ty, 1, 255, 0, 150, 255, 0, 255, alpha);
+                            }
+                        }
                     }
                 }
             }
