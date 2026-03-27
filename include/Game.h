@@ -364,6 +364,11 @@ public:
         }
     }
 
+    // Disaster notification triggers
+    void triggerFireDisaster();
+    void triggerSandstormDisaster();
+    void triggerSandwormDisaster();
+
     /**
         This method returns wether the game is currently paused
         \return true, if paused, false otherwise

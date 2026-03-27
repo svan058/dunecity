@@ -3731,6 +3731,21 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
+        case SDLK_F7: {
+            // Test: Fire disaster notification
+            triggerFireDisaster();
+        } break;
+
+        case SDLK_F8: {
+            // Test: Sandstorm disaster notification
+            triggerSandstormDisaster();
+        } break;
+
+        case SDLK_F9: {
+            // Test: Sandworm disaster notification
+            triggerSandwormDisaster();
+        } break;
+
         case SDLK_F10: {
             soundPlayer->toggleSound();
         } break;
@@ -4433,6 +4448,18 @@ void Game::takeScreenshot() const {
     sdl2::surface_ptr pCurrentScreen = renderReadSurface(renderer);
     SavePNG(pCurrentScreen.get(), screenshotFilename.c_str());
     currentGame->addToNewsTicker(_("Screenshot saved") + ": '" + screenshotFilename + "'");
+}
+
+void Game::triggerFireDisaster() {
+    addToNewsTicker("FIRE! Fire detected in city! (Test notification)");
+}
+
+void Game::triggerSandstormDisaster() {
+    addToNewsTicker("Sandstorm approaching! (Test notification)");
+}
+
+void Game::triggerSandwormDisaster() {
+    addToNewsTicker("Sandworm spotted! (Test notification)");
 }
 
 
