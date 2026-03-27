@@ -50,7 +50,7 @@
 - [x] Zone structures (R/C/I) buildable via Construction Yard (100 credits each)
 - [x] Sand placement support (zones can be placed on any non-mountain terrain)
 - [x] Removed legacy freeform zone placement (Z hotkey)
-- [ ] Dedicated "City" build menu tab alongside military buildings
+- [x] Dedicated "City" build menu tab alongside military buildings
 - [ ] City-specific structures (roads, power lines)
 - [ ] Build cost integration with city budget
 
