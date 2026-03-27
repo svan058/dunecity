@@ -25,6 +25,7 @@ public:
     ZoneSimulation();
 
     void init(CitySimulation* sim);
+    void setMap(const Map* map) { map_ = map; }
 
     void doZone(int x, int y);
 
@@ -53,6 +54,7 @@ private:
     void doIndOut(int x, int y, uint8_t pop, int landVal);
 
     CitySimulation* sim_ = nullptr;
+    const Map* map_ = nullptr;
 };
 
 } // namespace DuneCity

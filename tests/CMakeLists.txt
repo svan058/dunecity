@@ -19,6 +19,7 @@ target_sources(dunelegacy_tests
         CityBuildLogicTestCase/CityBuildLogicTestCase.cpp
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
         CityRoadTestCase/CityRoadTestCase.cpp
+        RoadNetworkGrowthTestCase/RoadNetworkGrowthTestCase.cpp
         MilestoneTestCase/MilestoneTestCase.cpp
         # DuneCity core sources (needed for CitySimulation tests)
         ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
@@ -28,6 +29,7 @@ target_sources(dunelegacy_tests
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityBudget.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityScanner.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
+        ${CMAKE_SOURCE_DIR}/src/Map.cpp
         ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
         globals_test_stub.cpp
         TextManager_stub.cpp
