@@ -60,7 +60,7 @@ target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
-        SDL2_mixer::SDL2_mixer-static
+        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 )
 
 if(WIN32)

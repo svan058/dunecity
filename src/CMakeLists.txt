@@ -314,7 +314,6 @@ target_sources(dunecity
         dunecity/CityEvaluation.cpp
 
         # misc
-        misc/DiscordManager.cpp
         misc/draw_util.cpp
         misc/FileSystem.cpp
         misc/fnkdat.cpp
@@ -385,10 +384,24 @@ if(APPLE)
 endif()
 
 # Find miniupnpc for UPnP support
-find_package(miniupnpc CONFIG REQUIRED)
+find_package(miniupnpc CONFIG QUIET)
+if(NOT miniupnpc_FOUND)
+    find_library(MINIUPNPC_LIBRARY miniupnpc PATHS ${CMAKE_PREFIX_PATH}/lib)
+    find_path(MINIUPNPC_INCLUDE_DIR miniupnpc/miniupnpc.h PATHS ${CMAKE_PREFIX_PATH}/include)
+    if(MINIUPNPC_LIBRARY AND MINIUPNPC_INCLUDE_DIR)
+        add_library(miniupnpc::miniupnpc UNKNOWN IMPORTED)
+        set_target_properties(miniupnpc::miniupnpc PROPERTIES
+            IMPORTED_LOCATION "${MINIUPNPC_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${MINIUPNPC_INCLUDE_DIR}")
+    endif()
+endif()
 
-# Find discord-rpc for Discord Rich Presence
+# Find discord-rpc for Discord Rich Presence (optional)
 find_library(DISCORD_RPC_LIBRARY discord-rpc PATHS ${CMAKE_PREFIX_PATH}/lib)
+if(DISCORD_RPC_LIBRARY)
+    target_sources(dunecity PRIVATE misc/DiscordManager.cpp)
+    target_compile_definitions(dunecity PRIVATE HAS_DISCORD_RPC)
+endif()
 
 # Link libraries
 # vcpkg provides modern CMake targets for SDL2
@@ -399,8 +412,8 @@ target_link_libraries(dunecity
         $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
         $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
         CURL::libcurl
-        miniupnpc::miniupnpc
-        ${DISCORD_RPC_LIBRARY}
+        $<IF:$<TARGET_EXISTS:miniupnpc::miniupnpc>,miniupnpc::miniupnpc,${MINIUPNPC_LIBRARY}>
+        $<$<BOOL:${DISCORD_RPC_LIBRARY}>:${DISCORD_RPC_LIBRARY}>
 )
 
 if(WIN32)
