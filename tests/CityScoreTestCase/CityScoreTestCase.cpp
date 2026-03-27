@@ -2,7 +2,7 @@
  *  CityScoreTestCase.cpp - Tests for CityScore system
  */
 
-#include <catch2/catch2.hpp>
+#include <catch2/catch_all.hpp>
 #include <CityScore.h>
 
 TEST_CASE("CityScore basic functionality", "[CityScore]") {

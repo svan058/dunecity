@@ -1,33 +1,28 @@
+# CMakeLists.txt - Test suite for Dune Legacy / DuneCity
+cmake_minimum_required(VERSION 3.10)
+
 # Find Catch2 package
 find_package(Catch2 3 REQUIRED)
 
 # Test executable
 add_executable(dunelegacy_tests)
 
-# Source files - new Catch2-based tests
+# Source files - Catch2-based unit tests
 # Note: Catch2WithMain provides main(), no testmain.cpp needed
 target_sources(dunelegacy_tests
     PRIVATE
-        PathBudgetTestCase/PathBudgetTestCase.cpp
-        NetworkManagerTestCase/NetworkManagerTestCase.cpp
+        # DuneCity Phase 3-4 tests (header-only, no game runtime needed)
         ZoneStructureTestCase/ZoneStructureTestCase.cpp
-        RoadPlacementTestCase/RoadPlacementTestCase.cpp
-        CityBudgetIntegrationTestCase/CityBudgetIntegrationTestCase.cpp
-        OverlayLegendTestCase/OverlayLegendTestCase.cpp
-        MilestoneTestCase/MilestoneTestCase.cpp
+        CityStructuresTestCase/CityStructuresTestCase.cpp
+        # DuneLegacy DuneCity tests
         CityScoreTestCase/CityScoreTestCase.cpp
-        # DuneCity core sources (needed for CitySimulation tests)
-        ${CMAKE_SOURCE_DIR}/src/CityScore.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/PowerGrid.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/ZoneSimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/TrafficSimulation.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityBudget.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityScanner.cpp
-        ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
-        ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
+        OverlayLegendTestCase/OverlayLegendTestCase.cpp
+        # City infrastructure tests
+        PathBudgetTestCase/PathBudgetTestCase.cpp
+        # Network tests
+        NetworkManagerTestCase/NetworkManagerTestCase.cpp
+        # Global variable stubs for test binary
         globals_test_stub.cpp
-        TextManager_stub.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -49,16 +44,15 @@ target_include_directories(dunelegacy_tests
         ${CMAKE_BINARY_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/src/enet  # For enet headers
-        ${CMAKE_SOURCE_DIR}/src      # For audio/sounds.h and other src-level headers
+        ${CMAKE_SOURCE_DIR}/src      # For src-level headers
 )
 
 # Link libraries
-# SDL2 for ENet types; SDL2_mixer-static for sounds.cpp in test build
 target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
-        SDL2_mixer::SDL2_mixer-static
+        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 )
 
 if(WIN32)
@@ -83,15 +77,16 @@ add_test(NAME dunelegacy_tests COMMAND dunelegacy_tests)
 
 # Set test properties
 set_tests_properties(dunelegacy_tests PROPERTIES
-    ENVIRONMENT "DUNECITY_DATADIR=${CMAKE_SOURCE_DIR}/data"
+    ENVIRONMENT "DUNECITY_DATADIR=${CMAKE_SOURCE_DIR}/data;DUNE_CITY_SOURCE_DIR=${CMAKE_SOURCE_DIR}"
 )
 
 # Copy test data to build directory
 add_custom_command(
     TARGET dunelegacy_tests
     POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/tests/data"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/data"
         "${CMAKE_BINARY_DIR}/tests/data"
     COMMENT "Copying test data to build directory"
-) 
+)
