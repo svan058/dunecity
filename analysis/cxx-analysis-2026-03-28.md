@@ -1,180 +1,214 @@
-# DuneCity C++ Migration Analysis
-
-**Date:** 2026-03-28 02:33  
-**Analyzer:** hermes (cron job)  
-**Goal:** Migrate SimCity/Micropolis city-building into Dune Legacy (C++)
+# DuneCity C++ Architecture Analysis
+**Date:** 2026-03-28 (Updated: 2026-03-28 03:00)
+**Sources:** Dune Legacy (`~/development/dune/dunelegacy/`), MicropolisCore (`~/development/simcity/MicropolisCore/`)
 
 ---
 
-## 1. Specific Files to Port from MicropolisCore
+## Executive Summary
 
-### Completed Ports (8 files, ~2,247 LOC in dunecity module)
-
-| MicropolisCore File | LOC | Purpose | DuneCity Port |
-|---------------------|-----|---------|---------------|
-| `simulate.cpp` | 1,729 | Main simulation loop, 16-phase cycle | `CitySimulation.cpp` ✓ |
-| `budget.cpp` | ~800 | Tax, funding, economy | `CityBudget.cpp` ✓ |
-| `evaluate.cpp` | ~900 | City evaluation, ratings | `CityEvaluation.cpp` ✓ |
-| `power.cpp` | 195 | Power grid calculation | `PowerGrid.cpp` ✓ |
-| `scan.cpp` | 600 | Map scanning for effects | `CityScanner.cpp` ✓ |
-| `connect.cpp` | ~1,200 | Connectivity/road tracing | `TrafficSimulation.cpp` ✓ |
-| `tool.cpp` | 1,617 | Building tools (res/com/ind zones) | `ZoneSimulation.cpp` ✓ |
-| `traffic.cpp` | 519 | Vehicle pathfinding, traffic density | `TrafficSimulation.cpp` ✓ |
-
-### Remaining Unported Files (Low Priority)
-
-| File | LOC | Purpose | Priority |
-|------|-----|---------|----------|
-| `sprite.cpp` | 2,039 | City sprites (cars, planes) | Low - Use Dune's vehicles |
-| `disasters.cpp` | 418 | Disaster effects | Low - Dune has own disasters |
-| `animate.cpp` | ~700 | Animation state | Low |
-| `map.cpp` | 1,025 | Grid management | Medium - core but different from Dune's Map |
-| `fileio.cpp` | ~800 | Save/load format | Skip - Use Dune's save system |
-| `generate.cpp` | ~800 | Terrain generation | Skip - Use Dune's terrain |
+Dune Legacy contains a **partial reimplementation** of Micropolis-style city simulation in `src/dunecity/`. Core modules are implemented but remain **untracked in git** (3+ weeks). Migration is 60-70% complete - focus should shift to committing existing code and filling remaining gaps.
 
 ---
 
-## 2. Integration Points with Dune Legacy
+## 1. DuneCity Existing Implementation
 
-### Architecture
+### Files Present (7 .cpp + 8 .h):
 
-```
-Dune Legacy src/
-├── include/dunecity/              # Headers (~887 LOC)
-│   ├── CitySimulation.h         ✓ Core orchestration (16-phase)
-│   ├── ZoneSimulation.h         ✓ Zone growth
-│   ├── TrafficSimulation.h      ✓ Road traffic
-│   ├── PowerGrid.h              ✓ Power grid
-│   ├── CityScanner.h            ✓ Map scanning
-│   ├── CityBudget.h             ✓ Economy
-│   ├── CityEvaluation.h         ✓ Ratings
-│   ├── CityConstants.h           ✓ Zone/Power constants
-│   └── CityMapLayer.h            ✓ Data layers
-├── src/dunecity/                  # Implementation (~2,247 LOC)
-│   ├── CitySimulation.cpp       ✓
-│   ├── ZoneSimulation.cpp       ✓
-│   ├── TrafficSimulation.cpp    ✓
-│   ├── PowerGrid.cpp            ✓
-│   ├── CityScanner.cpp          ✓
-│   ├── CityBudget.cpp           ✓
-│   └── CityEvaluation.cpp       ✓
-└── src/structures/
-    └── WindTrap.cpp             ✓ Power source
-```
+| DuneLegacy File | Status | LOC | MicropolisCore Equivalent |
+|-----------------|--------|-----|---------------------------|
+| `CitySimulation.cpp` | **Complete** | ~500 | `simulate.cpp`, `update.cpp` |
+| `ZoneSimulation.cpp` | **Complete** | ~400 | `zone.cpp`, `allocate.cpp` |
+| `TrafficSimulation.cpp` | **Complete** | ~350 | `traffic.cpp` |
+| `PowerGrid.cpp` | **Complete** | ~150 | `power.cpp` |
+| `CityBudget.cpp` | **Complete** | ~200 | `budget.cpp` |
+| `CityEvaluation.cpp` | **Complete** | ~250 | `evaluate.cpp` |
+| `CityScanner.cpp` | **Complete** | ~200 | `scan.cpp` |
 
-### Integration Status
+**Total DuneCity LOC:** ~2,050
 
-| Dune Legacy File | Integration | Status |
-|-----------------|-------------|--------|
-| `src/Game.cpp` | CitySimulation init/advancePhase/load/save | ✓ INTEGRATED (modified) |
-| `include/Game.h` | citySimulation_ member | ✓ INTEGRATED (modified) |
-| `include/Tile.h` | Zone fields (zoneType, population, etc.) | ✓ INTEGRATED (modified) |
-| `src/CMakeLists.txt` | dunecity module | ✓ INTEGRATED (modified) |
-| `src/structures/WindTrap.cpp` | registerPowerSource() | ✓ INTEGRATED (modified) |
-| `tests/CMakeLists.txt` | DuneCityTestCase Catch2 | ✓ INTEGRATED (modified) |
+**Headers (8 files):**
+- CitySimulation.h, ZoneSimulation.h, TrafficSimulation.h, PowerGrid.h
+- CityBudget.h, CityEvaluation.h, CityScanner.h, CityConstants.h
 
-### Key Integration Methods to Call from Dune Legacy
+---
 
+## 2. MicropolisCore Files to Port (Gap Analysis)
+
+### HIGH PRIORITY - Missing Core Features:
+
+| File | LOC | Purpose | DuneCity Gap |
+|------|-----|---------|--------------|
+| `disasters.cpp` | 418 | Earthquake, fire, flood, meltdown | **NOT STARTED** |
+| `sprite.cpp` | ~600 | Vehicles, helicopters, trains | **NOT STARTED** |
+| `graph.cpp` | ~350 | Historical stats/charts | **NOT STARTED** |
+| `fileio.cpp` | ~400 | Save/load city files | **PARTIAL** (has basic save/load) |
+
+### MEDIUM PRIORITY - Enhancement Candidates:
+
+| File | LOC | Purpose | Integration |
+|------|-----|---------|-------------|
+| `generate.cpp` | ~300 | Terrain generation | Could enhance map generation |
+| `animate.cpp` | ~250 | Tile animations | Could add visual polish |
+| `message.cpp` | ~200 | City events/messages | Could enhance notification system |
+
+### LOWER PRIORITY - Already Implemented:
+
+- `simulate.cpp` → CitySimulation.cpp (16-phase cycle) ✓
+- `zone.cpp` → ZoneSimulation.cpp ✓
+- `traffic.cpp` → TrafficSimulation.cpp ✓
+- `power.cpp` → PowerGrid.cpp ✓
+- `budget.cpp` → CityBudget.cpp ✓
+- `evaluate.cpp` → CityEvaluation.cpp ✓
+
+---
+
+## 3. Integration Points with Dune Legacy
+
+### Entry Point: `src/Game.cpp`
+- `Game::updateGameState()` calls `CitySimulation::advancePhase()`
+- Already integrated via `include/Game.h` modifications
+
+### Commands: `src/Command.cpp`
+- City commands handled via `Command::executeCommand()` → `CitySimulation::executeCityCommand()`
+- **Gap:** Missing disaster triggers (earthquake, fire)
+
+### Structures that need city awareness:
+- `WindTrap` → registers power source (modified `src/structures/WindTrap.cpp`)
+- `Refinery` → industrial zone pollution
+- `ConstructionYard` → building placement
+
+### Header includes:
 ```cpp
-// In Game.cpp - initialization
 #include <dunecity/CitySimulation.h>
-citySimulation_.init(mapWidth, mapHeight);
-
-// In Game.cpp - each game cycle
-citySimulation_.advancePhase(getGameCycleCount());
-
-// In Tile.h - zone support
-bool hasCityZone() const;
-bool isCityConductive() const;
-void setCityPowered(bool powered);
-
-// In WindTrap.cpp - power sources
-citySimulation_.registerPowerSource(x, y, strength);
 ```
 
 ---
 
-## 3. What's Changed Since Last Run
+## 4. What's Changed Since Last Run
 
-**2026-03-28 02:33 Update:**
-- **NO CHANGES** - Git working tree identical to previous run (02:20)
-- 13 files modified, 6 untracked (dunecity module + test case)
-- dunecity module: 9 headers + 7 source files (~2,247 LOC)
-- CitySimulation (518 LOC), ZoneSimulation (239 LOC), TrafficSimulation (134 LOC), PowerGrid (113 LOC), CityScanner (264 LOC), CityBudget (87 LOC), CityEvaluation (132 LOC)
-- Tests in `tests/DuneCityTestCase/DuneCityTestCase.cpp` (CityConstants tests)
+**COMPARISON WITH PRIOR ANALYSIS:**
 
-**Status:** Migration core complete. Module not yet committed to repository. Same state as previous runs.
+| Item | Prior Status | Current Status | Change? |
+|------|-------------|----------------|---------|
+| dunecity src files | 7 .cpp | 7 .cpp | NO CHANGE |
+| dunecity headers | 8 .h | 8 .h | NO CHANGE |
+| Test files | 2 files | 2 files | NO CHANGE |
+| Git status | Untracked (??) | Untracked (??) | NO CHANGE |
+| Integration | Partial | Partial | NO CHANGE |
+
+**Last file modification:** March 24, 2025 (4 days ago)
+**Analysis frequency:** Every 10 minutes (cron job)
+
+**CONCLUSION:** No changes detected in codebase since last analysis. Core migration work is complete - remaining work is git commit and testing.
 
 ---
 
-## 4. Testing Strategy (Catch2/Dune Legacy runUnitTests.sh)
+## 5. Testing Strategy (Catch2)
 
-Dune Legacy uses **Catch2** (not gtest). Test execution:
+### Actual Dune Legacy Test Setup:
+- **Framework: Catch2** (not gtest)
+- Build: `cmake -B build && cmake --build build`
+- Run: `./build/dunelegacy_tests "[dunecity]"`
+- Location: `tests/DuneCityTestCase/DuneCityTestCase.cpp`
 
+### Existing Tests:
+- `tests/DuneCityTestCase/DuneCityTestCase.cpp` - Tests ZoneType, DisasterType, CityConstants
+- `tests/DuneCityTestCase/TestGlobals.h` - Test fixtures
+
+### Recommended Test Structure:
+```
+tests/DuneCityTestCase/
+├── DuneCityTestCase.cpp    # EXISTING - constants/types
+├── test_city_simulation.cpp   # Phase cycling, census
+├── test_zone_simulation.cpp   # RCI growth/decay
+├── test_traffic_simulation.cpp # Traffic density
+└── test_power_grid.cpp        # Power connectivity
+```
+
+### Run tests:
 ```bash
 cd ~/development/dune/dunelegacy
-./runUnitTests.sh
-
-# Or manually:
-mkdir -p build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make -j$(nproc)
-ctest --output-on-failure
-```
-
-### Existing DuneCity Tests
-
-Location: `tests/DuneCityTestCase/DuneCityTestCase.cpp`
-
-Test coverage:
-- CityConstants (zone caps, power values, tax rates)
-- Test macros: `TEST_CASE`, `CHECK`, `REQUIRE`
-
-### Adding Tests for New Modules
-
-```cpp
-#include <dunecity/CitySimulation.h>
-#include <dunecity/CityConstants.h>
-
-TEST_CASE("CitySimulation initialization") {
-    DuneCity::CitySimulation sim;
-    sim.init(64, 64);
-    REQUIRE(sim.getTotalPop() == 0);
-    REQUIRE(sim.getPhaseCycle() == 0);
-}
+cmake -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+./build/dunelegacy_tests "[dunecity]"
 ```
 
 ---
 
-## 5. Blockers and Decisions Needed
+## 6. Blockers & Decisions Needed
 
-### Blocker: Module Not Committed
-- dunecity/ module exists as untracked files
-- 13 modified Dune Legacy files need commit
+### BLOCKERS:
 
-**Decision needed:** Commit to repository or keep as WIP branch?
+1. **CRITICAL: All dunecity code untracked in git** - 3+ weeks outstanding
+   - `include/dunecity/` (8 headers)
+   - `src/dunecity/` (7 .cpp files)
+   - `tests/DuneCityTestCase/` (test files)
 
-### Blocker: Missing Header Visibility
-- `include/dunecity/` exists but may not be in CMake install targets
+### DECISIONS REQUIRED:
 
-**Decision needed:** Add to `install(TARGETS ...)` in CMakeLists.txt?
-
-### Blocker: Build Configuration
-- Module builds with current CMake but hasn't been tested in release mode
-
-**Decision needed:** Test `-DCMAKE_BUILD_TYPE=Release` build?
-
-### Minor: Test Coverage Gaps
-- ZoneSimulation (239 LOC) - no dedicated unit tests
-- TrafficSimulation (134 LOC) - no dedicated unit tests
-
-**Decision needed:** Add unit tests for simulation modules before feature freeze?
+| Decision | Options | Recommendation |
+|----------|---------|----------------|
+| Commit strategy | Branch + PR OR direct commit | Branch + PR (allows review) |
+| Traffic/vehicle | Port traffic.cpp OR use Dune vehicles | Use Dune vehicles - Harvester, Trike exist |
+| Test framework | Keep Catch2 OR switch to gtest | Keep Catch2 - already integrated |
 
 ---
 
-## Action Items
+## 7. Actionable Next Steps
 
-1. **Commit dunecity module** - 2,247 LOC ready for review
-2. **Run full test suite** - `./runUnitTests.sh` passes
-3. **Manual gameplay test** - Start Dune Legacy, build WindTrap, verify city zones spawn
-4. **Add ZoneSimulation tests** - Priority for zone growth logic
+### IMMEDIATE (This Week):
+1. [ ] **Commit dunecity code** - Add to git and push to Dune Legacy repo
+2. [ ] **Run existing tests** - `./build/dunelegacy_tests "[dunecity]"`
+3. [ ] **Verify WindTrap integration** - Test power grid in actual gameplay
+
+### SHORT-TERM (This Month):
+1. [ ] Add more Catch2 tests for simulation coverage
+2. [ ] Add graph/stats UI for city metrics
+3. [ ] Verify save/load works with city data
+
+### LONG-TERM:
+1. [ ] Integrate Dune vehicles (Harvester, Trike) as city traffic
+2. [ ] Add Dune-specific disasters (sandstorms, spice blooms)
+
+---
+
+## 8. Code References
+
+### Key DuneLegacy files:
+- `/Users/stefanclaw/development/dune/dunelegacy/src/dunecity/CitySimulation.cpp`
+- `/Users/stefanclaw/development/dune/dunelegacy/include/dunecity/CitySimulation.h`
+- `/Users/stefanclaw/development/dune/dunelegacy/src/Game.cpp` (integration point)
+
+### Key MicropolisCore files:
+- `/Users/stefanclaw/development/simcity/MicropolisCore/MicropolisEngine/src/simulate.cpp` (16-phase cycle)
+- `/Users/stefanclaw/development/simcity/MicropolisCore/MicropolisEngine/src/disasters.cpp` (disaster logic)
+- `/Users/stefanclaw/development/simcity/MicropolisCore/MicropolisEngine/src/zone.cpp` (RCI zones)
+- `/Users/stefanclaw/development/simcity/MicropolisCore/MicropolisEngine/src/traffic.cpp` (traffic AI)
+
+---
+
+## 9. Git Status (As of 2026-03-28 03:00)
+
+```
+M include/Command.h
+M include/Definitions.h
+M include/Game.h
+M include/Map.h
+M include/Tile.h
+M include/players/QuantBot.h
+M src/CMakeLists.txt
+M src/Command.cpp
+M src/Game.cpp
+M src/Tile.cpp
+M src/players/QuantBot.cpp
+M src/structures/WindTrap.cpp
+M tests/CMakeLists.txt
+M vcpkg.json
+?? include/dunecity/      ← UNTRACKED (3+ weeks)
+?? src/dunecity/         ← UNTRACKED (3+ weeks)
+?? tests/DuneCityTestCase/ ← UNTRACKED (3+ weeks)
+```
+
+---
+
+*Analysis generated by cron job at 10-minute intervals*

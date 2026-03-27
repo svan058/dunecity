@@ -23,8 +23,8 @@ target_sources(dunelegacy_tests
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityBudget.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityScanner.cpp
         ${CMAKE_SOURCE_DIR}/src/dunecity/CityEvaluation.cpp
-        ${CMAKE_SOURCE_DIR}/src/globals.cpp
         ${CMAKE_SOURCE_DIR}/src/audio/sounds.cpp
+        globals_test_stub.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -56,6 +56,7 @@ target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
+        SDL2_mixer::SDL2_mixer
 )
 
 if(WIN32)

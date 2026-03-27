@@ -4,8 +4,6 @@
  *  Provides null pointers and minimal stubs so that CitySimulation.cpp and sounds.cpp
  *  compile and link in the test executable without the full Dune Legacy game
  *  infrastructure.
- *
- *  Only the symbols actually used by CitySimulation and sounds are stubbed.
  */
 
 #include <globals.h>
@@ -22,9 +20,8 @@ class SFXManager {};
 class FontManager {};
 class TextManager {
 public:
-    std::string getLocalized(const std::string& msgid) const {
-        return msgid; // Identity: return msgid unchanged in test context
-    }
+    std::string getLocalized(const std::istream&) const { return ""; }
+    std::string getLocalized(const std::string& msgid) const { return msgid; }
 };
 class NetworkManager {};
 
@@ -32,8 +29,8 @@ class NetworkManager {};
 std::unique_ptr<SoundPlayer>   soundPlayer;
 std::unique_ptr<MusicPlayer>   musicPlayer;
 std::unique_ptr<FileManager>    pFileManager;
-std::unique_ptr<GFXManager>    pGFXManager;
-std::unique_ptr<SFXManager>    pSFXManager;
+std::unique_ptr<GFXManager>     pGFXManager;
+std::unique_ptr<SFXManager>     pSFXManager;
 std::unique_ptr<FontManager>    pFontManager;
 std::unique_ptr<TextManager>    pTextManager{new TextManager};
 std::unique_ptr<NetworkManager> pNetworkManager;
@@ -53,14 +50,6 @@ int          drawnMouseY    = 0;
 int          currentZoomlevel = 0;
 bool         debug          = false;
 
-// Settings stubs
+// Settings stubs (empty structs, test context)
 SettingsClass settings;
 SettingsClass::GameOptionsClass effectiveGameOptions;
-
-// RobustList stubs (inline template methods must be out-of-line here)
-template<typename T>
-RobustList<T>::RobustList() noexcept = default;
-template<typename T>
-RobustList<T>::~RobustList() = default;
-template<typename T>
-bool RobustList<T>::empty() const noexcept { return true; }
