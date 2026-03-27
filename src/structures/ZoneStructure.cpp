@@ -58,6 +58,11 @@ void ZoneStructure::registerZoneWithCity() {
             }
         }
     }
+
+    // Trigger milestone notification for first zone built
+    if (currentGame && currentGame->getCitySimulation()) {
+        currentGame->getCitySimulation()->onFirstZoneBuilt();
+    }
 }
 
 void ZoneStructure::unregisterZoneFromCity() {
