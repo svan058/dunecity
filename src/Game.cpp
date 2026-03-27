@@ -3787,6 +3787,21 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
+        case SDLK_F7: {
+            // Test: Fire disaster notification
+            triggerFireDisaster();
+        } break;
+
+        case SDLK_F8: {
+            // Test: Sandstorm disaster notification
+            triggerSandstormDisaster();
+        } break;
+
+        case SDLK_F9: {
+            // Test: Sandworm disaster notification
+            triggerSandwormDisaster();
+        } break;
+
         case SDLK_F10: {
             soundPlayer->toggleSound();
         } break;
@@ -4736,6 +4751,23 @@ void Game::takeScreenshot() const {
     currentGame->addToNewsTicker(_("Screenshot saved") + ": '" + screenshotFilename + "'");
 }
 
+void Game::triggerFireDisaster() {
+    if(pInterface != nullptr) {
+        pInterface->addDisasterNotification(DisasterType::Fire, "Fire! Extinguish immediately!", 8, 3);
+    }
+}
+
+void Game::triggerSandstormDisaster() {
+    if(pInterface != nullptr) {
+        pInterface->addDisasterNotification(DisasterType::Sandstorm, "Sandstorm approaching!", 12, 5);
+    }
+}
+
+void Game::triggerSandwormDisaster() {
+    if(pInterface != nullptr) {
+        pInterface->addDisasterNotification(DisasterType::Sandworm, "Sandworm spotted!", 6, 2);
+    }
+}
 
 void Game::selectNextStructureOfType(const std::set<Uint32>& itemIDs) {
     bool bSelectNext = true;

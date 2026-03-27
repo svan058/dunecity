@@ -114,6 +114,28 @@ GameInterface::~GameInterface() {
 void GameInterface::draw(Point position) {
     Window::draw(position);
 
+    // Update and draw disaster notifications (top center, stacked vertically)
+    {
+        const int notificationWidth = 320;
+        const int notificationHeight = 44;
+        const int notificationSpacing = 4;
+        const int stackX = (getRendererWidth() - notificationWidth) / 2;
+        int stackY = 4;
+
+        // Remove dismissed notifications
+        disasterNotifications_.erase(
+            std::remove_if(disasterNotifications_.begin(), disasterNotifications_.end(),
+                [](const std::unique_ptr<DisasterNotification>& n) { return n->isDismissed(); }),
+            disasterNotifications_.end()
+        );
+
+        for (auto& notification : disasterNotifications_) {
+            notification->update();
+            notification->draw(Point(stackX, stackY));
+            stackY += notificationHeight + notificationSpacing;
+        }
+    }
+
     // draw Power Indicator and Spice indicator
 
     SDL_Rect powerIndicatorPos = {  getRendererWidth() - sideBar.getSize().x + 14, 146, 4, getRendererHeight() - 146 - 2 };
@@ -441,4 +463,10 @@ void GameInterface::drawCityStatsOverlay() {
 
     textY += 4;
     drawText("Press C to toggle", 10);
+}
+
+void GameInterface::addDisasterNotification(DisasterType type, const std::string& message, int durationSeconds, int affectedCount) {
+    auto notification = std::make_unique<DisasterNotification>();
+    notification->setDisaster(type, message, durationSeconds, affectedCount);
+    disasterNotifications_.push_back(std::move(notification));
 }

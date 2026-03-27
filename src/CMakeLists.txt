@@ -175,6 +175,7 @@ target_sources(dunecity
         GUI/dune/NewsTicker.cpp
         GUI/dune/MessageTicker.cpp
         GUI/dune/BuilderList.cpp
+        GUI/dune/DisasterNotification.cpp
         GUI/dune/WaitingForOtherPlayers.cpp
 
         # Menu

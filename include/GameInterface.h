@@ -27,6 +27,10 @@
 #include <GUI/PictureLabel.h>
 #include <GUI/dune/ChatManager.h>
 #include <GUI/dune/NewsTicker.h>
+#include <GUI/dune/DisasterNotification.h>
+
+#include <vector>
+#include <functional>
 
 #include <RadarView.h>
 
@@ -70,6 +74,15 @@ public:
     virtual void addUrgentMessageToNewsTicker(const std::string& text) {
         newsticker.addUrgentMessage(text);
     }
+
+    /**
+        This method adds a disaster notification
+        \param  type            the type of disaster
+        \param  message         the notification message
+        \param  durationSeconds duration in seconds
+        \param  affectedCount   number of zones affected
+    */
+    virtual void addDisasterNotification(DisasterType type, const std::string& message, int durationSeconds, int affectedCount);
 
     /**
         Returns the radar view
@@ -118,5 +131,7 @@ private:
     TextButton          ornithopterSelectButton;///< Button that selects all owned ornithopters
 
     bool                showCityStatsOverlay;   ///< Whether to show the city stats overlay
+
+    std::vector<std::unique_ptr<DisasterNotification>> disasterNotifications_;
 };
     #endif // GAMEINTERFACE_H

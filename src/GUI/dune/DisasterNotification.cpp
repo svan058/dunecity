@@ -38,21 +38,20 @@ void DisasterNotification::setDisaster(DisasterType type, const std::string& mes
     durationSeconds_ = durationSeconds;
     affectedCount_ = affectedCount;
     elapsed_ = 0;
+    dismissed_ = false;
 
-    // Create background
-    SDL_Color bgColor;
+    // Set background color
     switch (type) {
         case DisasterType::Fire:
-            bgColor = COLOR_RGB(180, 60, 30); // Red
+            bgColor_ = COLOR_RGB(180, 60, 30); // Red
             break;
         case DisasterType::Sandstorm:
-            bgColor = COLOR_RGB(180, 140, 60); // Orange-brown
+            bgColor_ = COLOR_RGB(180, 140, 60); // Orange-brown
             break;
         case DisasterType::Sandworm:
-            bgColor = COLOR_RGB(140, 40, 100); // Purple
+            bgColor_ = COLOR_RGB(140, 40, 100); // Purple
             break;
     }
-    pBackground_ = renderFillRect(renderer, nullptr, bgColor);
 
     // Create message texture
     std::string fullMsg = message;
@@ -60,26 +59,34 @@ void DisasterNotification::setDisaster(DisasterType type, const std::string& mes
         fullMsg += " (" + std::to_string(affectedCount) + " zones)";
     }
     pMessage_ = pFontManager->createTextureWithText(fullMsg, COLOR_WHITE, 12);
+
+    // Countdown text
+    int remaining = std::max(0, durationSeconds - elapsed_ / 1000);
+    countdownText_ = std::to_string(remaining) + "s";
+    pCountdown_ = pFontManager->createTextureWithText(countdownText_, COLOR_WHITE, 10);
 }
 
 bool DisasterNotification::handleMouseLeft(Sint32 x, Sint32 y, bool pressed) {
-    if (pressed && onDismiss_) {
-        onDismiss_();
+    if (pressed) {
+        dismiss();
     }
     return true;
 }
 
 void DisasterNotification::draw(Point position) {
-    if (!pBackground_) return;
+    if (dismissed_) return;
 
     SDL_Rect dest = { position.x, position.y, getSize().x, getSize().y };
-    SDL_RenderCopy(renderer, pBackground_, nullptr, &dest);
+
+    // Draw background
+    setRenderDrawColor(renderer, bgColor_);
+    SDL_RenderFillRect(renderer, &dest);
 
     // Draw border
     renderDrawRect(renderer, &dest, COLOR_WHITE);
 
     // Draw icon (simple colored box as placeholder)
-    SDL_Color iconColor;
+    Uint32 iconColor;
     switch (disasterType_) {
         case DisasterType::Fire:
             iconColor = COLOR_RGB(255, 100, 30);
@@ -92,28 +99,44 @@ void DisasterNotification::draw(Point position) {
             break;
     }
     SDL_Rect iconRect = { position.x + 5, position.y + 10, 20, 20 };
-    renderFillRect(renderer, &iconRect, iconColor);
+    setRenderDrawColor(renderer, iconColor);
+    SDL_RenderFillRect(renderer, &iconRect);
 
     // Draw message
     if (pMessage_) {
-        SDL_Rect msgRect = { position.x + 30, position.y + 12, getSize().x - 35, 16 };
-        SDL_RenderCopy(renderer, pMessage_, nullptr, &msgRect);
+        SDL_Rect msgRect = { position.x + 30, position.y + 8, getSize().x - 80, 14 };
+        SDL_RenderCopy(renderer, pMessage_.get(), nullptr, &msgRect);
+    }
+
+    // Draw countdown timer on the right
+    if (pCountdown_) {
+        SDL_Rect countdownRect = { position.x + getSize().x - 35, position.y + 13, 30, 14 };
+        SDL_RenderCopy(renderer, pCountdown_.get(), nullptr, &countdownRect);
     }
 
     // Draw timer bar at bottom
-    float remaining = 1.0f - (float)elapsed_ / (durationSeconds_ * 1000);
-    if (remaining > 0) {
+    float remainingRatio = 1.0f;
+    if (durationSeconds_ > 0) {
+        remainingRatio = std::max(0.0f, 1.0f - (float)elapsed_ / (durationSeconds_ * 1000));
+    }
+    if (remainingRatio > 0) {
         SDL_Rect timerRect = { position.x + 1, position.y + getSize().y - 4,
-                               (int)((getSize().x - 2) * remaining), 3 };
-        renderFillRect(renderer, &timerRect, COLOR_WHITE);
+                               (int)((getSize().x - 2) * remainingRatio), 3 };
+        setRenderDrawColor(renderer, COLOR_WHITE);
+        SDL_RenderFillRect(renderer, &timerRect);
     }
 }
 
 void DisasterNotification::update() {
     elapsed_ += 16; // Approximate frame time
     if (durationSeconds_ > 0 && elapsed_ >= durationSeconds_ * 1000) {
-        if (onDismiss_) {
-            onDismiss_();
-        }
+        dismiss();
+    }
+
+    // Update countdown texture every second
+    if (elapsed_ % 1000 < 20) {
+        int secs = std::max(0, durationSeconds_ - elapsed_ / 1000);
+        countdownText_ = std::to_string(secs) + "s";
+        pCountdown_ = pFontManager->createTextureWithText(countdownText_, COLOR_WHITE, 10);
     }
 }

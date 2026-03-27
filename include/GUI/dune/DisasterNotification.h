@@ -47,7 +47,7 @@ public:
         return Point(300, 40);
     }
 
-    void update() override;
+    void update();
 
 private:
     DisasterType disasterType_;
@@ -55,11 +55,17 @@ private:
     int durationSeconds_;
     int affectedCount_;
     int elapsed_ = 0;
+    bool dismissed_ = false;
     std::function<void()> onDismiss_;
 
-    sdl2::texture_ptr pBackground_;
-    sdl2::texture_ptr pIcon_;
+    Uint32 bgColor_;
     sdl2::texture_ptr pMessage_;
+    sdl2::texture_ptr pCountdown_;
+    std::string countdownText_;
+
+public:
+    bool isDismissed() const { return dismissed_; }
+    void dismiss() { dismissed_ = true; if(onDismiss_) onDismiss_(); }
 };
 
 #endif //DISASTERNOTIFICATION_H
