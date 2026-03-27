@@ -59,9 +59,18 @@ bool ConstructionYard::doPlaceStructure(int x, int y) {
 
         // Handle city infrastructure items (roads, power lines) - they modify tiles, not placed as structures
         if(itemID == Structure_Road || itemID == Structure_PowerLine) {
-            // Deduct cost from city budget
+            // Get price from object data
             int price = currentGame->objectData.data[itemID][originalHouseID].price;
-            getOwner()->returnCredits(price); // Refund what was deducted, we'll handle budget separately
+
+            // Check city budget has sufficient funds
+            auto* citySim = currentGame->getCitySimulation();
+            if (!citySim || !citySim->spendCityFunds(price)) {
+                // Insufficient city funds - refund credits and fail
+                getOwner()->returnCredits(price);
+                unSetWaitingToPlace();
+                currentProducedItem = ItemID_Invalid;
+                return false;
+            }
 
             // Send city tool command directly via the local player
             int toolType = (itemID == Structure_Road) ? 1 : 2;

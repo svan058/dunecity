@@ -70,6 +70,12 @@ TEST_CASE("ZoneStructure: isZoneStructure returns true only for zone types", "[z
     REQUIRE(isZoneStructure(Structure_ZoneCommercial));
     REQUIRE(isZoneStructure(Structure_ZoneIndustrial));
 
+    // City infrastructure (roads/power lines) are structures but not zones
+    REQUIRE(isStructure(Structure_Road));
+    REQUIRE(isStructure(Structure_PowerLine));
+    REQUIRE_FALSE(isZoneStructure(Structure_Road));
+    REQUIRE_FALSE(isZoneStructure(Structure_PowerLine));
+
     REQUIRE_FALSE(isZoneStructure(Structure_Barracks));
     REQUIRE_FALSE(isZoneStructure(Structure_ConstructionYard));
     REQUIRE_FALSE(isZoneStructure(Structure_WindTrap));
