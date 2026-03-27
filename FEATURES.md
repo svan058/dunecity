@@ -63,7 +63,7 @@
 - [x] Dual economy display (Spice credits + City tax revenue)
 - [x] City budget management screen
 - [x] Tax rate adjustment UI
-- [ ] Funding allocation sliders (police, fire, transport)
+- [x] Funding allocation sliders (police, fire, transport)
 
 ## Phase 6: Traffic & Roads (PARTIAL)
 - [ ] Road placement tool
