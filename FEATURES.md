@@ -57,7 +57,7 @@
 - [x] Removed legacy freeform zone placement (Z hotkey)
 - [x] Dedicated "City" build menu tab alongside military buildings
 - [x] City-specific structures (roads, power lines)
-- [ ] Build cost integration with city budget
+- [x] Build cost integration with city budget
 
 ## Phase 5: Economy Integration (DONE)
 - [x] Dual economy display (Spice credits + City tax revenue)
