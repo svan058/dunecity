@@ -1310,6 +1310,9 @@ void Game::drawScreen()
         drawCityOverlay(x1, y1, x2, y2);
     }
 
+    /* draw zone tooltip on hover */
+    drawZoneTooltip();
+
     /* draw structures */
     currentGameMap->for_each(x1, y1, x2, y2,
         [](Tile& t) {
@@ -4169,6 +4172,103 @@ void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
         default:
             break;
     }
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+void Game::drawZoneTooltip() {
+    // Only show tooltip if cursor is on the map and we have city simulation
+    if (!citySimulation_ || !screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
+        return;
+    }
+
+    // Convert screen coordinates to map tile coordinates
+    int mapX = screenborder->screen2MapX(drawnMouseX);
+    int mapY = screenborder->screen2MapY(drawnMouseY);
+
+    // Check if the tile is valid and has a zone
+    if (!currentGameMap->tileExists(mapX, mapY)) {
+        return;
+    }
+
+    Tile* pTile = currentGameMap->getTile(mapX, mapY);
+    DuneCity::ZoneType zoneType = pTile->getCityZoneType();
+
+    // Only show tooltip for R/C/I zones
+    if (zoneType == DuneCity::ZoneType::None) {
+        return;
+    }
+
+    // Build tooltip text based on zone type
+    std::string zoneName;
+    std::string zoneInfo;
+
+    switch (zoneType) {
+        case DuneCity::ZoneType::Residential:
+            zoneName = "Residential Zone";
+            break;
+        case DuneCity::ZoneType::Commercial:
+            zoneName = "Commercial Zone";
+            break;
+        case DuneCity::ZoneType::Industrial:
+            zoneName = "Industrial Zone";
+            break;
+        default:
+            return;
+    }
+
+    // Get zone density (population level)
+    uint8_t density = pTile->getCityZoneDensity();
+    bool powered = pTile->isCityPowered();
+
+    zoneInfo = "Density: " + std::to_string(density) + "/8";
+    if (powered) {
+        zoneInfo += " | Powered";
+    } else {
+        zoneInfo += " | UNPOWERED";
+    }
+
+    // Create tooltip texture with zone name and info
+    std::string tooltipText = zoneName + "\n" + zoneInfo;
+
+    sdl2::texture_ptr pTooltipTexture = pFontManager->createTextureWithMultilineText(
+        tooltipText.c_str(), COLOR_WHITE, 12, true);
+
+    if (!pTooltipTexture) {
+        return;
+    }
+
+    int texW, texH;
+    SDL_QueryTexture(pTooltipTexture.get(), nullptr, nullptr, &texW, &texH);
+
+    // Position tooltip near cursor, offset to avoid cursor overlap
+    int tooltipX = drawnMouseX + 15;
+    int tooltipY = drawnMouseY + 15;
+
+    // Keep tooltip within screen bounds
+    int screenW = getRendererWidth();
+    int screenH = getRendererHeight();
+    if (tooltipX + texW + 10 > screenW) {
+        tooltipX = drawnMouseX - texW - 15;
+    }
+    if (tooltipY + texH + 10 > screenH) {
+        tooltipY = drawnMouseY - texH - 15;
+    }
+
+    // Draw tooltip background (semi-transparent dark)
+    SDL_Rect bgRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Draw tooltip border
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 200);
+    SDL_Rect borderRect = {tooltipX - 5, tooltipY - 5, texW + 10, texH + 10};
+    SDL_RenderDrawRect(renderer, &borderRect);
+
+    // Draw tooltip text
+    SDL_Rect textRect = {tooltipX, tooltipY, texW, texH};
+    SDL_RenderCopy(renderer, pTooltipTexture.get(), nullptr, &textRect);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }

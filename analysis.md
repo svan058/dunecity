@@ -1,334 +1,373 @@
-# DuneCity: Dune Legacy + SimCity Hybrid
+# DuneCity: SimCity + Dune Legacy Design Analysis
 
 ## Executive Summary
 
-DuneCity is an ambitious hybrid project that merges SimCity-style city building mechanics into Dune Legacy (the open-source Dune 2 remake). The project has already achieved significant traction: a full 16-phase Micropolis-style simulation engine is running within the Dune Legacy game loop, complete with power grids, zone simulation, traffic, tax/budget systems, and economic victory conditions.
-
-This document analyzes the current state, design philosophy, and provides recommendations for completing the integration.
+This document analyzes the feasibility of merging SimCity-style city building mechanics with Dune Legacy (the open-source Dune 2 remake) using C++. The existing Dune Legacy codebase already contains a partial DuneCity simulation module with zone management, power grids, traffic, and disasters—this provides a strong foundation for the proposed hybrid game.
 
 ---
 
 ## 1. What Makes Each Game Fun and Unique
 
-### Dune Legacy (Dune 2 Clone)
+### Dune Legacy / Dune 2
 
 | Aspect | What Makes It Fun |
 |--------|-------------------|
-| **Faction Identity** | Three distinct houses (Atreides, Harkonnen, Ordos) with unique units, aesthetics, and gameplay philosophies |
-| **Base Building** | Strategic placement of structures with dependencies (refinery → factory → starport chain) |
-| **Combat** | Real-time tactics with unit rock-paper-scissors (tanks > infantry > sandworms > tanks) |
-| **Economy** | Spice harvesting is the core loop — refinery management, Harvester routes, credit accumulation |
-| **Atmosphere** | Desert planet aesthetic, sandworms, sandstorms, faction-specific music and voice lines |
-| **Scale** | 64x64 tile maps, multiple players, AI opponents |
+| **Faction asymmetry** | Three distinct houses (Atreides, Harkonnen, Ordos) with unique units, abilities, and strategies |
+| **Base building** | Construction queues, dependency chains (silo before refinery), power management |
+| **Resource management** | Spice harvesting, limited deposits, contested territory |
+| **Combat tactics** | Unit combos (infantry + tanks + ornithopters), flanking, base defense with turrets |
+| **Atmosphere** | Desert aesthetics, sandworms, spice storms, fremen/mentat characters |
 
-### SimCity (Classic/Micropolis)
+### SimCity (Classic)
 
 | Aspect | What Makes It Fun |
 |--------|-------------------|
-| **Emergent Storytelling** | Watching a city grow from empty desert to bustling metropolis |
-| **Feedback Loops** | Population → tax → infrastructure → more population (and negative cycles when neglected) |
-| **Zoning** | Residential/Commercial/Industrial separation creates organic city growth patterns |
-| **Infrastructure Puzzle** | Power grids, road networks, traffic flow, water/pipe systems |
-| **Disasters** | Floods, fires, earthquakes, monsters — chaos management |
-| **Evaluation** | City ratings, milestones, "Mayor" challenges |
-| **Micro-Management** | Setting tax rates, funding levels, emergency responses |
+| **Emergent gameplay** | Cities grow organically based on RCI zones, infrastructure |
+| **Feedback loops** | Land value → tax revenue → better services → more growth |
+| **Problem solving** | Traffic jams, pollution, crime, power outages—all interconnected |
+| **Long-term progression** | Population milestones, city specialization, mayor rating |
+| **Tile-level detail** | Individual roads, zones, buildings with density changes |
 
 ### The Synthesis Opportunity
 
-The hybrid gains:
-- **Strategic Layer**: Building cities while defending against enemy houses and sandworms
-- **Economic Depth**: SimCity tax/funding system layered on spice harvesting
-- **Base Defense as Urban Planning**: Turrets positioned around city districts
-- **Spice as Unique Resource**: Spice fields become the "industry" that drives city growth
+Dune Legacy already has:
+- Faction-based combat and base building
+- Spice as a contested resource
+- Desert map with unique hazards (sandworms, storms)
+
+SimCity mechanics to add:
+- civilian population separate from military units
+- RCI zoning with density-based growth
+- City services (police, fire, health)
+- Economic simulation (taxes, budget, trade routes)
+
+**The pitch**: You're not just building a military base—you're building a **city** on Arrakis. Civilians inhabit your base, generate tax revenue, and create strategic vulnerabilities.
 
 ---
 
-## 2. Core Mechanics Analysis and Merge Strategy
+## 2. Core Mechanics to Merge
 
-### What's Already Implemented (DuneCity)
-
-```
-src/dunecity/
-├── CitySimulation.cpp    # 16-phase simulation orchestrator
-├── CitySimulation.h     # Population, census, tax, disasters
-├── ZoneSimulation.cpp    # R/C/I zone growth from Micropolis
-├── PowerGrid.cpp        # Electrical distribution network
-├── TrafficSimulation.cpp # Vehicle pathfinding and congestion
-├── CityBudget.cpp       # Tax collection and fund allocation
-├── CityEvaluation.cpp   # City rating and metrics
-├── CityScanner.cpp      # Tile analysis for zone placement
-├── CityConstants.h      # Tuning parameters
-└── CityMapLayer.h       # Grid data structures
-```
-
-### Merge Strategy: Layered Architecture
-
-The key insight is that DuneCity runs as a **parallel simulation** within the existing Dune Legacy game loop, not replacing it:
+### 2.1 Dual Population System
 
 ```
-┌─────────────────────────────────────────┐
-│          Game Loop (Dune Legacy)         │
-│  ┌─────────────────────────────────┐    │
-│  │  DuneCity: advancePhase()       │    │
-│  │  Runs every 16 game cycles      │    │
-│  │  (Micropolis time scale)        │    │
-│  └─────────────────────────────────┘    │
-│                                         │
-│  - Units move/combat each cycle          │
-│  - Structures produce each cycle        │
-│  - Spice harvesting continues            │
-│  - City sim advances in parallel        │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    HOUSE (Faction)                      │
+├─────────────────────────────────────────────────────────┤
+│  Military Units ←──── Combat ←──── Player Control      │
+│       ↑                                               │
+│       │ (consume)                                     │
+├───────┼───────────────────────────────────────────────┤
+│       │              DuneCity Simulation               │
+│  Civilian Pop ←──── RCI Zones ←──── Growth Logic      │
+│       ↓                                               │
+│  Tax Revenue ←──── City Budget ←──── Player Control   │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Mechanics Mapping
+**Implementation**: Extend existing `Tile` city zone fields. Military units and civilian population coexist—military structures don't contribute to tax revenue but consume power; civilian zones generate tax but create traffic and vulnerability.
 
-| SimCity Mechanic | Dune Equivalent | Integration |
-|-----------------|----------------|-------------|
-| Residential zones | Existing structures? | New zone tiles adjacent to buildings |
-| Commercial zones | StarPort/Factory | Trade routes via roads |
-| Industrial zones | Spice Refinery | Spice fields become "industry" |
-| Power grid | Wind Trap network | Wind Traps power city zones |
-| Tax income | Spice credits | Tax + spice = dual economy |
-| Road traffic | Ornithopter routes | Traffic sim uses existing pathfinding |
-| Police/Fire | Guard towers/Barracks | Military structures provide city services |
-| Disasters | Sandstorms/Sandworms | Dune disasters integrate with city damage |
+### 2.2 Hybrid Resource System
+
+| Resource | Dune Source | SimCity Source |
+|----------|-------------|----------------|
+| Spice | Harvested by units | — |
+| Credits | Market / combat | Tax revenue |
+| Power | Windtraps / Solar | Windtraps / Solar (existing) |
+| Population | — | RCI zone growth |
+| Materials | Refinery output | Trade routes (new) |
+
+**Key insight**: Spice becomes both a military resource AND an economic driver. High civilian population requires spice imports (trade routes) or creates unrest.
+
+### 2.3 Combat-City Interaction
+
+- **Defensive vulnerability**: Dense civilian areas attract enemy attacks (more targets)
+- **Strategic targeting**: Enemy can destroy power grid, causing city panic + military power loss
+- **Sandworm behavior**: City zones in desert tiles risk sandworm attacks (existing disaster system)
+- **Liberation vs destruction**: Capturing enemy cities intact yields more tax revenue than destroying them
+
+### 2.4 City Services (New)
+
+| Service | Structure | Effect |
+|---------|-----------|--------|
+| Police | Security Office | Reduces crime, improves land value |
+| Fire | Fire Station | Prevents building decay from fires |
+| Health | Med Center | Increases population growth |
+| Education | Academy | Unlocks advanced units (tech level) |
+| Entertainment | Spice Circus | Reduces unrest, attracts commercial |
+
+**Integration**: Reuse existing Dune structure system. Add new city-specific structures that don't exist in vanilla Dune 2.
+
+### 2.5 Map Overlays (Existing + New)
+
+Dune Legacy already supports overlay rendering. Expand with SimCity-style data views:
+- Population density
+- Pollution levels  
+- Land value
+- Traffic flow
+- Power grid status
+- Crime rates
 
 ---
 
-## 3. Technical Architecture
+## 3. Technical Approach
 
-### Current Stack
-
-- **Language**: C++17
-- **Build**: CMake with vcpkg dependencies
-- **Rendering**: SDL2 (SDL2_mixer, SDL2_ttf)
-- **Networking**: ENet for multiplayer
-- **Math**: FixPoint for deterministic fixed-point arithmetic
-
-### Architecture Diagram
+### 3.1 Architecture Overview
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                         Game.cpp                           │
-│   - Main game loop (60 FPS target)                        │
-│   - updateGameState() calls citySimulation_->advancePhase │
+│                     Main Game Loop                          │
+├────────────────────────────────────────────────────────────┤
+│  DuneEngine (existing)    │    DuneCity Engine (new)      │
+│  ─────────────────────   │    ─────────────────────       │
+│  • Unit AI               │    • Zone Simulation           │
+│  • Combat System         │    • Population Growth          │
+│  • Pathfinding (A*)      │    • Traffic Simulation        │
+│  • Structure Build       │    • Economic Model            │
+│  • Spice Harvesting      │    • Disaster System           │
+│  • Network Sync          │    • Budget Management         │
 └────────────────────────────────────────────────────────────┘
                               │
-                              ▼
-┌────────────────────────────────────────────────────────────┐
-│              DuneCity::CitySimulation                      │
-│   - 16-phase cycle (CITY_PHASE_INTERVAL = 16 cycles)     │
-│   - Subsystems: Zone, Power, Traffic, Budget, Eval        │
-└────────────────────────────────────────────────────────────┘
+                    Shared World State
                               │
-        ┌─────────────────────┼─────────────────────┐
-        ▼                     ▼                     ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│ ZoneSimulation│    │  PowerGrid    │    │TrafficSim    │
-│ - R/C/I growth│    │ - Source reg  │    │- Pathfinding │
-│ - Building    │    │ - Distribution│    │- Density     │
-│   placement   │    │ - Load calc  │    │- Congestion  │
-└───────────────┘    └───────────────┘    └───────────────┘
-        │                     │                     │
-        └─────────────────────┼─────────────────────┘
-                              ▼
-┌────────────────────────────────────────────────────────────┐
-│                    Dune Legacy Systems                     │
-│   - Map/Tile grid (shared)                                │
-│   - ObjectManager (structures, units)                     │
-│   - CommandManager (network sync)                         │
-│   - GFXManager, SFXManager (assets)                      │
-└────────────────────────────────────────────────────────────┘
+         ┌────────────────────┼────────────────────┐
+         ↓                    ↓                    ↓
+    ┌─────────┐        ┌─────────────┐      ┌──────────┐
+    │  Tile   │        │  PowerGrid  │      │  Radar  │
+    │ Layer   │        │  (shared)   │      │  View   │
+    └─────────┘        └─────────────┘      └──────────┘
 ```
 
-### Key Design Decisions
+### 3.2 C++ Module Structure
 
-1. **Shared Tile Grid**: DuneCity overlays its data on the existing Dune `Map` class
-   - `Tile::hasCityZone()` extends tile flags
-   - `Tile::setCityPowered()` tracks power state
+```
+src/dunecity/                    # NEW - City simulation (existing)
+├── CitySimulation.cpp/h         # Main simulation loop
+├── ZoneSimulation.cpp/h         # RCI zone growth logic
+├── PopulationModel.cpp/h       # Birth/death/migration
+├── TrafficSimulation.cpp/h    # Vehicle pathfinding
+├── EconomicModel.cpp/h        # Tax/budget/trade
+├── PowerGrid.cpp/h            # Power distribution
+├── CityScanner.cpp/h          # Map analysis (pollution, crime)
+├── CityBudget.cpp/h           # Funding allocation
+├── CityEvaluation.cpp/h       # Metrics/milestones
+├── Structures/
+│   ├── CityHall.cpp/h         # Mayor interface
+│   ├── PoliceStation.cpp/h
+│   ├── FireStation.cpp/h
+│   ├── Hospital.cpp/h
+│   └── School.cpp/h
+└── UI/
+    ├── CityHUD.cpp/h          # Population, funds, time
+    ├── BudgetPanel.cpp/h      # Tax/service sliders
+    ├── ZoneTool.cpp/h        # RCI placement
+    └── DataViewOverlay.cpp/h # Map overlays
+```
 
-2. **Deterministic RNG**: City sim uses dedicated `Random` stream seeded from game RNG
-   - Ensures network sync: same seed → same simulation results
+### 3.3 Integration Points
 
-3. **Phase-Based Execution**: Spreads Micropolis computation across 16 game cycles
-   - Prevents frame drops during intensive simulation
-   - `advancePhase()` called from `Game::updateGameState()`
+| Dune System | Integration Point |
+|-------------|-------------------|
+| `Tile` class | Add `cityZoneType_`, `cityZoneDensity_` (exists) |
+| `Game` class | Add `citySimulation_` member |
+| `Command` system | Add `CMD_CITY_*` commands |
+| `StructureManager` | Add city structure IDs |
+| `GUI/Menu` | Add city view panels |
+| `Savegame` | CitySimulation save/load |
+| `Network` | Sync city state (if multiplayer) |
 
-4. **Command Integration**: City commands (place zone, set tax) flow through Dune's `Command` system
-   - Enables network play: commands are replicated to all players
-   - `CitySimulation::executeCityCommand()` handles city-specific actions
+### 3.4 Rendering Stack
 
-### Rendering Integration
+Dune Legacy uses SDL2. No changes needed—reuse existing rendering:
+- **Tile renderer**: Extended for zone overlays
+- **Sprite system**: New civilian building sprites
+- **GUI**: New city management panels
+- **Minimap**: Toggle between unit/city views
 
-Dune Legacy uses a tile-based rendering system. City overlays would render via:
+### 3.5 Build System
 
-1. **Overlay Mode**: Toggle city view (like SimCity's query mode)
-2. **Mini-Overlays**: Power grid, pollution, traffic density as toggleable views
-3. **UI Panel**: City statistics, budget, population in the game sidebar
+Existing CMake structure is sound:
+
+```cmake
+# src/CMakeLists.txt (existing pattern)
+add_subdirectory(dunecity)
+
+# src/dunecity/CMakeLists.txt
+set(DUNECITY_SOURCES
+    CitySimulation.cpp
+    ZoneSimulation.cpp
+    PopulationModel.cpp
+    TrafficSimulation.cpp
+    EconomicModel.cpp
+    PowerGrid.cpp
+    CityScanner.cpp
+    CityBudget.cpp
+    CityEvaluation.cpp
+)
+
+add_library(dunecity STATIC ${DUNECITY_SOURCES})
+target_link_libraries(dunecity PRIVATE
+    dune-core
+    dune-gui
+    SDL2::SDL2
+)
+```
 
 ---
 
-## 4. Compelling Features for the Hybrid
+## 4. Compelling Features
 
-### A. Dual Economy System
+### 4.1 Persistent Civilian Population
 
-- **Spice Credits**: Used for military, structures, upgrades
-- **City Tax**: Used for city infrastructure, zone development
-- **Exchange Rate**: Tax income can buy spice, or vice versa (future)
+- Civilians appear as small sprites in residential zones
+- They walk along roads, commute between zones
+- Population count displayed in HUD
+- Growth depends on jobs, services, land value
 
-### B. Strategic City Defense
+### 4.2 Economic Warfare
 
-- Place military structures (Rocket Turrets, Gun Turrets) strategically
-- City population provides "defense bonus" — more citizens = harder to capture
-- Destroying enemy city reduces their economic output
+- Destroying enemy civilian infrastructure reduces their tax revenue
+- Sabotage missions target power grids (military + city)
+- Capture intact cities for immediate economic boost
 
-### C. Dune-Specific Disasters
+### 4.3 Hybrid Victory Conditions
 
-- **Sandstorms**: Disrupt power grid, damage structures, reduce population
-- **Sandworm Attacks**: Consume Harvester units and damage buildings
-- **Spice Blows**: Contaminate zones, require cleanup
+- **Military victory**: Destroy all enemy units/structures
+- **Economic victory**: Achieve X population + Y credits per minute
+- **Domination**: Control 80% of map population
 
-### D. Victory Conditions
+### 4.4 Dune-Specific City Hazards
 
-- **Military Victory**: Destroy all enemy structures (existing)
-- **Economic Victory**: Reach population threshold (implemented: 500)
-- **Ecological Victory**: Maintain pollution below threshold for X months
+| Hazard | Effect | Mitigation |
+|--------|--------|------------|
+| Sandstorm | Zone damage, visibility loss | Wind walls, forecasts |
+| Sandworm | Zone destruction (radius) | Sound detectors, bait |
+| Spice bloom | Explosive growth opportunity | Harvest quickly |
+| Water shortage | Population decline | Windtraps, trade |
 
-### E. Faction-Specific Cities
+### 4.5 Mayor Rating System
 
-- **Atreides**: Efficient power, lower RCI growth, advanced turrets
-- **Harkonnen**: Fast RCI growth, high pollution tolerance, brute force military
-- **Ordos**: Balanced, special commerce/industry bonuses
+- Tracks city achievements (population milestones, economic stability)
+- Affects unit morale (happy city = disciplined troops)
+- Unlock special buildings or abilities at thresholds
+
+### 4.6 Trade Routes
+
+- Connect to allied/enemy spice refineries
+- Convoys transport goods (vulnerable to attack)
+- Creates strategic choke points
 
 ---
 
 ## 5. Potential Challenges
 
-| Challenge | Impact | Mitigation |
-|-----------|--------|------------|
-| **Performance** | 16-phase sim every 16 cycles may lag on large maps | Phase spreading already implemented; profile before optimizing |
-| **Network Sync** | Deterministic simulation critical for multiplayer | Use FixPoint math, dedicated city RNG stream (done) |
-| **Asset Gaps** | Need new building graphics for city zones | Reuse existing structure sprites; create hybrid tiles |
-| **UX Overload** | Too many systems for new players | Progressive UI: "City Mode" toggle, tooltips |
-| **Balance** | Economic vs military power curve | Tune tax rates, spice income, building costs |
-| **Save Format** | City state must persist | Implemented: `load()`/`save()` methods exist |
-| **AI Integration** | Bots need to understand city building | QuantBot already has `citySim_` member; expand logic |
+### 5.1 Technical Challenges
 
-### Known Gaps from Current Implementation
+| Challenge | Risk | Mitigation |
+|-----------|------|------------|
+| Performance (simulation + rendering) | Medium | Phase-based updates, spatial partitioning exists |
+| Savegame compatibility | Low | Versioned save format (existing) |
+| Network sync for city state | High | Simplify: only sync essential data |
+| AI integration | Medium | QuantBot already builds zones; extend logic |
 
-1. **UI Integration**: No city placement UI yet (tools, menus)
-2. **Building Placement**: Zone → building generation needs completion
-3. **Rendering**: No overlay rendering for pollution/traffic/power views
-4. **Full Disaster Integration**: Sandstorm/sandworm hooks exist but need wiring
-5. **Victory Screen**: Economic victory triggers but no celebration
+### 5.2 Design Challenges
 
----
+| Challenge | Risk | Mitigation |
+|-----------|------|------------|
+| Game pacing | High | Military + city building time balance |
+| Complexity overload | High | Progressive tutorial, toggleable features |
+| Balance (RTS vs Sim) | High | Faction-specific city bonuses |
+| UI clutter | Medium | Tabbed views, keyboard shortcuts |
 
-## 6. Concrete Next Steps
+### 5.3 Scope Management
 
-### Phase 1: Core Simulation (Near-Complete)
+**Recommended phases**:
 
-- [x] 16-phase city engine
-- [x] Power grid with Wind Trap integration
-- [x] Zone simulation (R/C/I)
-- [x] Tax/budget system
-- [x] Economic victory condition
-- [ ] Population growth tuning
-- [ ] Zone → building conversion
-
-### Phase 2: UI and Interaction
-
-- [ ] City tool palette (place zones, roads)
-- [ ] City information panel (population, funds, ratings)
-- [ ] Tax rate slider
-- [ ] Budget allocation UI
-- [ ] Overlay toggles (power, pollution, traffic)
-
-### Phase 3: Dune Integration
-
-- [ ] Connect zone growth to structure spawning
-- [ ] Spice fields as industrial zones
-- [ ] City damage from combat
-- [ ] Sandstorm/sandworm disaster integration
-
-### Phase 4: Polish
-
-- [ ] Faction-specific city bonuses
-- [ ] City save/load verification
-- [ ] Performance profiling on 64x64 maps
-- [ ] Multiplayer sync testing
+1. **Phase 1**: Basic city building (zones, power, population)
+2. **Phase 2**: Economic layer (taxes, budget, services)
+3. **Phase 3**: Combat integration (city as target)
+4. **Phase 4**: Advanced features (trade routes, disasters)
 
 ---
 
-## 7. Technical Recommendations
+## 6. Existing DuneCity Implementation
 
-### Rendering: Add City Overlays
+The codebase already contains significant DuneCity infrastructure:
 
-```cpp
-// In Game.cpp - render city overlay
-void Game::renderCityOverlays() {
-    if (!cityViewEnabled_ || !citySimulation_) return;
-    
-    // Render selected overlay
-    switch (currentOverlay_) {
-        case OVERLAY_POWER:
-            renderPowerGridOverlay();
-            break;
-        case OVERLAY_POLLUTION:
-            renderPollutionOverlay();
-            break;
-        case OVERLAY_TRAFFIC:
-            renderTrafficOverlay();
-            break;
-    }
-}
+### Already Implemented
+
+- `CitySimulation` class with 16-phase simulation cycle
+- Zone types: Residential, Commercial, Industrial
+- Map layers: power, traffic, pollution, land value, crime, population
+- Power grid with windtrap/solar sources
+- Disaster system: sandstorms, sandworm attacks, sabotage, spice blows
+- `QuantBot` AI places zones and roads
+- Zone density growth/decay logic
+- Budget and tax collection
+- City evaluation and metrics
+
+### Integration Status
+
+```
+Tile class:         ✓ Has cityZoneType_, cityZoneDensity_, cityPowered_
+Game class:         ✓ getCitySimulation() returns pointer
+Command system:     ✓ CMD_CITY_PLACE_ZONE, CMD_CITY_SET_TAX_RATE, etc.
+Savegame:           ✓ CitySimulation serialization
 ```
 
-### New Structures: City Buildings
+### Next Integration Steps
 
-Add to `structures/`:
-- **Residence**: Provides population capacity
-- **Shop**: Commercial zone catalyst
-- **Factory**: Industrial zone catalyst (in addition to Refinery)
-- **Power Pylon**: Extends power grid (like Wind Trap)
+1. **HUD integration**: Display population, funds, city time
+2. **Tool integration**: Allow player to place zones (currently QuantBot only)
+3. **Structure integration**: Add city service buildings
+4. **UI panels**: Budget screen, data view overlays
 
-### AI: Expand QuantBot
+---
 
-```cpp
-// In QuantBot.cpp - city-aware decision making
-void QuantBot::updateCityStrategy() {
-    if (!hasCitySimulation()) return;
-    
-    auto& city = getCitySimulation();
-    
-    // Prioritize zones based on population needs
-    if (city.getResPop() < city.getIndPop()) {
-        placeZone(ZONE_RESIDENTIAL);
-    }
-    
-    // Balance military vs economy
-    if (getCredits() > 5000 && city.getTotalPop() > 200) {
-        buildMilitary();
-    }
-}
-```
+## 7. Recommendations and Next Steps
+
+### Immediate Actions
+
+1. **Survey existing code**: Review `src/dunecity/` in full, verify all systems compile
+2. **Run existing tests**: `cd build && ctest` to ensure DuneCity module works
+3. **Create proof-of-concept**: Enable city mode in skirmish, verify QuantBot builds city
+4. **Write specification**: Detailed design doc for each city system
+
+### Short-Term (1-2 months)
+
+- Add city HUD overlay (population, funds, date)
+- Enable manual zone placement tool
+- Add 3-5 city service structures
+- Implement tax/budget UI
+
+### Medium-Term (3-6 months)
+
+- Combat-city interaction (civilian casualties, economic damage)
+- Trade route system
+- Sandworm/sandstorm city hazards
+- Faction-specific city bonuses
+
+### Long-Term (6-12 months)
+
+- Full mayor rating system
+- Campaign integration (story-driven city building)
+- Network sync for city state
+
+### Technical Priorities
+
+1. Don't break existing Dune 2 gameplay
+2. Keep city simulation decoupled (can be disabled)
+3. Use existing SDL2 rendering (no new dependencies)
+4. Follow existing code style and architecture patterns
 
 ---
 
 ## 8. Conclusion
 
-DuneCity is already 60-70% implemented. The core simulation engine runs correctly, integrates with Dune Legacy's game loop, and handles save/load. The remaining work is primarily:
+The merger of SimCity and Dune Legacy is technically feasible and strategically compelling. The existing DuneCity module provides a strong foundation—most of the simulation framework already exists. The primary challenges are design (balancing RTS and city-builder pacing) rather than technical.
 
-1. **UI layer** — giving players tools to interact with city systems
-2. **Rendering overlays** — visualizing the simulation data
-3. **Full Dune integration** — connecting zones to structures, disasters to city damage
-
-The hybrid concept is sound: SimCity's economic/urban growth loops complement Dune's combat/strategy without replacing either. A player can build an economic engine (city) to fund military expansion, or focus on military conquest while neglecting city development leads to economic stagnation.
-
-**Recommendation**: Prioritize Phase 2 (UI) to make the existing simulation playable, then Phase 3 (Dune integration) to close the loop. The foundation is solid.
+The key differentiator: **a city that fights back**. Unlike static SimCity maps or disposable Dune bases, your city is both an economic engine and a military asset. Destroy it and you lose resources; defend it and you project power.
 
 ---
 
-*Analysis prepared: March 2026*
-*Project: ~/development/dune/dunelegacy/*
+*Analysis prepared for DuneCity project development*
+*Based on Dune Legacy codebase at ~/development/dune/dunelegacy/*

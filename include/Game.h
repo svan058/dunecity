@@ -459,6 +459,11 @@ public:
     */
     void drawCityOverlay(int x1, int y1, int x2, int y2);
 
+    /**
+        Draw zone info tooltip on hover (Phase 2 feature)
+    */
+    void drawZoneTooltip();
+
 private:
 
     /**
