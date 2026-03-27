@@ -66,7 +66,7 @@
 - [x] Funding allocation sliders (police, fire, transport)
 
 ## Phase 6: Traffic & Roads (PARTIAL)
-- [ ] Road placement tool
+- [x] Road placement tool
 - [x] Traffic density visualization overlay
 - [ ] Road network affecting zone growth rates
 
