@@ -257,7 +257,7 @@ void GameInterface::drawCityStatsOverlay() {
     }
 
     const int overlayWidth = 250;
-    const int overlayHeight = 220;
+    const int overlayHeight = 260;
     const int overlayX = getRendererWidth() - overlayWidth - 10;
     const int overlayY = 10;
     const int padding = 8;
@@ -366,6 +366,77 @@ void GameInterface::drawCityStatsOverlay() {
             default: break;
         }
         drawText(fmt::sprintf("Overlay: %s", overlayName), 10);
+
+        // Draw color legend bar for the active overlay
+        const int legendBarWidth = overlayWidth - 2 * padding;
+        const int legendBarHeight = 12;
+        const int numStops = 10;
+
+        // Select gradient endpoints based on overlay type
+        uint8_t r1 = 0, g1 = 0, b1 = 0, r2 = 0, g2 = 0, b2 = 0;
+        const char* lowLabel = "";
+        const char* highLabel = "";
+        switch (overlayMode) {
+            case DuneCity::CityOverlayMode::PowerGrid:
+                r1 = 200; g1 = 0;   b1 = 0;   r2 = 0;   g2 = 255; b2 = 0;
+                lowLabel = "Unpowered"; highLabel = "Powered";
+                break;
+            case DuneCity::CityOverlayMode::TrafficDensity:
+                r1 = 0;   g1 = 255; b1 = 0;   r2 = 255; g2 = 0;   b2 = 0;
+                lowLabel = "Low"; highLabel = "High";
+                break;
+            case DuneCity::CityOverlayMode::Pollution:
+                r1 = 0;   g1 = 255; b1 = 0;   r2 = 150; g2 = 0;   b2 = 200;
+                lowLabel = "Clean"; highLabel = "Polluted";
+                break;
+            case DuneCity::CityOverlayMode::LandValue:
+                r1 = 255; g1 = 0;   b1 = 0;   r2 = 0;   g2 = 255; b2 = 0;
+                lowLabel = "Low"; highLabel = "High";
+                break;
+            case DuneCity::CityOverlayMode::CrimeRate:
+                r1 = 0;   g1 = 255; b1 = 0;   r2 = 255; g2 = 0;   b2 = 0;
+                lowLabel = "Safe"; highLabel = "Dangerous";
+                break;
+            case DuneCity::CityOverlayMode::Population:
+                r1 = 50;  g1 = 50;  b1 = 50;  r2 = 255; g2 = 255; b2 = 255;
+                lowLabel = "Sparse"; highLabel = "Dense";
+                break;
+            default:
+                break;
+        }
+
+        // Draw gradient bar as a series of colored vertical stripes
+        int stripWidth = legendBarWidth / numStops;
+        for (int i = 0; i < numStops; i++) {
+            float t = static_cast<float>(i) / (numStops - 1);
+            uint8_t sr = static_cast<uint8_t>(r1 + (r2 - r1) * t);
+            uint8_t sg = static_cast<uint8_t>(g1 + (g2 - g1) * t);
+            uint8_t sb = static_cast<uint8_t>(b1 + (b2 - b1) * t);
+            SDL_Rect strip = { textX + i * stripWidth, textY, stripWidth, legendBarHeight };
+            SDL_SetRenderDrawColor(renderer, sr, sg, sb, 255);
+            SDL_RenderFillRect(renderer, &strip);
+        }
+        // Border around bar
+        SDL_Rect barBorder = { textX, textY, legendBarWidth, legendBarHeight };
+        SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+        SDL_RenderDrawRect(renderer, &barBorder);
+
+        textY += legendBarHeight + 2;
+
+        // Draw low/high labels below the bar
+        sdl2::texture_ptr lowTex = pFontManager->createTextureWithText(lowLabel, COLOR_WHITE, 9);
+        if (lowTex) {
+            SDL_Rect d = { textX, textY, 0, 0 };
+            SDL_QueryTexture(lowTex.get(), nullptr, nullptr, &d.w, &d.h);
+            SDL_RenderCopy(renderer, lowTex.get(), nullptr, &d);
+        }
+        sdl2::texture_ptr highTex = pFontManager->createTextureWithText(highLabel, COLOR_WHITE, 9);
+        if (highTex) {
+            SDL_Rect d = { textX + legendBarWidth - 80, textY, 80, 0 };
+            SDL_QueryTexture(highTex.get(), nullptr, nullptr, &d.w, &d.h);
+            SDL_RenderCopy(renderer, highTex.get(), nullptr, &d);
+        }
+        textY += 14;
     }
 
     textY += 4;

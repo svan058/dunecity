@@ -6,6 +6,10 @@
 | `C` | Capture unit mode (existing) |
 | `Shift+C` | Toggle city stats HUD |
 | `Shift+B` | Open city budget screen |
+| `Z` | Enter/exit zone placement mode |
+| `1` (in zone mode) | Select Residential zone |
+| `2` (in zone mode) | Select Commercial zone |
+| `3` (in zone mode) | Select Industrial zone |
 | `Shift+1` | Toggle overlay: None (default) |
 | `Shift+2` | Toggle overlay: Power Grid |
 | `Shift+3` | Toggle overlay: Traffic Density |
@@ -14,6 +18,7 @@
 | `Shift+6` | Toggle overlay: Crime Rate |
 | `Shift+7` | Toggle overlay: Population Density |
 | `Shift+8` | Toggle overlay: Wind Trap Radius |
+| `Escape` (in zone mode) | Exit zone placement mode |
 
 ---
 
@@ -68,7 +73,7 @@
 ## Phase 7: Map Overlays (DONE)
 - [x] Data layer toggles: crime, pollution, land value, population density, traffic, power
 - [x] Color-coded overlay rendering on game map
-- [ ] Legend/key for overlay values
+- [x] Legend/key for overlay values
 
 ## Phase 8: Disasters & Events
 - [ ] Sandstorm damage to city zones
