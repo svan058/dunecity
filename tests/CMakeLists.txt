@@ -11,7 +11,9 @@ target_sources(dunelegacy_tests
         PathBudgetTestCase/PathBudgetTestCase.cpp
         NetworkManagerTestCase/NetworkManagerTestCase.cpp
         ZoneStructureTestCase/ZoneStructureTestCase.cpp
+        CityBuildLogicTestCase/CityBuildLogicTestCase.cpp
         OverlayLegendTestCase/OverlayLegendTestCase.cpp
+        CityRoadTestCase/CityRoadTestCase.cpp
         # ENet library sources (needed for NetworkManager tests)
         ${CMAKE_SOURCE_DIR}/src/enet/callbacks.c
         ${CMAKE_SOURCE_DIR}/src/enet/compress.c
@@ -36,12 +38,11 @@ target_include_directories(dunelegacy_tests
 )
 
 # Link libraries
-# Only SDL2 is needed for ENet types (Uint32, etc.)
-# SDL2_mixer and SDL2_ttf are NOT needed for these tests
 target_link_libraries(dunelegacy_tests
     PRIVATE
         Catch2::Catch2WithMain
         SDL2::SDL2
+        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 )
 
 if(WIN32)

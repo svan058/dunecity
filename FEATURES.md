@@ -18,7 +18,8 @@
 | `Shift+6` | Toggle overlay: Crime Rate |
 | `Shift+7` | Toggle overlay: Population Density |
 | `Shift+8` | Toggle overlay: Wind Trap Radius |
-| `Escape` (in zone mode) | Exit zone placement mode |
+| `Shift+R` | Enter/exit road placement mode |
+| `Escape` (in zone/road mode) | Exit placement mode |
 
 ---
 
@@ -56,7 +57,8 @@
 - [x] Sand placement support (zones can be placed on any non-mountain terrain)
 - [x] Removed legacy freeform zone placement (Z hotkey)
 - [x] Dedicated "City" build menu tab alongside military buildings
-- [ ] City-specific structures (roads, power lines)
+- [x] City-specific structures (roads)
+- [ ] City-specific structures (power lines)
 - [ ] Build cost integration with city budget
 
 ## Phase 5: Economy Integration (DONE)
@@ -66,7 +68,7 @@
 - [ ] Funding allocation sliders (police, fire, transport)
 
 ## Phase 6: Traffic & Roads (PARTIAL)
-- [ ] Road placement tool
+- [x] Road placement tool
 - [x] Traffic density visualization overlay
 - [ ] Road network affecting zone growth rates
 

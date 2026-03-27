@@ -83,6 +83,40 @@ std::mutex Game::performanceLogMutex;
 #include <sstream>
 #include <iomanip>
 
+namespace {
+
+DuneCity::CityTilePlacementState makeCityTilePlacementState(const Tile& tile) {
+    return DuneCity::makeCityTilePlacementState(
+        tile.isRock(),
+        tile.isMountain(),
+        tile.hasAGroundObject(),
+        tile.hasCityZone(),
+        tile.isCityConductive());
+}
+
+bool hasVisibleRoadNeighbor(int x, int y) {
+    constexpr int dx[] = {0, 1, 0, -1};
+    constexpr int dy[] = {-1, 0, 1, 0};
+
+    for (int i = 0; i < 4; ++i) {
+        const int nx = x + dx[i];
+        const int ny = y + dy[i];
+
+        if (!currentGameMap->tileExists(nx, ny)) {
+            continue;
+        }
+
+        const Tile* neighbor = currentGameMap->getTile(nx, ny);
+        if (neighbor->isCityConductive() && !neighbor->hasCityZone()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+} // namespace
+
 Game::Game() {
     currentZoomlevel = settings.video.preferredZoomLevel;
 
@@ -1310,7 +1344,10 @@ void Game::drawScreen()
         drawCityOverlay(x1, y1, x2, y2);
     }
 
-    /* draw zone tooltip on hover */
+    /* draw placeholder road visuals */
+    drawCityRoads(x1, y1, x2, y2);
+
+    /* draw zone / road tooltip on hover */
     drawZoneTooltip();
     /* draw structures */
     currentGameMap->for_each(x1, y1, x2, y2,
@@ -1513,6 +1550,42 @@ void Game::drawScreen()
         }
     }
 
+    if(currentCursorMode == CursorMode_CityRoad) {
+        if(screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
+            int xPos = screenborder->screen2MapX(drawnMouseX);
+            int yPos = screenborder->screen2MapY(drawnMouseY);
+
+            SDL_Texture* validPlace = nullptr;
+            SDL_Texture* invalidPlace = nullptr;
+
+            switch(currentZoomlevel) {
+                case 0:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel0);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel0);
+                    break;
+                case 1:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel1);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel1);
+                    break;
+                case 2:
+                default:
+                    validPlace = pGFXManager->getUIGraphic(UI_ValidPlace_Zoomlevel2);
+                    invalidPlace = pGFXManager->getUIGraphic(UI_InvalidPlace_Zoomlevel2);
+                    break;
+            }
+
+            if(currentGameMap->tileExists(xPos, yPos)) {
+                Tile* pTile = currentGameMap->getTile(xPos, yPos);
+                const bool tileValid = DuneCity::canPlaceRoad(makeCityTilePlacementState(*pTile));
+                SDL_Texture* image = tileValid ? validPlace : invalidPlace;
+                SDL_Rect drawLocation = calcDrawingRect(image,
+                    screenborder->world2screenX(xPos * TILESIZE),
+                    screenborder->world2screenY(yPos * TILESIZE));
+                SDL_RenderCopy(renderer, image, nullptr, &drawLocation);
+            }
+        }
+    }
+
 ///////////draw game selection rectangle
     if(selectionMode) {
 
@@ -1555,6 +1628,7 @@ void Game::drawScreen()
 ///////////draw game bar
     pInterface->draw(Point(0,0));
     pInterface->drawOverlay(Point(0,0));
+    drawCityPlacementHint();
 
     // draw chat message currently typed
     if(chatMode) {
@@ -1753,6 +1827,14 @@ void Game::doInput()
 
                                     if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
                                         handleCityZonePlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
+                                    }
+
+                                } break;
+
+                                case CursorMode_CityRoad: {
+
+                                    if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
+                                        handleCityRoadPlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
                                     }
 
                                 } break;
@@ -3656,7 +3738,7 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_ESCAPE: {
-            if (currentCursorMode == CursorMode_CityZone) {
+            if (currentCursorMode == CursorMode_CityZone || currentCursorMode == CursorMode_CityRoad) {
                 setCursorMode(CursorMode_Normal);
             } else {
                 onOptions();
@@ -3788,12 +3870,21 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
 
 
         case SDLK_r: {
-            for(Uint32 objectID : selectedList) {
-                ObjectBase* pObject = objectManager.getObject(objectID);
-                if(pObject->isAStructure()) {
-                    static_cast<StructureBase*>(pObject)->handleRepairClick();
-                } else if(pObject->isAGroundUnit() && pObject->getHealth() < pObject->getMaxHealth()) {
-                    static_cast<GroundUnit*>(pObject)->handleSendToRepairClick();
+            if (SDL_GetModState() & KMOD_SHIFT) {
+                if (currentCursorMode == CursorMode_CityRoad) {
+                    setCursorMode(CursorMode_Normal);
+                } else {
+                    setCursorMode(CursorMode_CityRoad);
+                    addToNewsTicker(_("Road tool selected: click rock or slab tiles to place roads."));
+                }
+            } else {
+                for(Uint32 objectID : selectedList) {
+                    ObjectBase* pObject = objectManager.getObject(objectID);
+                    if(pObject->isAStructure()) {
+                        static_cast<StructureBase*>(pObject)->handleRepairClick();
+                    } else if(pObject->isAGroundUnit() && pObject->getHealth() < pObject->getMaxHealth()) {
+                        static_cast<GroundUnit*>(pObject)->handleSendToRepairClick();
+                    }
                 }
             }
         } break;
@@ -4089,6 +4180,38 @@ void Game::handleCityZonePlacementClick(int xPos, int yPos) {
     soundPlayer->playSound(Sound_PlaceStructure);
 }
 
+void Game::handleCityRoadPlacementClick(int xPos, int yPos) {
+    Tile* pTile = currentGameMap->getTile(xPos, yPos);
+
+    if(pTile == nullptr) {
+        return;
+    }
+
+    if(pTile->isMountain()) {
+        addToNewsTicker(_("Cannot place road on mountain."));
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    if(pTile->hasAStructure()) {
+        addToNewsTicker(_("Cannot place road on structure."));
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    if(pTile->isCityConductive()) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_TOOL,
+                                   static_cast<uint32_t>(xPos),
+                                   static_cast<uint32_t>(yPos),
+                                   static_cast<uint32_t>(DuneCity::CityTool_Road)));
+
+    soundPlayer->playSound(Sound_PlaceStructure);
+}
+
 bool Game::handleSelectedObjectsActionClick(int xPos, int yPos) {
     //let unit handle right click on map or target
     ObjectBase  *pResponder = nullptr;
@@ -4262,6 +4385,129 @@ void Game::drawCityOverlay(int x1, int y1, int x2, int y2) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
+void Game::drawCityRoads(int x1, int y1, int x2, int y2) {
+    if (!citySimulation_) {
+        return;
+    }
+
+    const int zoomedTileSize = world2zoomedWorld(TILESIZE);
+    const int centerInset = std::max(2, zoomedTileSize / 3);
+    const int laneHalfWidth = std::max(1, zoomedTileSize / 10);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    auto drawRoadStub = [&](int tileX, int tileY, int dx, int dy) {
+        SDL_Rect stubRect{};
+        const int centerX = screenborder->world2screenX(tileX * TILESIZE) + zoomedTileSize / 2;
+        const int centerY = screenborder->world2screenY(tileY * TILESIZE) + zoomedTileSize / 2;
+
+        if (dx != 0) {
+            stubRect.y = centerY - laneHalfWidth;
+            stubRect.h = laneHalfWidth * 2;
+            if (dx < 0) {
+                stubRect.x = centerX - centerInset;
+                stubRect.w = centerInset;
+            } else {
+                stubRect.x = centerX;
+                stubRect.w = centerInset;
+            }
+        } else {
+            stubRect.x = centerX - laneHalfWidth;
+            stubRect.w = laneHalfWidth * 2;
+            if (dy < 0) {
+                stubRect.y = centerY - centerInset;
+                stubRect.h = centerInset;
+            } else {
+                stubRect.y = centerY;
+                stubRect.h = centerInset;
+            }
+        }
+
+        SDL_RenderFillRect(renderer, &stubRect);
+    };
+
+    currentGameMap->for_each(x1, y1, x2, y2, [&](Tile& tile) {
+        if (!tile.isCityConductive() || tile.hasCityZone()) {
+            return;
+        }
+
+        if (!debug && !tile.isExploredByTeam(pLocalHouse->getTeamID())) {
+            return;
+        }
+
+        const int tileX = tile.getLocation().x;
+        const int tileY = tile.getLocation().y;
+        const int screenX = screenborder->world2screenX(tileX * TILESIZE);
+        const int screenY = screenborder->world2screenY(tileY * TILESIZE);
+
+        SDL_SetRenderDrawColor(renderer, 120, 92, 56, 210);
+        SDL_Rect centerRect = {
+            screenX + centerInset,
+            screenY + centerInset,
+            zoomedTileSize - 2 * centerInset,
+            zoomedTileSize - 2 * centerInset
+        };
+        SDL_RenderFillRect(renderer, &centerRect);
+
+        SDL_SetRenderDrawColor(renderer, 196, 168, 120, 210);
+        if (currentGameMap->tileExists(tileX, tileY - 1) && currentGameMap->getTile(tileX, tileY - 1)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 0, -1);
+        }
+        if (currentGameMap->tileExists(tileX + 1, tileY) && currentGameMap->getTile(tileX + 1, tileY)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 1, 0);
+        }
+        if (currentGameMap->tileExists(tileX, tileY + 1) && currentGameMap->getTile(tileX, tileY + 1)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, 0, 1);
+        }
+        if (currentGameMap->tileExists(tileX - 1, tileY) && currentGameMap->getTile(tileX - 1, tileY)->isCityConductive()) {
+            drawRoadStub(tileX, tileY, -1, 0);
+        }
+
+        if (!hasVisibleRoadNeighbor(tileX, tileY)) {
+            SDL_SetRenderDrawColor(renderer, 196, 168, 120, 210);
+            SDL_Rect fallbackRect = {
+                screenX + zoomedTileSize / 2 - laneHalfWidth,
+                screenY + centerInset,
+                laneHalfWidth * 2,
+                zoomedTileSize - 2 * centerInset
+            };
+            SDL_RenderFillRect(renderer, &fallbackRect);
+        }
+    });
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+void Game::drawCityPlacementHint() {
+    if (currentCursorMode != CursorMode_CityRoad) {
+        return;
+    }
+
+    const std::string hint = std::string(DuneCity::getRoadPlacementModeLabel()) + "\nShift+R toggle · Click to place · Esc cancels";
+    sdl2::texture_ptr hintTexture = pFontManager->createTextureWithMultilineText(hint, COLOR_WHITE, 12, true);
+    if (!hintTexture) {
+        return;
+    }
+
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(hintTexture.get(), nullptr, nullptr, &texW, &texH);
+
+    const int hintX = 20;
+    const int hintY = std::max(90, topBarPos.h + 18);
+    SDL_Rect bgRect = {hintX - 6, hintY - 6, texW + 12, texH + 12};
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_RenderFillRect(renderer, &bgRect);
+    SDL_SetRenderDrawColor(renderer, 196, 168, 120, 220);
+    SDL_RenderDrawRect(renderer, &bgRect);
+
+    SDL_Rect textRect = {hintX, hintY, texW, texH};
+    SDL_RenderCopy(renderer, hintTexture.get(), nullptr, &textRect);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
 void Game::drawZoneTooltip() {
     // Only show tooltip if cursor is on the map and we have city simulation
     if (!citySimulation_ || !screenborder->isScreenCoordInsideMap(drawnMouseX, drawnMouseY)) {
@@ -4280,38 +4526,42 @@ void Game::drawZoneTooltip() {
     Tile* pTile = currentGameMap->getTile(mapX, mapY);
     DuneCity::ZoneType zoneType = pTile->getCityZoneType();
 
-    // Only show tooltip for R/C/I zones
-    if (zoneType == DuneCity::ZoneType::None) {
-        return;
-    }
-
-    // Build tooltip text based on zone type
+    // Build tooltip text based on city content
     std::string zoneName;
     std::string zoneInfo;
 
-    switch (zoneType) {
-        case DuneCity::ZoneType::Residential:
-            zoneName = "Residential Zone";
-            break;
-        case DuneCity::ZoneType::Commercial:
-            zoneName = "Commercial Zone";
-            break;
-        case DuneCity::ZoneType::Industrial:
-            zoneName = "Industrial Zone";
-            break;
-        default:
+    if (zoneType == DuneCity::ZoneType::None) {
+        if (!pTile->isCityConductive()) {
             return;
-    }
+        }
 
-    // Get zone density (population level)
-    uint8_t density = pTile->getCityZoneDensity();
-    bool powered = pTile->isCityPowered();
-
-    zoneInfo = "Density: " + std::to_string(density) + "/8";
-    if (powered) {
-        zoneInfo += " | Powered";
+        zoneName = "Road";
+        zoneInfo = "Conductive city tile";
     } else {
-        zoneInfo += " | UNPOWERED";
+        switch (zoneType) {
+            case DuneCity::ZoneType::Residential:
+                zoneName = "Residential Zone";
+                break;
+            case DuneCity::ZoneType::Commercial:
+                zoneName = "Commercial Zone";
+                break;
+            case DuneCity::ZoneType::Industrial:
+                zoneName = "Industrial Zone";
+                break;
+            default:
+                return;
+        }
+
+        // Get zone density (population level)
+        uint8_t density = pTile->getCityZoneDensity();
+        bool powered = pTile->isCityPowered();
+
+        zoneInfo = "Density: " + std::to_string(density) + "/8";
+        if (powered) {
+            zoneInfo += " | Powered";
+        } else {
+            zoneInfo += " | UNPOWERED";
+        }
     }
 
     // Create tooltip texture with zone name and info

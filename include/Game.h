@@ -463,6 +463,16 @@ public:
         Draw zone info tooltip on hover (Phase 2 feature)
     */
     void drawZoneTooltip();
+
+    /**
+        Draw placeholder visuals for conductive city roads.
+    */
+    void drawCityRoads(int x1, int y1, int x2, int y2);
+
+    /**
+        Draw the active city placement hint.
+    */
+    void drawCityPlacementHint();
 private:
 
     /**
@@ -523,6 +533,14 @@ private:
         \param  yPos    y-coordinate in map coordinates
     */
     void handleCityZonePlacementClick(int xPos, int yPos);
+
+    /**
+        Handles a city road placement click.
+        \param  xPos    x-coordinate in map coordinates
+        \param  yPos    y-coordinate in map coordinates
+    */
+    void handleCityRoadPlacementClick(int xPos, int yPos);
+
     /**
         Performs a request carryall click for the currently selected units.
         \param  xPos    x-coordinate in map coordinates
@@ -563,7 +581,8 @@ public:
         CursorMode_Capture,
         CursorMode_CarryallDrop,
         CursorMode_Placing,
-        CursorMode_CityZone
+        CursorMode_CityZone,
+        CursorMode_CityRoad
     };
 
     int         currentCursorMode = CursorMode_Normal;
