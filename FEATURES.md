@@ -68,7 +68,7 @@
 ## Phase 7: Map Overlays (DONE)
 - [x] Data layer toggles: crime, pollution, land value, population density, traffic, power
 - [x] Color-coded overlay rendering on game map
-- [ ] Legend/key for overlay values
+- [x] Legend/key for overlay values
 
 ## Phase 8: Disasters & Events
 - [ ] Sandstorm damage to city zones
