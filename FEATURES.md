@@ -76,7 +76,7 @@
 - [x] Legend/key for overlay values
 
 ## Phase 8: Disasters & Events
-- [WIP] Sandstorm damage to city zones
+- [x] Sandstorm damage to city zones
 - [ ] Sandworm attacks on populated areas
 - [ ] Fire spread from combat into city zones
 - [x] Disaster notification system
