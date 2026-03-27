@@ -298,4 +298,25 @@ void Sound_CombatNearby() {
     SDL_free(combined);
 }
 
+void Sound_TaxCollected() {
+    if (masterMute) return;
+    // Pleasant two-tone ascending: 440 Hz -> 660 Hz
+    int notes[] = { 440, 660 };
+    Mix_Chunk* chunk = GenerateArpeggio(notes, 2, 80, MIX_MAX_VOLUME / 2);
+    if (chunk) {
+        Mix_PlayChannel(-1, chunk, 0);
+        Mix_FreeChunk(chunk);
+    }
+}
+
+void Sound_BudgetLow() {
+    if (masterMute) return;
+    // Urgent double beep at 600 Hz
+    Mix_Chunk* chunk = GenerateAlertTone(600, 600, 2, 100, 50, MIX_MAX_VOLUME * 2 / 3);
+    if (chunk) {
+        Mix_PlayChannel(-1, chunk, 0);
+        Mix_FreeChunk(chunk);
+    }
+}
+
 } // namespace DuneCitySounds

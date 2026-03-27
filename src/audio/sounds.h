@@ -47,6 +47,18 @@ void Sound_Milestone();
  */
 void Sound_CombatNearby();
 
+/**
+ * Tax Collected — pleasant rising tone when city tax is collected.
+ * Two-tone ascending: 440 Hz -> 660 Hz, 80ms each.
+ */
+void Sound_TaxCollected();
+
+/**
+ * Budget Low Warning — urgent double beep when city budget is critical.
+ * Two quick beeps at 600 Hz, 100ms each with short gap.
+ */
+void Sound_BudgetLow();
+
 } // namespace DuneCitySounds
 
 #endif // AUDIO_SOUNDS_H

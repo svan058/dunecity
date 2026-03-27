@@ -86,6 +86,13 @@ typedef enum {
     Sound_MachineGun,
     Sound_Sonic,
     Sound_RocketSmall,
+    // City event sounds
+    Sound_CityTaxCollected,
+    Sound_CityBudgetLow,
+    Sound_CityZoneBuilt,
+    Sound_CityPowerShortage,
+    Sound_CityDisasterWarning,
+    Sound_CityMilestone,
     NUM_SOUNDCHUNK
 } Sound_enum;
 
