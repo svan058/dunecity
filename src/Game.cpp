@@ -1757,6 +1757,14 @@ void Game::doInput()
 
                                 } break;
 
+                                case CursorMode_CityRoad: {
+
+                                    if(screenborder->isScreenCoordInsideMap(mouse->x, mouse->y) == true) {
+                                        handleCityRoadPlacementClick(screenborder->screen2MapX(mouse->x), screenborder->screen2MapY(mouse->y));
+                                    }
+
+                                } break;
+
                                 case CursorMode_Normal:
                                 default: {
 
@@ -1782,6 +1790,9 @@ void Game::doInput()
                             if(currentCursorMode != CursorMode_Normal) {
                                 //cancel special cursor mode
                                 setCursorMode(CursorMode_Normal);
+                                // Reset road drag state
+                                lastRoadTileX = -1;
+                                lastRoadTileY = -1;
                             } else if((!selectedList.empty()
                                             && (((objectManager.getObject(*selectedList.begin()))->getOwner() == pLocalHouse))
                                             && (((objectManager.getObject(*selectedList.begin()))->isRespondable())) ) )
@@ -3646,6 +3657,19 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
             }
         } break;
 
+        case SDLK_r: {
+            // Toggle road placement mode
+            if (currentCursorMode == CursorMode_CityRoad) {
+                setCursorMode(CursorMode_Normal);
+                lastRoadTileX = -1;
+                lastRoadTileY = -1;
+            } else {
+                setCursorMode(CursorMode_CityRoad);
+                lastRoadTileX = -1;
+                lastRoadTileY = -1;
+            }
+        } break;
+
         case SDLK_a: {
             //set object to attack
             setCursorMode(CursorMode_Attack);
@@ -3656,8 +3680,10 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
         } break;
 
         case SDLK_ESCAPE: {
-            if (currentCursorMode == CursorMode_CityZone) {
+            if (currentCursorMode == CursorMode_CityZone || currentCursorMode == CursorMode_CityRoad) {
                 setCursorMode(CursorMode_Normal);
+                lastRoadTileX = -1;
+                lastRoadTileY = -1;
             } else {
                 onOptions();
             }
@@ -3782,18 +3808,6 @@ void Game::handleKeyInput(SDL_KeyboardEvent& keyboardEvent) {
                 ObjectBase* pObject = objectManager.getObject(objectID);
                 if(pObject->getItemID() == Unit_Harvester) {
                     static_cast<Harvester*>(pObject)->handleReturnClick();
-                }
-            }
-        } break;
-
-
-        case SDLK_r: {
-            for(Uint32 objectID : selectedList) {
-                ObjectBase* pObject = objectManager.getObject(objectID);
-                if(pObject->isAStructure()) {
-                    static_cast<StructureBase*>(pObject)->handleRepairClick();
-                } else if(pObject->isAGroundUnit() && pObject->getHealth() < pObject->getMaxHealth()) {
-                    static_cast<GroundUnit*>(pObject)->handleSendToRepairClick();
                 }
             }
         } break;
@@ -4085,6 +4099,55 @@ void Game::handleCityZonePlacementClick(int xPos, int yPos) {
                                    static_cast<uint32_t>(xPos),
                                    static_cast<uint32_t>(yPos),
                                    static_cast<uint32_t>(selectedZoneType_)));
+
+    soundPlayer->playSound(Sound_PlaceStructure);
+}
+
+void Game::handleCityRoadPlacementClick(int xPos, int yPos) {
+    // Skip if same tile as last placement (for drag handling)
+    if (xPos == lastRoadTileX && yPos == lastRoadTileY) {
+        return;
+    }
+
+    Tile* pTile = currentGameMap->getTile(xPos, yPos);
+
+    if(pTile == nullptr) {
+        return;
+    }
+
+    // Check valid terrain (can build on sand, rock, or slab)
+    if (pTile->getType() == Terrain_Mountain) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    // Check for blocking objects
+    if (pTile->hasANonInfantryGroundObject()) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    // Check city budget for road cost
+    auto* citySim = getCitySimulation();
+    if (!citySim) {
+        return;
+    }
+
+    int roadCost = 25; // From ObjectData
+    if (!citySim->spendCityFunds(roadCost)) {
+        soundPlayer->playSound(Sound_InvalidAction);
+        return;
+    }
+
+    // Place road via city command
+    cmdManager.addCommand(Command(pLocalPlayer->getPlayerID(), CMD_CITY_TOOL,
+                                   static_cast<uint32_t>(xPos),
+                                   static_cast<uint32_t>(yPos),
+                                   1)); // 1 = road tool type
+
+    // Update last position for drag tracking
+    lastRoadTileX = xPos;
+    lastRoadTileY = yPos;
 
     soundPlayer->playSound(Sound_PlaceStructure);
 }

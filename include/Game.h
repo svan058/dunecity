@@ -523,6 +523,7 @@ private:
         \param  yPos    y-coordinate in map coordinates
     */
     void handleCityZonePlacementClick(int xPos, int yPos);
+    void handleCityRoadPlacementClick(int xPos, int yPos);
     /**
         Performs a request carryall click for the currently selected units.
         \param  xPos    x-coordinate in map coordinates
@@ -563,10 +564,13 @@ public:
         CursorMode_Capture,
         CursorMode_CarryallDrop,
         CursorMode_Placing,
-        CursorMode_CityZone
+        CursorMode_CityZone,
+        CursorMode_CityRoad
     };
 
     int         currentCursorMode = CursorMode_Normal;
+    int         lastRoadTileX = -1;
+    int         lastRoadTileY = -1;
     DuneCity::ZoneType selectedZoneType_ = DuneCity::ZoneType::Residential;
 
     GameType    gameType = GameType::Campaign;
