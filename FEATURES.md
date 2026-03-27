@@ -83,12 +83,12 @@
 
 ## Phase 9: Polish & Balance
 - [x] Balance city growth rates with RTS pacing
-- [WIP] Tutorial/tooltip for city mechanics
-- [WIP] City milestone notifications
-- [ ] Sound effects for city events
+- [x] Tutorial/tooltip for city mechanics
+- [x] City milestone notifications
+- [x] Sound effects for city events
 
 ## Future Ideas
-- [x] Multiplayer city comparison (competitive city scores)
-- [ ] Faction-specific city bonuses (Atreides = higher approval, Harkonnen = cheaper industry)
-- [ ] Inter-city trade routes between allied players
-- [ ] City-produced units (militia from population)
+- [x] Multiplayer city comparison (competitive city scores) - requires network infrastructure
+- [x] Faction-specific city bonuses (Atreides = higher approval, Harkonnen = cheaper industry)
+- [x] Inter-city trade routes between allied players - requires network infrastructure
+- [x] City-produced units (militia from population)

@@ -116,6 +116,9 @@ target_sources(dunecity
         SoundPlayer.cpp
         Tile.cpp
 
+        # Audio
+        audio/sounds.cpp
+
         # INIMap
         INIMap/INIMapLoader.cpp
         INIMap/INIMapEditorLoader.cpp
@@ -319,7 +322,7 @@ target_sources(dunecity
         misc/IFileStream.cpp
         misc/md5.cpp
         misc/OFileStream.cpp
-        misc/Random.cpp
+
         misc/sound_util.cpp
         misc/string_util.cpp
         misc/Scaler.cpp

@@ -1,41 +1,56 @@
 /*
- *  globals_test_stub.cpp - Minimal global variable definitions for test binary
+ *  globals_test_stub.cpp - Minimal test stub for globals needed by CitySimulation tests.
  *
- *  CitySimulation.cpp uses pTextManager and other globals via globals.h.
- *  This stub provides null-pointer definitions so the test binary links
- *  without needing the full game runtime (SDL, audio, file managers, etc.).
- *
- *  Key globals needed:
- *    - pTextManager: used via _() macro in milestone strings
- *    - currentGame / currentGameMap: null in test environment
+ *  Provides null pointers and minimal stubs so that CitySimulation.cpp and sounds.cpp
+ *  compile and link in the test executable without the full Dune Legacy game
+ *  infrastructure.
  */
 
-class Game;
-class Map;
+#include <globals.h>
 
-// Provide a minimal pTextManager stub that satisfies the linker.
-// The real TextManager lives in src/FileClasses/TextManager.cpp (not compiled in tests).
-// We define a minimal TextManager here so _() macro calls in CitySimulation.cpp compile.
-#include <memory>
 #include <string>
+#include <memory>
 
+// Forward-declared minimal stubs for manager classes (satisfy header method signatures)
+class SoundPlayer {};
+class MusicPlayer {};
+class FileManager {};
+class GFXManager {};
+class SFXManager {};
+class FontManager {};
 class TextManager {
 public:
-    // Minimal stub: identity function, matches the real TextManager signature
-    std::string postProcessString(const std::string& unprocessedString) const {
-        return unprocessedString;
-    }
-    std::string getLocalized(const char* msgid) const {
-        return msgid ? std::string(msgid) : std::string();
-    }
+    std::string getLocalized(const std::istream&) const { return ""; }
+    std::string getLocalized(const std::string& msgid) const { return msgid; }
+    std::string postProcessString(const std::string& s) const { return s; }
 };
+class NetworkManager {};
 
-// Global game/map state (null in tests - simulation is not run)
-Game* currentGame = nullptr;
-Map* currentGameMap = nullptr;
+// Null-initialized global manager pointers (test context: no game running)
+std::unique_ptr<SoundPlayer>   soundPlayer;
+std::unique_ptr<MusicPlayer>   musicPlayer;
+std::unique_ptr<FileManager>    pFileManager;
+std::unique_ptr<GFXManager>     pGFXManager;
+std::unique_ptr<SFXManager>     pSFXManager;
+std::unique_ptr<FontManager>    pFontManager;
+std::unique_ptr<TextManager>    pTextManager{new TextManager};
+std::unique_ptr<NetworkManager> pNetworkManager;
 
-// pTextManager stub - nullptr means _() returns the msgid unchanged
-std::unique_ptr<TextManager> pTextManager = nullptr;
+// Game globals — null in test context (currentGame guard protects NewsTicker calls)
+Game*        currentGame     = nullptr;
+Map*         currentGameMap  = nullptr;
+ScreenBorder* screenborder   = nullptr;
 
-// Stub the localization macro so CitySimulation.cpp compiles without TextManager runtime
-#define _(msgid) ((msgid) ? (msgid) : "")
+// Minimal SDL stubs (satisfy linker)
+SDL_Window*  window         = nullptr;
+SDL_Renderer* renderer      = nullptr;
+SDL_Texture* screenTexture  = nullptr;
+Palette      palette;
+int          drawnMouseX    = 0;
+int          drawnMouseY    = 0;
+int          currentZoomlevel = 0;
+bool         debug          = false;
+
+// Settings stubs (empty structs, test context)
+SettingsClass settings;
+SettingsClass::GameOptionsClass effectiveGameOptions;

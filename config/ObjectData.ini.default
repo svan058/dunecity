@@ -299,6 +299,56 @@ Builder = Construction Yard
 TechLevel = 2
 Prerequisite = Windtrap, Refinery
 
+### DuneCity Zone Structures ###
+
+[Residential Zone]
+Enabled = true
+HitPoints = 300
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 40
+Builder = Construction Yard
+TechLevel = 1
+
+[Commercial Zone]
+Enabled = true
+HitPoints = 300
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 40
+Builder = Construction Yard
+TechLevel = 1
+
+[Industrial Zone]
+Enabled = true
+HitPoints = 300
+Price = 100
+Power = 0
+ViewRange = 2
+BuildTime = 40
+Builder = Construction Yard
+TechLevel = 1
+
+### DuneCity Infrastructure ###
+
+[Road]
+Enabled = true
+Price = 25
+ViewRange = 1
+BuildTime = 10
+Builder = Construction Yard
+TechLevel = 1
+
+[Power Line]
+Enabled = true
+Price = 15
+ViewRange = 1
+BuildTime = 8
+Builder = Construction Yard
+TechLevel = 1
+
 [Slab1]
 Enabled = true
 Price = 5
