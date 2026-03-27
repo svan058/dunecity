@@ -49,6 +49,7 @@
 #include <structures/Wall.h>
 #include <structures/WindTrap.h>
 #include <structures/WOR.h>
+#include <structures/ZoneStructure.h>
 
 //units
 #include <units/Carryall.h>
@@ -777,6 +778,9 @@ ObjectBase* ObjectBase::createObject(int itemID, House* Owner, bool byScenario) 
         case Structure_Wall:                newObject = new Wall(Owner); break;
         case Structure_WindTrap:            newObject = new WindTrap(Owner); break;
         case Structure_WOR:                 newObject = new WOR(Owner); break;
+        case Structure_ZoneResidential:     newObject = new ResidentialZone(Owner); break;
+        case Structure_ZoneCommercial:      newObject = new CommercialZone(Owner); break;
+        case Structure_ZoneIndustrial:      newObject = new IndustrialZone(Owner); break;
 
         case Unit_Carryall:                 newObject = new Carryall(Owner); break;
         case Unit_Devastator:               newObject = new Devastator(Owner); break;
@@ -851,6 +855,9 @@ ObjectBase* ObjectBase::loadObject(InputStream& stream, int itemID, Uint32 objec
         case Structure_Wall:                newObject = new Wall(stream); break;
         case Structure_WindTrap:            newObject = new WindTrap(stream); break;
         case Structure_WOR:                 newObject = new WOR(stream); break;
+        case Structure_ZoneResidential:     newObject = new ResidentialZone(stream); break;
+        case Structure_ZoneCommercial:      newObject = new CommercialZone(stream); break;
+        case Structure_ZoneIndustrial:      newObject = new IndustrialZone(stream); break;
 
         case Unit_Carryall:                 newObject = new Carryall(stream); break;
         case Unit_Devastator:               newObject = new Devastator(stream); break;

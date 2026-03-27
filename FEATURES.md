@@ -6,10 +6,6 @@
 | `C` | Capture unit mode (existing) |
 | `Shift+C` | Toggle city stats HUD |
 | `Shift+B` | Open city budget screen |
-| `Z` | Enter/exit zone placement mode |
-| `1` (in zone mode) | Select Residential zone |
-| `2` (in zone mode) | Select Commercial zone |
-| `3` (in zone mode) | Select Industrial zone |
 | `Shift+1` | Toggle overlay: None (default) |
 | `Shift+2` | Toggle overlay: Power Grid |
 | `Shift+3` | Toggle overlay: Traffic Density |
@@ -17,7 +13,6 @@
 | `Shift+5` | Toggle overlay: Land Value |
 | `Shift+6` | Toggle overlay: Crime Rate |
 | `Shift+7` | Toggle overlay: Population Density |
-| `Escape` (in zone mode) | Exit zone placement mode |
 
 ---
 
@@ -42,6 +37,7 @@
 - [x] Zone placement tool (R/C/I zones on map tiles)
 - [x] Visual zone indicators on map (colored overlays or tile borders)
 - [ ] Zone info tooltip on hover
+- [x] Zones buildable as structures via Construction Yard (Phase 3 upgrade)
 
 ## Phase 3: Power Grid Visualization (DONE)
 - [x] Power grid overlay mode (show powered/unpowered areas)
@@ -49,9 +45,12 @@
 - [ ] Wind Trap radius visualization
 - [ ] Power shortage warnings
 
-## Phase 4: City Building Menu
+## Phase 4: City Building Menu (DONE)
+- [x] Zone structures (R/C/I) buildable via Construction Yard (100 credits each)
+- [x] Sand placement support (zones can be placed on any non-mountain terrain)
+- [x] Removed legacy freeform zone placement (Z hotkey)
 - [ ] Dedicated "City" build menu tab alongside military buildings
-- [ ] City-specific structures (roads, power lines, zone markers)
+- [ ] City-specific structures (roads, power lines)
 - [ ] Build cost integration with city budget
 
 ## Phase 5: Economy Integration (DONE)

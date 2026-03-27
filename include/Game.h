@@ -514,13 +514,6 @@ private:
     bool handleSelectedObjectsCaptureClick(int xPos, int yPos);
 
     /**
-        Handles a city zone placement click.
-        \param  xPos    x-coordinate in map coordinates
-        \param  yPos    y-coordinate in map coordinates
-    */
-    void handleCityZonePlacementClick(int xPos, int yPos);
-
-    /**
         Performs a request carryall click for the currently selected units.
         \param  xPos    x-coordinate in map coordinates
         \param  yPos    x-coordinate in map coordinates
@@ -559,12 +552,10 @@ public:
         CursorMode_Move,
         CursorMode_Capture,
         CursorMode_CarryallDrop,
-        CursorMode_Placing,
-        CursorMode_CityZone
+        CursorMode_Placing
     };
 
     int         currentCursorMode = CursorMode_Normal;
-    DuneCity::ZoneType selectedZoneType_ = DuneCity::ZoneType::Residential;
 
     GameType    gameType = GameType::Campaign;
     int         techLevel = 0;

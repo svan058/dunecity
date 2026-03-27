@@ -197,6 +197,9 @@ Coord getStructureSize(int itemID) {
         case Structure_Wall:                return Coord(1,1); break;
         case Structure_WindTrap:            return Coord(2,2); break;
         case Structure_WOR:                 return Coord(2,2); break;
+        case Structure_ZoneResidential:     return Coord(2,2); break;
+        case Structure_ZoneCommercial:      return Coord(2,2); break;
+        case Structure_ZoneIndustrial:      return Coord(2,2); break;
         default:                            return Coord(0,0); break;
     }
 }
@@ -229,6 +232,9 @@ Uint32  getItemIDByName(const std::string& name) {
     else if(lowerName == "wall")                                                return Structure_Wall;
     else if(lowerName == "windtrap")                                            return Structure_WindTrap;
     else if(lowerName == "wor")                                                 return Structure_WOR;
+    else if((lowerName == "zone residential") || (lowerName == "residential zone")) return Structure_ZoneResidential;
+    else if((lowerName == "zone commercial") || (lowerName == "commercial zone"))   return Structure_ZoneCommercial;
+    else if((lowerName == "zone industrial") || (lowerName == "industrial zone"))   return Structure_ZoneIndustrial;
     else if((lowerName == "carryall") || (lowerName == "carry-all"))            return Unit_Carryall;
     else if((lowerName == "devastator") || (lowerName == "devistator"))         return Unit_Devastator;
     else if(lowerName == "deviator")                                            return Unit_Deviator;
@@ -282,6 +288,9 @@ std::string getItemNameByID(Uint32 itemID) {
         case Structure_Wall:                return "Wall";              break;
         case Structure_WindTrap:            return "Windtrap";          break;
         case Structure_WOR:                 return "WOR";               break;
+        case Structure_ZoneResidential:     return "Residential Zone";  break;
+        case Structure_ZoneCommercial:      return "Commercial Zone";   break;
+        case Structure_ZoneIndustrial:      return "Industrial Zone";   break;
 
         case Unit_Carryall:                 return "Carryall";          break;
         case Unit_Devastator:               return "Devastator";        break;
@@ -338,6 +347,9 @@ std::string resolveItemName(int itemID) {
         case Structure_Wall:                return _("@DUNE.ENG|261#Wall");                break;
         case Structure_WindTrap:            return _("@DUNE.ENG|251#Windtrap");            break;
         case Structure_WOR:                 return _("@DUNE.ENG|247#WOR");                 break;
+        case Structure_ZoneResidential:     return _("Residential Zone");                  break;
+        case Structure_ZoneCommercial:      return _("Commercial Zone");                   break;
+        case Structure_ZoneIndustrial:      return _("Industrial Zone");                   break;
 
         case Unit_Carryall:                 return _("@DUNE.ENG|195#Carryall");            break;
         case Unit_Devastator:               return _("@DUNE.ENG|217#Devastator");          break;
