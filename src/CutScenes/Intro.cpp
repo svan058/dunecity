@@ -138,7 +138,7 @@ Intro::Intro() {
     addVideoEvent(std::make_unique<HoldPictureVideoEvent>(pDuneText->getPicture(pDuneText->getNumFrames() - 1).get(), 30, false));
     addVideoEvent(std::make_unique<FadeOutVideoEvent>(pDuneText->getPicture(pDuneText->getNumFrames() - 1).get(), 20, false));
     addTextEvent(std::make_unique<TextEvent>(intro_text.getString(IntroText_The_Battle_for_Arrakis),color,48,40,true,true,true));
-    addTextEvent(std::make_unique<TextEvent>("The remake is called Dune Legacy!",color,48,40,true));
+    addTextEvent(std::make_unique<TextEvent>("The remake is called Dune City!",color,48,40,true));
     if(bEnableVoice) addTrigger(std::make_unique<CutSceneSoundTrigger>(52,voice[Voice_The_building].get()));
     if(bEnableVoice) addTrigger(std::make_unique<CutSceneSoundTrigger>(64,voice[Voice_of_a_Dynasty].get()));
 

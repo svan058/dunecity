@@ -295,11 +295,11 @@
 		E375D33F2DB00C5E00F459C8 /* VOC.PAK in CopyFiles */ = {isa = PBXBuildFile; fileRef = E375D32D2DB00C5D00F459C8 /* VOC.PAK */; };
 		E398899A2EA8A80A00188668 /* CrashHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39889992EA8A80A00188668 /* CrashHandler.cpp */; };
 		E39889BD2EABC2B300188668 /* QuantBotConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39889BC2EABC2B300188668 /* QuantBotConfig.cpp */; };
-		E39889E92EABD26A00188668 /* Dune Legacy.ini in Resources */ = {isa = PBXBuildFile; fileRef = E39889E42EABD26A00188668 /* Dune Legacy.ini */; };
+		E39889E92EABD26A00188668 /* Dune City.ini in Resources */ = {isa = PBXBuildFile; fileRef = E39889E42EABD26A00188668 /* Dune City.ini */; };
 		E39889EA2EABD26A00188668 /* QuantBot Config.ini.default in Resources */ = {isa = PBXBuildFile; fileRef = E39889E62EABD26A00188668 /* QuantBot Config.ini.default */; };
 		E39889EB2EABD26A00188668 /* ObjectData.ini.default in Resources */ = {isa = PBXBuildFile; fileRef = E39889E52EABD26A00188668 /* ObjectData.ini.default */; };
 		E39889EC2EABD26A00188668 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E39889E72EABD26A00188668 /* README.md */; };
-		E39889ED2EABD27900188668 /* Dune Legacy.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = E39889E42EABD26A00188668 /* Dune Legacy.ini */; };
+		E39889ED2EABD27900188668 /* Dune City.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = E39889E42EABD26A00188668 /* Dune City.ini */; };
 		E39889EE2EABD27900188668 /* ObjectData.ini.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = E39889E52EABD26A00188668 /* ObjectData.ini.default */; };
 		E39889EF2EABD27900188668 /* QuantBot Config.ini.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = E39889E62EABD26A00188668 /* QuantBot Config.ini.default */; };
 		E39889F02EABD27900188668 /* README.md in CopyFiles */ = {isa = PBXBuildFile; fileRef = E39889E72EABD26A00188668 /* README.md */; };
@@ -433,7 +433,7 @@
 			dstPath = config;
 			dstSubfolderSpec = 7;
 			files = (
-				E39889ED2EABD27900188668 /* Dune Legacy.ini in CopyFiles */,
+				E39889ED2EABD27900188668 /* Dune City.ini in CopyFiles */,
 				E39889EE2EABD27900188668 /* ObjectData.ini.default in CopyFiles */,
 				E39889EF2EABD27900188668 /* QuantBot Config.ini.default in CopyFiles */,
 				E39889F02EABD27900188668 /* README.md in CopyFiles */,
@@ -1016,7 +1016,7 @@
 		E398899E2EA8A83100188668 /* SpatialGridHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpatialGridHandle.h; sourceTree = "<group>"; };
 		E39889BC2EABC2B300188668 /* QuantBotConfig.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = QuantBotConfig.cpp; sourceTree = "<group>"; };
 		E39889BE2EABC2C300188668 /* QuantBotConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QuantBotConfig.h; sourceTree = "<group>"; };
-		E39889E42EABD26A00188668 /* Dune Legacy.ini */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Dune Legacy.ini"; sourceTree = "<group>"; };
+		E39889E42EABD26A00188668 /* Dune City.ini */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Dune City.ini"; sourceTree = "<group>"; };
 		E39889E52EABD26A00188668 /* ObjectData.ini.default */ = {isa = PBXFileReference; lastKnownFileType = text; path = ObjectData.ini.default; sourceTree = "<group>"; };
 		E39889E62EABD26A00188668 /* QuantBot Config.ini.default */ = {isa = PBXFileReference; lastKnownFileType = text; path = "QuantBot Config.ini.default"; sourceTree = "<group>"; };
 		E39889E72EABD26A00188668 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -2027,7 +2027,7 @@
 		E39889E82EABD26A00188668 /* config */ = {
 			isa = PBXGroup;
 			children = (
-				E39889E42EABD26A00188668 /* Dune Legacy.ini */,
+				E39889E42EABD26A00188668 /* Dune City.ini */,
 				E39889E52EABD26A00188668 /* ObjectData.ini.default */,
 				E39889E62EABD26A00188668 /* QuantBot Config.ini.default */,
 				E39889E72EABD26A00188668 /* README.md */,
@@ -2103,7 +2103,7 @@
 				134D2FE90F38F178001B38EF /* LEGACY.PAK in Resources */,
 				13E564D1169B55BE00D282B9 /* OPENSD2.PAK in Resources */,
 				13E929C010AF72BF00169991 /* Dune2-Versions.txt in Resources */,
-				E39889E92EABD26A00188668 /* Dune Legacy.ini in Resources */,
+				E39889E92EABD26A00188668 /* Dune City.ini in Resources */,
 				E39889EA2EABD26A00188668 /* QuantBot Config.ini.default in Resources */,
 				E39889EB2EABD26A00188668 /* ObjectData.ini.default in Resources */,
 				E39889EC2EABD26A00188668 /* README.md in Resources */,

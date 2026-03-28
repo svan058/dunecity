@@ -16,11 +16,11 @@
  */
 
 #ifndef VERSION
-    #define VERSION "0.99.5"
+    #define VERSION "0.01"
 #endif
 
 #ifndef PACKAGE
-    #define PACKAGE "dunelegacy"
+    #define PACKAGE "dunecity"
 #endif
 
 #define VERSIONSTRING   PACKAGE VERSION
@@ -30,9 +30,9 @@
 #endif
 
 #ifndef CONFIGFILENAME
-    #define CONFIGFILENAME "Dune Legacy.ini"
+    #define CONFIGFILENAME "Dune City.ini"
 #endif
 
 #ifndef LOGFILENAME
-    #define LOGFILENAME "Dune Legacy.log"
+    #define LOGFILENAME "Dune City.log"
 #endif

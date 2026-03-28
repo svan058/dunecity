@@ -693,7 +693,7 @@ void ModManager::seedVanillaFromDefaults() {
     ModInfo info;
     info.name = VANILLA_MOD_NAME;
     info.displayName = "Vanilla";
-    info.author = "Dune Legacy";
+    info.author = "Dune City";
     info.description = "Default game settings";
     info.gameVersion = VERSION;
     writeModInfo(vanillaPath, info);

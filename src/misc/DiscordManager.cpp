@@ -131,7 +131,7 @@ void DiscordManager::updatePresence(const std::string& state, const std::string&
 }
 
 void DiscordManager::setMainMenu() {
-    updatePresence("In Main Menu", "Dune Legacy");
+    updatePresence("In Main Menu", "Dune City");
 }
 
 void DiscordManager::setInGame(const std::string& houseName, const std::string& mapName, bool isCampaign) {
@@ -148,14 +148,14 @@ void DiscordManager::setInGame(const std::string& houseName, const std::string& 
         smallText = houseName;
     }
     
-    updatePresence(state, details + " - " + mapName, "logo", "Dune Legacy", smallImage, smallText);
+    updatePresence(state, details + " - " + mapName, "logo", "Dune City", smallImage, smallText);
 }
 
 void DiscordManager::setHostingGame(const std::string& mapName, int currentPlayers, int maxPlayers) {
     std::string state = "Hosting Multiplayer";
     std::string details = mapName;
     
-    updatePresence(state, details, "logo", "Dune Legacy", "multiplayer", "Multiplayer", 
+    updatePresence(state, details, "logo", "Dune City", "multiplayer", "Multiplayer", 
                    currentPlayers, maxPlayers);
 }
 
@@ -163,7 +163,7 @@ void DiscordManager::setInLobby(const std::string& hostName, const std::string& 
     std::string state = "In Lobby";
     std::string details = hostName + " - " + mapName;
     
-    updatePresence(state, details, "logo", "Dune Legacy", "multiplayer", "Multiplayer");
+    updatePresence(state, details, "logo", "Dune City", "multiplayer", "Multiplayer");
 }
 
 void DiscordManager::setMultiplayerGame(const std::string& houseName, const std::string& mapName,
@@ -171,7 +171,7 @@ void DiscordManager::setMultiplayerGame(const std::string& houseName, const std:
     std::string state = "Playing as " + houseName;
     std::string details = "Multiplayer - " + mapName;
     
-    updatePresence(state, details, "logo", "Dune Legacy", "multiplayer", "Multiplayer",
+    updatePresence(state, details, "logo", "Dune City", "multiplayer", "Multiplayer",
                    currentPlayers, maxPlayers);
 }
 
@@ -193,7 +193,7 @@ void DiscordManager::setGameStarting(const std::string& mapName, const std::stri
         state = state.substr(0, 122) + "...";
     }
     
-    updatePresence(state, details, "logo", "Dune Legacy", "multiplayer", "Game Starting!",
+    updatePresence(state, details, "logo", "Dune City", "multiplayer", "Game Starting!",
                    playerCount, playerCount);
 }
 
@@ -201,7 +201,7 @@ void DiscordManager::setMapEditor(const std::string& mapName) {
     std::string state = "Map Editor";
     std::string details = mapName.empty() ? "Creating a map" : "Editing: " + mapName;
     
-    updatePresence(state, details, "logo", "Dune Legacy", "editor", "Map Editor");
+    updatePresence(state, details, "logo", "Dune City", "editor", "Map Editor");
 }
 
 void DiscordManager::clear() {
@@ -248,7 +248,7 @@ void DiscordManager::sendWebhookMessage(const std::string& title, const std::str
             "\"title\":\"" + escapeJson(title) + "\","
             "\"description\":\"" + escapeJson(description) + "\","
             "\"color\":" + std::to_string(color) + ","
-            "\"footer\":{\"text\":\"Dune Legacy\"}"
+            "\"footer\":{\"text\":\"Dune City\"}"
             "}]}";
         
         struct curl_slist* headers = nullptr;

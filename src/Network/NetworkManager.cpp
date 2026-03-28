@@ -118,7 +118,7 @@ void NetworkManager::startServer(bool bLANServer, const std::string& serverName,
             // Try to add port mapping if UPnP is available
             // Use 1 hour lease (3600s) instead of permanent - will be renewed if game runs longer
             if (pUPnPManager->isAvailable()) {
-                if (pUPnPManager->addPortMapping(host->address.port, host->address.port, "UDP", "Dune Legacy", UPNP_LEASE_DURATION)) {
+                if (pUPnPManager->addPortMapping(host->address.port, host->address.port, "UDP", "Dune City", UPNP_LEASE_DURATION)) {
                     upnpPortMapped = true;
                     upnpMappedPort = host->address.port;
                     upnpLeaseStartTime = SDL_GetTicks();
@@ -353,7 +353,7 @@ void NetworkManager::update()
         Uint32 elapsed = (SDL_GetTicks() - upnpLeaseStartTime) / 1000;  // seconds
         if (elapsed >= (UPNP_LEASE_DURATION - UPNP_RENEWAL_MARGIN)) {
             SDL_Log("NetworkManager: Renewing UPnP port mapping lease...");
-            if (pUPnPManager->addPortMapping(upnpMappedPort, upnpMappedPort, "UDP", "Dune Legacy", UPNP_LEASE_DURATION)) {
+            if (pUPnPManager->addPortMapping(upnpMappedPort, upnpMappedPort, "UDP", "Dune City", UPNP_LEASE_DURATION)) {
                 upnpLeaseStartTime = SDL_GetTicks();
                 SDL_Log("NetworkManager: UPnP lease renewed successfully");
             } else {

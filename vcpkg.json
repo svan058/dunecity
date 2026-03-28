@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "name": "dunelegacy",
-  "version": "0.99.5",
-  "description": "Dune Legacy - A modern OpenSource Dune 2 engine",
+  "name": "dunecity",
+  "version": "0.01",
+  "description": "Dune City - A modern OpenSource Dune 2 engine with city simulation",
   "homepage": "https://dunelegacy.sourceforge.net",
   "dependencies": [
     "sdl2",

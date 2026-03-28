@@ -16,11 +16,11 @@
 #endif
 
 #ifndef CONFIGFILENAME
-    #define CONFIGFILENAME "Dune Legacy.ini"
+    #define CONFIGFILENAME "Dune City.ini"
 #endif
 
 #ifndef LOGFILENAME
-    #define LOGFILENAME "Dune Legacy.log"
+    #define LOGFILENAME "Dune City.log"
 #endif
 
 #cmakedefine HAS_GETHOSTBYADDR_R

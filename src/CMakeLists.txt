@@ -19,7 +19,7 @@ if(APPLE)
         MACOSX_BUNDLE_ICON_FILE "dunecity.icns"
         MACOSX_BUNDLE_GUI_IDENTIFIER "net.dunecity.DuneCity"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/IDE/xCode/Info.plist"
-        MACOSX_BUNDLE_COPYRIGHT "© Dune Legacy Team"
+        MACOSX_BUNDLE_COPYRIGHT "© Dune City Team"
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "net.dunecity.DuneCity"
     )
     
@@ -466,7 +466,7 @@ if(APPLE)
         COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_SOURCE_DIR}/config/ObjectData.ini.default"
             "${CMAKE_SOURCE_DIR}/config/QuantBot Config.ini.default"
-            "${CMAKE_SOURCE_DIR}/config/Dune Legacy.ini"
+            "${CMAKE_SOURCE_DIR}/config/Dune City.ini"
             "${CMAKE_SOURCE_DIR}/config/README.md"
             "${BUNDLE_RESOURCES_DIR}/config/"
         COMMENT "Copying data and config files into app bundle Resources"

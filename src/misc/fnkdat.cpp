@@ -440,7 +440,7 @@ int fnkdat(const char* target, char* buffer, int len, int flags) {
 
 #ifdef __APPLE__
       getMacApplicationSupportFolder(buffer, len);
-      FNKDAT_S(strncat(buffer, "/Dune Legacy", len));
+      FNKDAT_S(strncat(buffer, "/Dune City", len));
 #else
       {
          char* xdg_config = getenv("XDG_CONFIG_HOME");

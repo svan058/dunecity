@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project name and version
-project(DuneCity VERSION 0.99.5 LANGUAGES C CXX)
+project(DuneCity VERSION 0.01 LANGUAGES C CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -168,7 +168,7 @@ if(NOT APPLE)
         install(FILES 
             config/ObjectData.ini.default
             "config/QuantBot Config.ini.default"
-            "config/Dune Legacy.ini"
+            "config/Dune City.ini"
             config/README.md
             DESTINATION ${DUNECITY_CONFIG_DIR}
         )
@@ -217,7 +217,7 @@ endif()
 
 # CPack configuration for packaging
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VENDOR "Dune Legacy Team")
+set(CPACK_PACKAGE_VENDOR "Dune City Team")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_HOMEPAGE_URL ${PROJECT_HOMEPAGE_URL})
@@ -261,7 +261,7 @@ if(WIN32)
         CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Readme.lnk\\\" \\\"$INSTDIR\\\\README\\\"
     ")
     set(CPACK_NSIS_DELETE_ICONS_EXTRA "
-        Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Dune Legacy.lnk\\\"
+        Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Dune City.lnk\\\"
         Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Release Notes.lnk\\\"
         Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Readme.lnk\\\"
     ")
@@ -334,7 +334,7 @@ else()
     set(CPACK_GENERATOR "DEB;RPM;TGZ")
     set(CPACK_DEBIAN_PACKAGE_SECTION "games")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0, libsdl2-mixer-2.0-0, libsdl2-ttf-2.0-0")
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Dune Legacy Team")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Dune City Team")
     set(CPACK_RPM_PACKAGE_LICENSE "GPL-2.0+")
     set(CPACK_RPM_PACKAGE_GROUP "Amusements/Games")
     set(CPACK_PACKAGE_FILE_NAME "DuneCity-${PROJECT_VERSION}-Linux-x64")

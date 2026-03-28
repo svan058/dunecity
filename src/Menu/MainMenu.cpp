@@ -148,7 +148,7 @@ void MainMenu::update()
     if(!latestVersion.empty() && !bUpdateDialogShown && !pChildWindow) {
         bUpdateDialogShown = true;
 
-        std::string message = _("A new version of Dune Legacy is available!");
+        std::string message = _("A new version of Dune City is available!");
         message += "\n\n";
         message += _("Current: ");
         message += VERSION;

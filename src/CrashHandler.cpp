@@ -188,16 +188,16 @@ static void signalHandler(int sig) {
     // Show message to user
     char message[512];
     snprintf(message, sizeof(message),
-        "Dune Legacy has crashed unexpectedly.\n\n"
+        "Dune City has crashed unexpectedly.\n\n"
         "A crash report has been saved to:\n"
         "%s\n\n"
         "Please report this bug on GitHub or the forums.\n"
         "Include the crash report to help fix the issue.",
-        crashLogPath ? crashLogPath : "Dune Legacy.log");
+        crashLogPath ? crashLogPath : "Dune City.log");
     
     SDL_ShowSimpleMessageBox(
         SDL_MESSAGEBOX_ERROR,
-        "Dune Legacy - Fatal Error",
+        "Dune City - Fatal Error",
         message,
         nullptr
     );

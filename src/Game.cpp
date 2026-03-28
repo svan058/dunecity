@@ -240,7 +240,7 @@ void Game::initPerformanceLog() {
         char timeStr[100];
         std::strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", std::localtime(&nowTime));
         
-        performanceLogFile << "=== Dune Legacy Performance Log Started " << timeStr << " ===" << std::endl;
+        performanceLogFile << "=== Dune City Performance Log Started " << timeStr << " ===" << std::endl;
         performanceLogFile << "Version: " << VERSION << std::endl;
         performanceLogFile << "Platform: " << SDL_GetPlatform() << std::endl;
         performanceLogFile << std::endl;

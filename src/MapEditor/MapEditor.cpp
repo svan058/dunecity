@@ -395,7 +395,7 @@ void MapEditor::loadMap(const std::string& filepath) {
 
 void MapEditor::saveMap(const std::string& filepath) {
     if(!loadedINIFile) {
-        std::string comment = "Created with Dune Legacy " + std::string(VERSION) + " Map Editor.";
+        std::string comment = "Created with Dune City " + std::string(VERSION) + " Map Editor.";
         loadedINIFile = std::make_unique<INIFile>(false, comment);
     }
 
