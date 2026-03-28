@@ -479,11 +479,6 @@ public:
     void drawZoneTooltip();
 
     /**
-        Draw city help tooltip for empty tiles (Phase 9 feature)
-    */
-    void drawCityHelpTooltip(int mapX, int mapY);
-
-    /**
         Draw placeholder visuals for conductive city roads.
     */
     void drawCityRoads(int x1, int y1, int x2, int y2);
