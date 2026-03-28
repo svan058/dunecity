@@ -24,6 +24,8 @@
 #include <Map.h>
 #include <House.h>
 
+#include <array>
+
 #include <misc/exceptions.h>
 
 
@@ -102,7 +104,7 @@ void SoundPlayer::playSound(Sound_enum id) {
 
 void SoundPlayer::playSound(Sound_enum soundID, int volume)
 {
-    static ChannelGroup soundID2ChannelGroup[] = {
+    static constexpr std::array<ChannelGroup, NUM_SOUNDCHUNK> soundID2ChannelGroup = {
         ChannelGroup::UI,                   // Sound_PlaceStructure
         ChannelGroup::UI,                   // Sound_ButtonClick
         ChannelGroup::UI,                   // Sound_InvalidAction
@@ -130,6 +132,12 @@ void SoundPlayer::playSound(Sound_enum soundID, int volume)
         ChannelGroup::Gun,                  // Sound_MachineGun
         ChannelGroup::Sonic,                // Sound_Sonic
         ChannelGroup::Rocket,               // Sound_RocketSmall
+        ChannelGroup::Credits,              // Sound_CityTaxCollected
+        ChannelGroup::UI,                   // Sound_CityBudgetLow
+        ChannelGroup::UI,                   // Sound_CityZoneBuilt
+        ChannelGroup::UI,                   // Sound_CityPowerShortage
+        ChannelGroup::Other,                // Sound_CityDisasterWarning
+        ChannelGroup::Credits,              // Sound_CityMilestone
     };
 
     if(soundOn) {

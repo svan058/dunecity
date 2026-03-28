@@ -8,6 +8,8 @@
 #ifndef AUDIO_SOUNDS_H
 #define AUDIO_SOUNDS_H
 
+#include <misc/SDL2pp.h>
+
 #include <SDL_mixer.h>
 
 namespace DuneCitySounds {
@@ -16,6 +18,13 @@ namespace DuneCitySounds {
  * Master mute toggle. When true, all city sounds are suppressed.
  */
 extern bool masterMute;
+
+sdl2::mix_chunk_ptr CreateZoneBuiltChunk();
+sdl2::mix_chunk_ptr CreateDisasterWarningChunk();
+sdl2::mix_chunk_ptr CreatePowerOutageChunk();
+sdl2::mix_chunk_ptr CreateMilestoneChunk();
+sdl2::mix_chunk_ptr CreateTaxCollectedChunk();
+sdl2::mix_chunk_ptr CreateBudgetLowChunk();
 
 /**
  * Zone Built — short confirmation beep.

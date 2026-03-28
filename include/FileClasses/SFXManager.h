@@ -108,6 +108,7 @@ public:
 private:
     sdl2::mix_chunk_ptr loadMixFromADL(const std::string& adlFile, int index, int volume = MIX_MAX_VOLUME/2) const;
 
+    void            loadSoundEffects();
     void            loadEnglishVoice();
     Mix_Chunk*      getEnglishVoice(Voice_enum id, int house) const;
 
