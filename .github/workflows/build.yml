@@ -19,7 +19,11 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
       
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+        # Quote the -D arg so PowerShell expands $env:VCPKG_ROOT instead
+        # of treating the colon-slash as a literal string. Without the
+        # quotes CMake gets the unexpanded path and fails to find the
+        # toolchain file.
+        run: cmake -B build "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
       
       - name: Build
         run: cmake --build build --config Release
