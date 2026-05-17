@@ -72,12 +72,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
+      # vcpkg builds several autotools-based ports from source on Linux
+      # (libxcrypt, sdl2-mixer's flac/opus/etc.) and needs the GNU build
+      # toolchain pre-installed on the runner. Without these the Configure
+      # step fails with: "libxcrypt currently requires ... autoconf
+      # autoconf-archive automake libtoolize". Also pulling in
+      # build-essential + libltdl-dev so any other transitive port that
+      # needs them is happy.
+      - name: Install Linux build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf autoconf-archive automake libtool libltdl-dev \
+            build-essential pkg-config bison flex
+
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-      
+
       - name: Configure CMake
         run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
       
