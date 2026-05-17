@@ -343,9 +343,13 @@ void CustomGameMenu::onMapTypeChange(int buttonID)
                 all.emplace_back(std::move(base), *src);
             }
         }
+        // Portable case-insensitive sort: lowercase both keys and
+        // compare. strcasecmp is POSIX-only and MSVC's equivalent is
+        // _stricmp — using strToLower (already in misc/string_util.h)
+        // keeps a single code path across Windows / macOS / Linux.
         std::sort(all.begin(), all.end(),
                   [](const auto& a, const auto& b) {
-                      return strcasecmp(a.first.c_str(), b.first.c_str()) < 0;
+                      return strToLower(a.first) < strToLower(b.first);
                   });
         for (const auto& [name, dir] : all) {
             mapList.addEntry(name);
