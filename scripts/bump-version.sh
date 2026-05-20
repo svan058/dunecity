@@ -17,6 +17,10 @@ VCPKG="$REPO_ROOT/vcpkg.json"
 
 # ── helpers ──────────────────────────────────────────────────────────
 
+# On Windows Git Bash, MSYS paths (/d/a/...) don't work with native Python.
+# Convert to Windows-native paths when cygpath is available.
+pypath() { command -v cygpath >/dev/null 2>&1 && cygpath -w "$1" || echo "$1"; }
+
 read_cmake_version() {
   sed -n 's/^project(DuneCity VERSION \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' "$CMAKE"
 }
@@ -26,7 +30,7 @@ read_config_h_version() {
 }
 
 read_vcpkg_version() {
-  python3 -c "import json; print(json.load(open('$VCPKG'))['version'])"
+  python3 -c "import json; print(json.load(open(r'$(pypath "$VCPKG")'))['version'])"
 }
 
 # ── --check mode ─────────────────────────────────────────────────────
@@ -96,11 +100,12 @@ bump_file "$CONFIG_H" \
   ""
 
 # vcpkg.json — use python for proper JSON handling
+VCPKG_PY="$(pypath "$VCPKG")"
 if (( DRY_RUN )); then
   echo "[dry-run] vcpkg.json:"
   python3 -c "
 import json, sys
-d = json.load(open('$VCPKG'))
+d = json.load(open(r'$VCPKG_PY'))
 old = d['version']
 d['version'] = '$VERSION'
 if old != '$VERSION':
@@ -111,9 +116,9 @@ else:
 else
   python3 -c "
 import json
-d = json.load(open('$VCPKG'))
+d = json.load(open(r'$VCPKG_PY'))
 d['version'] = '$VERSION'
-open('$VCPKG', 'w').write(json.dumps(d, indent=2) + '\n')
+open(r'$VCPKG_PY', 'w').write(json.dumps(d, indent=2) + '\n')
 "
 fi
 
