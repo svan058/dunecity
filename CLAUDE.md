@@ -75,11 +75,21 @@ scripts/bump-version.sh --check        # verify all files agree
 scripts/bump-version.sh 1.0.8 --dry-run  # preview changes
 ```
 
-Tag releases use `vX.Y.Z` (e.g. `v1.0.8`). The CI workflow calls the script automatically on tag builds.
+Tag releases use `vX.Y.Z` (e.g. `v1.0.8`). CI verifies that source metadata already matches the tag before building; it will not auto-bump for you.
 
 Do not hand-edit `CMakeLists.txt` project VERSION, `include/config.h` VERSION, or `vcpkg.json` version separately. Use the script.
 
 Generated build outputs (`build/include/config.h`, app bundle `Info.plist`) are not source of truth -- they are derived at configure/build time from `CMakeLists.txt`.
+
+Release/version rule: any user-visible release build, tag, or CI-triggering push must include the intended version bump in the same commit as the release work. Before saying a release is tagged, pushed, building in CI, or ready for Stefan to test, run:
+
+```bash
+scripts/bump-version.sh --check
+git diff -- CMakeLists.txt include/config.h vcpkg.json
+git tag --points-at HEAD
+```
+
+If the tag is meant to be `vX.Y.Z`, the checked version must be exactly `X.Y.Z`. If it is not, stop and fix the version before tagging or reporting completion.
 
 ## Build/test commands
 
@@ -106,6 +116,11 @@ deliverable is that `build/bin/dunecity.app` is rebuilt in the dev folder so
 Stefan can launch it. If the local build tree is stale or the target names have
 drifted, fix the build-tree issue or report the exact blocker instead of
 claiming the feature is done.
+
+For builds intended for Stefan or a release tag, verify the source-controlled
+version first with `scripts/bump-version.sh --check`, then rebuild. Do not rely
+on an already-open app bundle, a stale build tree, or a tag name as proof of the
+visible version.
 
 If those fail because the local build tree is stale or target names differ, inspect `README.md`, `BUILD.md`, `CMakeLists.txt`, and `tests/CMakeLists.txt` before changing build configuration.
 

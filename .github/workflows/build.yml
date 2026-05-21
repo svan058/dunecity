@@ -9,16 +9,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  # Gate: on v* tag builds, verify that the source-controlled version metadata
+  # (CMakeLists.txt, include/config.h, vcpkg.json) already matches the tag.
+  # This catches missing bump commits BEFORE any build/release/upload runs.
+  verify-version:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Bump version from tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        shell: bash
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Verify source version matches tag
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          bash scripts/bump-version.sh "$VERSION"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "Tag version: $TAG_VERSION"
+          bash scripts/bump-version.sh --check
+          SOURCE_VERSION=$(sed -n 's/^project(DuneCity VERSION \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' CMakeLists.txt)
+          if [ "$SOURCE_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Version mismatch: tag is v${TAG_VERSION} but source metadata says ${SOURCE_VERSION}."
+            echo "::error::Commit the version bump with 'scripts/bump-version.sh ${TAG_VERSION}' before tagging."
+            exit 1
+          fi
+          echo "OK — all source files agree on $SOURCE_VERSION, matches tag v${TAG_VERSION}"
+
+  build-windows:
+    runs-on: windows-latest
+    # Wait for version check on tag builds; run unconditionally otherwise
+    needs: [verify-version]
+    if: always() && (needs.verify-version.result == 'success' || needs.verify-version.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -60,13 +82,10 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    needs: [verify-version]
+    if: always() && (needs.verify-version.result == 'success' || needs.verify-version.result == 'skipped')
     steps:
       - uses: actions/checkout@v4
-      - name: Bump version from tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          bash scripts/bump-version.sh "$VERSION"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -104,13 +123,10 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    needs: [verify-version]
+    if: always() && (needs.verify-version.result == 'success' || needs.verify-version.result == 'skipped')
     steps:
       - uses: actions/checkout@v4
-      - name: Bump version from tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          bash scripts/bump-version.sh "$VERSION"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -170,7 +186,7 @@ jobs:
   # so creating a release here automatically flips every existing
   # install's "update available" flag the next time they launch.
   release:
-    needs: [build-windows, build-macos]
+    needs: [verify-version, build-windows, build-macos]
     # Linux is best-effort; Windows + macOS are required for release
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest

@@ -22,6 +22,18 @@ This guide covers building Dune Legacy on all platforms using modern dependency 
 
 **DO NOT** just run `cmake --build build` - this only builds the binary, not the installer!
 
+## Release/version gate
+
+Before any build that will be handed to Stefan, tagged, or pushed for CI as a release candidate, verify the source-controlled version:
+
+```bash
+scripts/bump-version.sh --check
+git diff -- CMakeLists.txt include/config.h vcpkg.json
+git tag --points-at HEAD
+```
+
+If the intended tag is `vX.Y.Z`, the app version must already be `X.Y.Z` before tagging or reporting that CI is building the release. Version bumps belong in the same commit as the release work; do not tag first and patch the version afterward.
+
 **ALWAYS** use the platform-specific installer target when testing or distributing:
 
 ```bash
