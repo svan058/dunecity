@@ -2530,31 +2530,52 @@ void QuantBot::build(int militaryValue) {
 				// requires an actual structure object, so tile-flag placement
 				// (CMD_CITY_PLACE_ZONE without a structure) does not work.
 				// Target ratio: ~3 R : 1 C : 1 I.
-				// Only start zoning after core base is established.
+				// Only start zoning after a reasonably built base:
+				// starport + heavy factory (+ refinery as baseline).
 				if (itemID == NONE_ID && !skipRemainingStructureLogic
 					&& currentGame && currentGame->isCitySimEnabled()
 					&& money > 200
 					&& itemCount[Structure_WindTrap] > 0
 					&& itemCount[Structure_Refinery] > 0
-					&& (itemCount[Structure_LightFactory] > 0 || itemCount[Structure_HeavyFactory] > 0)) {
-					int resCount = itemCount[Structure_ZoneResidential];
-					int comCount = itemCount[Structure_ZoneCommercial];
-					int indCount = itemCount[Structure_ZoneIndustrial];
-					int totalZones = resCount + comCount + indCount;
+					&& itemCount[Structure_HeavyFactory] > 0
+					&& itemCount[Structure_StarPort] > 0) {
+					// Zones consume power as they grow. Before placing one,
+					// ensure we have surplus power. If not, build a nuclear
+					// plant (or windtrap fallback) first.
+					constexpr int kZonePowerHeadroom = 24;  // worst case: industrial L3
+					const int powerSurplus = getHouse()->getProducedPower() - getHouse()->getPowerRequirement();
+					if (powerSurplus < kZonePowerHeadroom) {
+						if (pBuilder->isAvailableToBuild(Structure_NuclearPlant)
+							&& findPlaceLocation(Structure_NuclearPlant).isValid()) {
+							itemID = Structure_NuclearPlant;
+							logDebug("CITY-ZONE-POWER: Building Nuclear Plant before zoning (surplus=%d, need=%d)",
+								powerSurplus, kZonePowerHeadroom);
+						} else if (pBuilder->isAvailableToBuild(Structure_WindTrap)
+							&& findPlaceLocation(Structure_WindTrap).isValid()) {
+							itemID = Structure_WindTrap;
+							logDebug("CITY-ZONE-POWER: Building Windtrap before zoning (surplus=%d, need=%d)",
+								powerSurplus, kZonePowerHeadroom);
+						}
+					} else {
+						int resCount = itemCount[Structure_ZoneResidential];
+						int comCount = itemCount[Structure_ZoneCommercial];
+						int indCount = itemCount[Structure_ZoneIndustrial];
+						int totalZones = resCount + comCount + indCount;
 
-					Uint32 zoneID = Structure_ZoneResidential;
-					if (totalZones > 0) {
-						if (comCount * 5 < totalZones)
-							zoneID = Structure_ZoneCommercial;
-						else if (indCount * 5 < totalZones)
-							zoneID = Structure_ZoneIndustrial;
-					}
+						Uint32 zoneID = Structure_ZoneResidential;
+						if (totalZones > 0) {
+							if (comCount * 5 < totalZones)
+								zoneID = Structure_ZoneCommercial;
+							else if (indCount * 5 < totalZones)
+								zoneID = Structure_ZoneIndustrial;
+						}
 
-					if (pBuilder->isAvailableToBuild(zoneID)
-						&& findPlaceLocation(zoneID).isValid()) {
-						itemID = zoneID;
-						logDebug("CITY-ZONE: Building %s (R:%d C:%d I:%d total:%d)",
-							getItemNameByID(zoneID).c_str(), resCount, comCount, indCount, totalZones);
+						if (pBuilder->isAvailableToBuild(zoneID)
+							&& findPlaceLocation(zoneID).isValid()) {
+							itemID = zoneID;
+							logDebug("CITY-ZONE: Building %s (R:%d C:%d I:%d total:%d surplus=%d)",
+								getItemNameByID(zoneID).c_str(), resCount, comCount, indCount, totalZones, powerSurplus);
+						}
 					}
 				}
 
