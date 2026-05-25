@@ -287,6 +287,17 @@ jobs:
           git clone "https://x-access-token:${WEBSITE_TOKEN}@github.com/svan058/dunelegacy.com.git" website-repo
           cd website-repo
 
+          # Guard: don't let a stale older run overwrite a newer version
+          CURRENT=$(sed -n 's/.*softwareVersion": "\([0-9]*\.[0-9]*\.[0-9]*\)".*/\1/p' website/index.html | head -1)
+          if [ -n "$CURRENT" ]; then
+            CUR_PATCH=$(echo "$CURRENT" | cut -d. -f3)
+            NEW_PATCH=$(echo "$VERSION" | cut -d. -f3)
+            if [ "$NEW_PATCH" -lt "$CUR_PATCH" ] 2>/dev/null; then
+              echo "Website already at $CURRENT, skipping update to $VERSION (older)"
+              exit 0
+            fi
+          fi
+
           # Replace version numbers and download URLs in both HTML files
           for FILE in website/index.html website/dune-city.html; do
             # Download URLs: v1.0.4/DuneCity-1.0.4-... -> vVERSION/DuneCity-VERSION-...
