@@ -903,10 +903,29 @@ void CitySimulation::runZoneGrowth() {
     churchCount_   = computeChurchCount(newRes);
 
     // Designate residential zones as hospitals/churches for rendering.
-    // Walk residential nodes in map order and assign civic overlays.
+    // Cap overlays: at most 1 hospital per 8 populated res zones and
+    // 1 church per 8 zones, so they appear as sparse civic landmarks
+    // rather than covering every zone. Spread evenly across zones.
     {
-        int hospRemain = hospitalCount_;
-        int churRemain = churchCount_;
+        int populatedResZones = 0;
+        for (const auto& n : nodes) {
+            auto* zone = dynamic_cast<ZoneStructure*>(n.pStruct);
+            if (!zone) continue;
+            if (n.role == CityRole::Residential && n.level > 0)
+                populatedResZones++;
+        }
+
+        int maxHosp = std::max(1, populatedResZones / 8);
+        int maxChur = std::max(1, populatedResZones / 8);
+        int hospRemain = std::min(hospitalCount_, maxHosp);
+        int churRemain = std::min(churchCount_, maxChur);
+
+        // Spacing: place a hospital every N zones, a church offset halfway between
+        int stride = (hospRemain + churRemain > 0)
+            ? std::max(2, populatedResZones / (hospRemain + churRemain))
+            : 0;
+        int resIndex = 0;
+
         for (const auto& n : nodes) {
             auto* zone = dynamic_cast<ZoneStructure*>(n.pStruct);
             if (!zone) continue;
@@ -918,15 +937,17 @@ void CitySimulation::runZoneGrowth() {
                 zone->setCivicOverlay(ZoneStructure::CivicOverlay::None);
                 continue;
             }
-            if (hospRemain > 0) {
+
+            if (stride > 0 && hospRemain > 0 && (resIndex % stride == 0)) {
                 zone->setCivicOverlay(ZoneStructure::CivicOverlay::Hospital);
                 --hospRemain;
-            } else if (churRemain > 0) {
+            } else if (stride > 0 && churRemain > 0 && (resIndex % stride == stride / 2)) {
                 zone->setCivicOverlay(ZoneStructure::CivicOverlay::Church);
                 --churRemain;
             } else {
                 zone->setCivicOverlay(ZoneStructure::CivicOverlay::None);
             }
+            resIndex++;
         }
     }
 }

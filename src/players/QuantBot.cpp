@@ -44,6 +44,7 @@
 #include <units/Carryall.h>
 
 #include <dunecity/CitySimulation.h>
+#include <dunecity/CityEffects.h>
 #include <dunecity/CityConstants.h>
 #include <Command.h>
 #include <CommandManager.h>
@@ -1921,6 +1922,11 @@ void QuantBot::build(int militaryValue) {
 	}
 
 	// End of adaptive unit prioritisation algorithm
+
+	// Track unique structures ordered this tick to prevent multiple CYs
+	// from building the same thing. Zones and turrets are excluded (want multiples).
+	std::set<Uint32> orderedThisTick;
+
 	for (const StructureBase* pStructure : getStructureList()) {
 		if (pStructure->getOwner() == getHouse()) {
 			if ((pStructure->isRepairing() == false)
@@ -2111,12 +2117,31 @@ void QuantBot::build(int militaryValue) {
 							}
 						}
 						else if (gameMode == GameMode::Custom
-							&& (itemCount[Structure_ConstructionYard] + itemCount[Unit_MCV]) * 4000 < money
 							&& pBuilder->isAvailableToBuild(Unit_MCV)
 							&& !getHouse()->isGroundUnitLimitReached()) {
-							// Build MCVs for expansion — scales with money, no cap
-							produceItemWithLogging(Unit_MCV);
-							itemCount[Unit_MCV]++;
+							// City sim: 1 CY base + 1 per 100 credits/second income
+							// Non-city: scales with money (1 per 4000 credits)
+							int currentCYs = itemCount[Structure_ConstructionYard] + itemCount[Unit_MCV];
+							int desiredCYs = 1;
+							if (currentGame && currentGame->isCitySimEnabled()) {
+								auto* citySim = currentGame->getCitySimulation();
+								if (citySim) {
+									int totalPop = citySim->getTotalPop();
+									int tax = citySim->getCityTax();
+									int avgLV = citySim->getAvgLandValue();
+									int32_t annual = DuneCity::computeAnnualTaxRevenue(totalPop, tax, avgLV);
+									int creditsPerSec = annual / 60;
+									desiredCYs = 1 + creditsPerSec / 100;
+								}
+							} else {
+								desiredCYs = money / 4000;
+							}
+							if (currentCYs < desiredCYs) {
+								produceItemWithLogging(Unit_MCV);
+								itemCount[Unit_MCV]++;
+								logDebug("MCV: Building MCV %d/%d (city-income scaling)",
+									currentCYs + 1, desiredCYs);
+							}
 						}
 						else if (gameMode == GameMode::Custom
 							&& pBuilder->isAvailableToBuild(Unit_Harvester)
@@ -2980,6 +3005,23 @@ void QuantBot::build(int militaryValue) {
 					}
 				}
 
+			// Dedup: skip if another CY already ordered this unique structure
+			// this tick. Zones and turrets are allowed in multiples.
+			if (itemID != NONE_ID) {
+				bool isMultiBuild = (itemID == Structure_ZoneResidential
+					|| itemID == Structure_ZoneCommercial
+					|| itemID == Structure_ZoneIndustrial
+					|| itemID == Structure_RocketTurret
+					|| itemID == Structure_GunTurret
+					|| itemID == Structure_Wall
+					|| itemID == Structure_Slab1);
+				if (!isMultiBuild && orderedThisTick.count(itemID)) {
+					logDebug("DEDUP: Skipping %s — already ordered by another CY this tick",
+						getItemNameByID(itemID).c_str());
+					itemID = NONE_ID;
+				}
+			}
+
 			if (pBuilder->isAvailableToBuild(itemID) && findPlaceLocation(itemID).isValid() && itemID != NONE_ID) {
 				// Pre-lay concrete only for specific structures that need max health:
 				// - Heavy Factory (upgrades need full health)
@@ -2990,19 +3032,19 @@ void QuantBot::build(int militaryValue) {
 					&& (itemID == Structure_HeavyFactory
 						|| itemID == Structure_HighTechFactory
 						|| itemID == Structure_RocketTurret
-						|| (itemID == Structure_WindTrap 
-							&& itemCount[Structure_RepairYard] > 0 
+						|| (itemID == Structure_WindTrap
+							&& itemCount[Structure_RepairYard] > 0
 							&& (itemCount[Structure_StarPort] > 0 || itemCount[Structure_HeavyFactory] > 0)
 							&& pBuilder->getCurrentUpgradeLevel() >= 2));
-				
+
 				if (needsConcrete) {
 					Coord location = findPlaceLocation(itemID);
 					Coord structureSize = getStructureSize(itemID);
-					
+
 					// Determine starting corner based on build range (like AIPlayer)
 					int incI = 1, incJ = 1;
 					int startI = location.x, startJ = location.y;
-					
+
 					if (getMap().isWithinBuildRange(location.x, location.y, getHouse())) {
 						startI = location.x; startJ = location.y; incI = 1; incJ = 1;
 					} else if (getMap().isWithinBuildRange(location.x + structureSize.x - 1, location.y, getHouse())) {
@@ -3012,12 +3054,12 @@ void QuantBot::build(int militaryValue) {
 					} else {
 						startI = location.x + structureSize.x - 1; startJ = location.y + structureSize.y - 1; incI = -1; incJ = -1;
 					}
-					
+
 					// Queue concrete slabs for each tile, preferring Slab4 (2x2) when available
 					for (int i = startI; abs(i - startI) < structureSize.x; i += incI) {
 						for (int j = startJ; abs(j - startJ) < structureSize.y; j += incJ) {
 							const Tile* pTile = getMap().getTile(i, j);
-							
+
 							// For structures >= 2x2, try to use Slab4 for the first 2x2 area
 							if (structureSize.x > 1 && structureSize.y > 1
 								&& pBuilder->isAvailableToBuild(Structure_Slab4)
@@ -3038,11 +3080,12 @@ void QuantBot::build(int militaryValue) {
 							}
 						}
 					}
-					
+
 					// Store building location and queue the building
 					placeLocations.push_back(location);
 				}
-				
+
+				orderedThisTick.insert(itemID);
 				produceItemWithLogging(itemID);
 				itemCount[itemID]++;
 			}
