@@ -1452,6 +1452,111 @@ Coord QuantBot::findTurretPlaceLocation(Uint32 itemID) {
 	return bestLocation;
 }
 
+Coord QuantBot::findCityTurretPlaceLocation(Uint32 itemID) {
+	int newSizeX = getStructureSize(itemID).x;
+	int newSizeY = getStructureSize(itemID).y;
+
+	Coord baseCenter = findBaseCentre(getHouse()->getHouseID());
+
+	// Build a list of high-value structures to protect and R/C zones for coverage
+	struct ProtectTarget {
+		Coord pos;
+		int priority; // higher = place turrets here first
+	};
+	std::vector<ProtectTarget> targets;
+
+	for (const StructureBase* pStructure : getStructureList()) {
+		if (!pStructure || !pStructure->getOwner() || pStructure->getOwner() != getHouse())
+			continue;
+		Uint32 sid = pStructure->getItemID();
+		int prio = 0;
+		if (sid == Structure_ConstructionYard)    prio = 100;
+		else if (sid == Structure_NuclearPlant)   prio = 90;
+		else if (sid == Structure_HeavyFactory)   prio = 80;
+		else if (sid == Structure_HighTechFactory) prio = 60;
+		else if (sid == Structure_StarPort)       prio = 50;
+		else if (sid == Structure_ZoneResidential) prio = 15;
+		else if (sid == Structure_ZoneCommercial)  prio = 15;
+		else continue;
+		targets.push_back({pStructure->getLocation(), prio});
+	}
+
+	if (targets.empty()) return Coord::Invalid();
+
+	// Count existing turret positions for spread-out penalty
+	std::vector<Coord> existingTurrets;
+	for (const StructureBase* pStructure : getStructureList()) {
+		if (!pStructure || !pStructure->getOwner() || pStructure->getOwner() != getHouse())
+			continue;
+		if (pStructure->getItemID() == Structure_RocketTurret || pStructure->getItemID() == Structure_GunTurret)
+			existingTurrets.push_back(pStructure->getLocation());
+	}
+
+	FixPoint bestScore = -FixPt_MAX;
+	Coord bestLocation = Coord::Invalid();
+
+	for (int x = 0; x <= getMap().getSizeX() - newSizeX; x++) {
+		for (int y = 0; y <= getMap().getSizeY() - newSizeY; y++) {
+			if (!getMap().okayToPlaceStructure(x, y, newSizeX, newSizeY, false,
+				getHouse(), false, itemID))
+				continue;
+
+			FixPoint score = 0;
+			Coord candidatePos(x, y);
+
+			// Score based on proximity to high-value targets
+			for (const auto& target : targets) {
+				FixPoint dist = blockDistance(candidatePos, target.pos);
+				if (dist < 8) {
+					// Strong bonus for being close (within ~8 tiles) to high-priority buildings
+					score += FixPoint(target.priority) * (8 - dist) / 8;
+				}
+			}
+
+			// Penalty for distance from base center (don't build at map edges)
+			FixPoint distFromBase = blockDistance(candidatePos, baseCenter);
+			score -= distFromBase;
+
+			// Adjacency bonus — turrets should be next to buildings
+			int adjacentOwn = 0;
+			for (int dx = -1; dx <= newSizeX; dx++) {
+				for (int dy = -1; dy <= newSizeY; dy++) {
+					if ((dx == -1 || dx == newSizeX || dy == -1 || dy == newSizeY)
+						&& getMap().tileExists(x + dx, y + dy)) {
+						const Tile* pTile = getMap().getTile(x + dx, y + dy);
+						if (pTile->hasAStructure()) {
+							const StructureBase* pAdj = dynamic_cast<const StructureBase*>(pTile->getObject());
+							if (pAdj && pAdj->getOwner() == getHouse())
+								adjacentOwn++;
+						}
+					}
+				}
+			}
+			score += adjacentOwn * 10;
+
+			// Spread-out: penalise being too close to existing turrets,
+			// but encourage pairs (distance 1-2 is ok, distance 0 is bad)
+			for (const auto& tPos : existingTurrets) {
+				FixPoint tDist = blockDistance(candidatePos, tPos);
+				if (tDist < 1) {
+					score -= 200; // don't stack on top
+				} else if (tDist <= 3) {
+					score += 5;   // encourage pairs/small groups
+				} else if (tDist < 6) {
+					score -= 10;  // mild penalty — spread to other areas
+				}
+			}
+
+			if (score > bestScore) {
+				bestScore = score;
+				bestLocation = Coord(x, y);
+			}
+		}
+	}
+
+	return bestLocation;
+}
+
 Coord QuantBot::findPlaceLocationSimple(Uint32 itemID) {
 	int newSizeX = getStructureSize(itemID).x;
 	int newSizeY = getStructureSize(itemID).y;
@@ -2696,6 +2801,35 @@ void QuantBot::build(int militaryValue) {
 									&& itemCount[Structure_LightFactory] > 0) {
 								itemID = Structure_Palace;
 							}
+				// 17b. City protection turrets (city sim only)
+				//      Floor: 1 turret per CY + nuclear + heavy factory
+				//      Scaling: +1 per 5000 population
+				//      Uses findCityTurretPlaceLocation which prioritises near
+				//      key buildings (CY, nuclear, heavy factory) and spreads
+				//      turrets in pairs across the city including near R/C zones.
+				if (itemID == NONE_ID && !skipRemainingStructureLogic
+					&& currentGame && currentGame->isCitySimEnabled()
+					&& money > 500
+					&& hasPowerBufferForTurret()
+					&& pBuilder->isAvailableToBuild(Structure_RocketTurret)) {
+					int keyBuildings = itemCount[Structure_ConstructionYard]
+						+ itemCount[Structure_NuclearPlant]
+						+ itemCount[Structure_HeavyFactory];
+					int turretFloor = keyBuildings;
+					int popBonus = 0;
+					if (auto* citySim = currentGame->getCitySimulation()) {
+						popBonus = citySim->getTotalPop() / 5000;
+					}
+					int desiredTurrets = turretFloor + popBonus;
+					if (itemCount[Structure_RocketTurret] < desiredTurrets) {
+						Coord loc = findCityTurretPlaceLocation(Structure_RocketTurret);
+						if (loc.isValid()) {
+							itemID = Structure_RocketTurret;
+							logDebug("CITY-TURRET: Building rocket turret %d/%d (floor=%d pop_bonus=%d)",
+								itemCount[Structure_RocketTurret] + 1, desiredTurrets, turretFloor, popBonus);
+						}
+					}
+				}
 				// 18. City zone structures (when city sim is active)
 				// Zones are 2x2 structures built via the CY; runZoneGrowth()
 				// requires an actual structure object, so tile-flag placement
@@ -2895,8 +3029,13 @@ void QuantBot::build(int militaryValue) {
 						// For concrete slabs, use specialized slab placement method
 						location = findSlabPlaceLocation(itemToBePlaced);
 					} else if (itemToBePlaced == Structure_RocketTurret || itemToBePlaced == Structure_GunTurret) {
-						// For turrets, use specialized placement that favors perimeter and enemy direction
-						location = findTurretPlaceLocation(itemToBePlaced);
+						// For turrets, use city placement in city sim (near key buildings),
+						// otherwise use default placement (enemy-facing perimeter)
+						if (currentGame && currentGame->isCitySimEnabled()) {
+							location = findCityTurretPlaceLocation(itemToBePlaced);
+						} else {
+							location = findTurretPlaceLocation(itemToBePlaced);
+						}
 					} else {
 						// For other structures, use normal method that favors adjacency
 						location = findPlaceLocation(itemToBePlaced);
