@@ -271,7 +271,8 @@ void CityBudgetWindow::updateDisplay() {
 
     const int32_t netAnnual = projected - paying;
     netLabel.setText(fmt::sprintf("Net: %+d/yr", netAnnual));
-    const int32_t perSec = netAnnual / DuneCity::kBudgetTicksPerYear;
+    // At default game speed (16ms/cycle), 1 city year ≈ 60 seconds.
+    const int32_t perSec = netAnnual / 60;
     perSecondLabel.setText(fmt::sprintf("Income: %+d credits/sec", perSec));
 
     // The slider's pending value is seeded once in the constructor so

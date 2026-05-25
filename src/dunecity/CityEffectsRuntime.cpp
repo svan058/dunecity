@@ -1002,14 +1002,16 @@ void CitySimulation::runDailyBudget() {
         const int fundingPct = (house == pLocalHouse) ? policeFundingPercent_ : 100;
         const int32_t annualPaid = (hb.policeCost * fundingPct) / 100;
 
-        const int32_t dailyRevenue = annualRevenue / kBudgetTicksPerYear;
-        const int32_t dailyPaid    = annualPaid    / kBudgetTicksPerYear;
-        const int32_t net = dailyRevenue - dailyPaid;
+        // Per-cycle payout: use FixPoint so fractional credits accumulate
+        // smoothly (credits tick up like a harvester unloading spice).
+        const FixPoint tickRevenue = FixPoint(annualRevenue) / kBudgetTicksPerYear;
+        const FixPoint tickPaid    = FixPoint(annualPaid)    / kBudgetTicksPerYear;
+        const FixPoint net = tickRevenue - tickPaid;
 
-        if (net > 0) {
-            house->returnCredits(FixPoint(net));
-        } else if (net < 0) {
-            house->takeCredits(FixPoint(-net));
+        if (net > FixPoint(0)) {
+            house->returnCredits(net);
+        } else if (net < FixPoint(0)) {
+            house->takeCredits(-net);
         }
 
         if (house == pLocalHouse) {
@@ -1021,9 +1023,9 @@ void CitySimulation::runDailyBudget() {
 
         // Log once per city year to avoid spam (48 ticks/year)
         if (cityDay_ == 0) {
-            SDL_Log("[CitySim] year=%d house=%d pop=%d rate=%d%% annual_revenue=%d annual_police=%d daily_net=%+d",
+            SDL_Log("[CitySim] year=%d house=%d pop=%d rate=%d%% annual_revenue=%d annual_police=%d tick_net=%+d",
                     cityYear_, house->getHouseID(), hb.pop, cityTax_,
-                    annualRevenue, annualPaid, net);
+                    annualRevenue, annualPaid, lround(net.toDouble()));
         }
     }
 

@@ -52,7 +52,7 @@ TEST_CASE("getStructureMaxLevel matches structure tier", "[city-effects][role]")
     REQUIRE(getStructureMaxLevel(Structure_LightFactory)     == 2);  // I-medium
     REQUIRE(getStructureMaxLevel(Structure_HeavyFactory)     == 3);  // I-high
     REQUIRE(getStructureMaxLevel(Structure_RepairYard)       == 3);  // I-high
-    REQUIRE(getStructureMaxLevel(Structure_Refinery)         == 2);  // I-medium
+    REQUIRE(getStructureMaxLevel(Structure_Refinery)         == 3);  // I-high
     REQUIRE(getStructureMaxLevel(Structure_Barracks)         == 3);  // R-high
     REQUIRE(getStructureMaxLevel(Structure_WOR)              == 3);  // R-high
     REQUIRE(getStructureMaxLevel(Structure_WindTrap)         == 0);  // not a role
@@ -134,7 +134,7 @@ TEST_CASE("Industrial supply scales by level for any industrial-role structure",
     REQUIRE(getIndustrialSupply(Structure_LightFactory, 2)   == 25);
     REQUIRE(getIndustrialSupply(Structure_HeavyFactory, 3)   == 50);
     REQUIRE(getIndustrialSupply(Structure_RepairYard, 3)     == 50);
-    REQUIRE(getIndustrialSupply(Structure_Refinery, 2)       == 25);   // I-medium (was I-low)
+    REQUIRE(getIndustrialSupply(Structure_Refinery, 3)       == 50);   // I-high
     REQUIRE(getIndustrialSupply(Structure_Silo, 1)           == 10);   // I-low (was C-low)
     REQUIRE(getIndustrialSupply(Structure_HighTechFactory, 3) == 50);  // I-high (was C-high)
 }
@@ -252,9 +252,10 @@ TEST_CASE("Non-zone city-role buildings ALSO contribute population at their leve
     REQUIRE(getZonePopulation(Structure_IX, 3)             == 5);   // Commercial
     REQUIRE(getZonePopulation(Structure_Silo, 1)           == 1);   // Industrial L1 (was Commercial)
     REQUIRE(getZonePopulation(Structure_Radar, 2)          == 3);   // Commercial L2
-    // Refinery is I-medium: caps at level 2 = 3 jobs.
+    // Refinery is I-high: grows to level 3 = 4 jobs.
     REQUIRE(getZonePopulation(Structure_Refinery, 1)       == 1);
     REQUIRE(getZonePopulation(Structure_Refinery, 2)       == 3);
+    REQUIRE(getZonePopulation(Structure_Refinery, 3)       == 4);
     // Barracks/WOR are residential high
     REQUIRE(getZonePopulation(Structure_Barracks, 1)       == 16);
     REQUIRE(getZonePopulation(Structure_Barracks, 3)       == 40);

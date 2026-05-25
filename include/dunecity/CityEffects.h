@@ -168,8 +168,8 @@ inline int getStructureMaxLevel(int itemID) {
             return 1;
         case Structure_Radar:           // commercial medium
         case Structure_LightFactory:    // industrial medium
-        case Structure_Refinery:        // industrial medium
             return 2;
+        case Structure_Refinery:        // industrial high
         case Structure_HighTechFactory: // industrial high
         case Structure_IX:              // commercial high
         case Structure_HeavyFactory:    // industrial high
@@ -865,11 +865,11 @@ constexpr uint32_t kCyclesPerCityYear = 3750;
 constexpr int      kCityDaysPerYear   = 48;
 constexpr uint32_t kCyclesPerCityDay  = kCyclesPerCityYear / kCityDaysPerYear;
 
-/// Budget tick cadence: 1 tick per second of wall-clock time at default
-/// game speed (16 ms/cycle → 62 cycles ≈ 1.0 s). Each tick pays 1/50th
-/// of the annual budget for smooth income.
-constexpr uint32_t kCyclesPerBudgetTick = 62;
-constexpr int      kBudgetTicksPerYear  = 50;
+/// Budget tick cadence: every game cycle (smooth credits like harvester
+/// unloading). Each tick pays 1/3750th of the annual budget via FixPoint
+/// arithmetic so fractional credits accumulate correctly.
+constexpr uint32_t kCyclesPerBudgetTick = 1;
+constexpr int      kBudgetTicksPerYear  = static_cast<int>(kCyclesPerCityYear);
 
 /// Compute annual tax revenue (in credits). Revenue scales with population,
 /// tax rate, AND average land value — richer neighbourhoods pay more tax,
