@@ -2351,30 +2351,28 @@ void QuantBot::build(int militaryValue) {
 
 								logDebug("***CampAI Build A new Rocket turret increasing count to: %d", itemCount[Structure_RocketTurret]);
 							}
-							// City zone structures for campaign AI
+							// City zone structures for campaign AI — pick by demand valve
 							else if (currentGame && currentGame->isCitySimEnabled()
 								&& money > 200
 								&& pBuilder->getProductionQueueSize() == 0
 								&& itemCount[Structure_WindTrap] > 0) {
-								int resCount = itemCount[Structure_ZoneResidential];
-								int comCount = itemCount[Structure_ZoneCommercial];
-								int indCount = itemCount[Structure_ZoneIndustrial];
-								int totalZones = resCount + comCount + indCount;
+								auto* citySim = currentGame->getCitySimulation();
+								int16_t rValve = citySim ? citySim->getResValve() : 0;
+								int16_t cValve = citySim ? citySim->getComValve() : 0;
+								int16_t iValve = citySim ? citySim->getIndValve() : 0;
 
 								Uint32 zoneID = Structure_ZoneResidential;
-								if (totalZones > 0) {
-									if (comCount * 5 < totalZones)
-										zoneID = Structure_ZoneCommercial;
-									else if (indCount * 5 < totalZones)
-										zoneID = Structure_ZoneIndustrial;
-								}
+								if (cValve > rValve && cValve >= iValve)
+									zoneID = Structure_ZoneCommercial;
+								else if (iValve > rValve && iValve > cValve)
+									zoneID = Structure_ZoneIndustrial;
 
 								if (pBuilder->isAvailableToBuild(zoneID)
 									&& findPlaceLocation(zoneID).isValid()) {
 									produceItemWithLogging(zoneID);
 									itemCount[zoneID]++;
-									logDebug("***CampAI CITY-ZONE: Building %s (R:%d C:%d I:%d)",
-										getItemNameByID(zoneID).c_str(), resCount, comCount, indCount);
+									logDebug("***CampAI CITY-ZONE: Building %s (valves=R%+d C%+d I%+d)",
+										getItemNameByID(zoneID).c_str(), rValve, cValve, iValve);
 								}
 							}
 
@@ -2851,7 +2849,9 @@ void QuantBot::build(int militaryValue) {
 				// Zones are 2x2 structures built via the CY; runZoneGrowth()
 				// requires an actual structure object, so tile-flag placement
 				// (CMD_CITY_PLACE_ZONE without a structure) does not work.
-				// Target ratio: ~3 R : 1 C : 1 I.
+				// Zone type is chosen by demand valves: build whichever R/I/C
+				// has the highest positive demand. Falls back to R if all
+				// valves are equal or negative.
 				// Prerequisites scale with tech level:
 				//   Tech 1-3: windtrap + refinery + light factory
 				//   Tech 4-5: + heavy factory
@@ -2882,24 +2882,30 @@ void QuantBot::build(int militaryValue) {
 								powerSurplus, kZonePowerHeadroom);
 						}
 					} else {
+						// Pick zone type by demand valve — build whichever
+						// has the highest demand (R/C/I valves from city sim).
+						auto* citySim = currentGame->getCitySimulation();
+						int16_t rValve = citySim ? citySim->getResValve() : 0;
+						int16_t cValve = citySim ? citySim->getComValve() : 0;
+						int16_t iValve = citySim ? citySim->getIndValve() : 0;
+
+						Uint32 zoneID = Structure_ZoneResidential;
+						if (cValve > rValve && cValve >= iValve) {
+							zoneID = Structure_ZoneCommercial;
+						} else if (iValve > rValve && iValve > cValve) {
+							zoneID = Structure_ZoneIndustrial;
+						}
+
 						int resCount = itemCount[Structure_ZoneResidential];
 						int comCount = itemCount[Structure_ZoneCommercial];
 						int indCount = itemCount[Structure_ZoneIndustrial];
-						int totalZones = resCount + comCount + indCount;
-
-						Uint32 zoneID = Structure_ZoneResidential;
-						if (totalZones > 0) {
-							if (comCount * 5 < totalZones)
-								zoneID = Structure_ZoneCommercial;
-							else if (indCount * 5 < totalZones)
-								zoneID = Structure_ZoneIndustrial;
-						}
 
 						if (pBuilder->isAvailableToBuild(zoneID)
 							&& findPlaceLocation(zoneID).isValid()) {
 							itemID = zoneID;
-							logDebug("CITY-ZONE: Building %s (R:%d C:%d I:%d total:%d surplus=%d)",
-								getItemNameByID(zoneID).c_str(), resCount, comCount, indCount, totalZones, powerSurplus);
+							logDebug("CITY-ZONE: Building %s (R:%d C:%d I:%d valves=R%+d C%+d I%+d surplus=%d)",
+								getItemNameByID(zoneID).c_str(), resCount, comCount, indCount,
+								rValve, cValve, iValve, powerSurplus);
 						}
 					}
 				}
