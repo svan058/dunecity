@@ -2863,10 +2863,10 @@ void QuantBot::build(int militaryValue) {
 								}
 				// 17. City protection turrets (city sim only) — before Palace
 				//     Floor: 1 turret per CY + nuclear + heavy factory
-				//     Cap: floor * 5 — prevents turret spam on maps with pre-placed turrets
-				//     Between floor and cap: only build if city has meaningful crime
-				//     Uses findCityTurretPlaceLocation which prioritises high
-				//     crime areas and proximity to builder buildings + nuclear.
+				//     Between floor and cap: only build if OWN territory has crime
+				//     Bug fix: previously scanned the global crime map — detected
+				//     crime in other players' zones, built turrets locally that
+				//     couldn't reach it, then repeated forever.
 				if (itemID == NONE_ID && !skipRemainingStructureLogic
 					&& currentGame && currentGame->isCitySimEnabled()
 					&& money > 500
@@ -2876,38 +2876,32 @@ void QuantBot::build(int militaryValue) {
 						+ itemCount[Structure_NuclearPlant]
 						+ itemCount[Structure_HeavyFactory];
 					int turretFloor = keyBuildings;
-					int maxCityTurrets = turretFloor * 5;
 					int currentTurrets = itemCount[Structure_RocketTurret];
 					bool shouldBuild = false;
+					int maxOwnCrime = 0;
 
-					if (currentTurrets >= maxCityTurrets) {
-						// At or above cap — don't build more
-						shouldBuild = false;
-					} else if (currentTurrets < turretFloor) {
+					if (currentTurrets < turretFloor) {
 						// Below minimum — always build
 						shouldBuild = true;
 					} else if (auto* citySim = currentGame->getCitySimulation()) {
-						// Between floor and cap — only build if there's crime to suppress
+						// Check crime only near OWN structures (not global map)
 						const auto& crimeMap = citySim->getCrimeRateMap();
-						int maxCrime = 0;
-						for (int cx = 0; cx < citySim->getMapWidth(); cx++) {
-							for (int cy = 0; cy < citySim->getMapHeight(); cy++) {
-								int c = crimeMap.worldGet(cx, cy);
-								if (c > maxCrime) maxCrime = c;
-							}
+						for (const StructureBase* pStructure : getStructureList()) {
+							if (!pStructure || pStructure->getOwner() != getHouse())
+								continue;
+							Coord pos = pStructure->getLocation();
+							int c = crimeMap.worldGet(pos.x, pos.y);
+							if (c > maxOwnCrime) maxOwnCrime = c;
 						}
-						// Raise threshold as turret count grows — diminishing returns
-						int crimeThreshold = 30 + (currentTurrets - turretFloor) * 5;
-						shouldBuild = (maxCrime > crimeThreshold);
+						shouldBuild = (maxOwnCrime > 30);
 					}
 
 					if (shouldBuild) {
 						Coord loc = findCityTurretPlaceLocation(Structure_RocketTurret);
 						if (loc.isValid()) {
 							itemID = Structure_RocketTurret;
-							logDebug("CITY-TURRET: Building rocket turret %d/%d (floor=%d, crime-driven=%s)",
-								currentTurrets + 1, maxCityTurrets, turretFloor,
-								currentTurrets >= turretFloor ? "yes" : "no");
+							logDebug("CITY-TURRET: Building rocket turret %d (floor=%d, ownCrime=%d)",
+								currentTurrets + 1, turretFloor, maxOwnCrime);
 						}
 					}
 				}
