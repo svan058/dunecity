@@ -528,10 +528,6 @@ void CitySimulation::runZoneGrowth() {
             StructureBase* pStruct = static_cast<StructureBase*>(pObj);
             if (pStruct->getLocation().x != x || pStruct->getLocation().y != y) continue;
 
-            // Only count structures belonging to the local player.
-            // Population, demand, and zone growth are per-player.
-            if (pLocalHouse && pStruct->getOwner() != pLocalHouse) continue;
-
             const int itemID = pStruct->getItemID();
             const CityRole role = getStructureCityRole(itemID);
             if (role == CityRole::None) continue;
@@ -551,6 +547,7 @@ void CitySimulation::runZoneGrowth() {
         }
     }
 
+    // Global supply totals (all players) — used in growth loop employment tracking
     int totalResidentialSupply = 0;
     int totalJobSupply = 0;
     for (const auto& n : nodes) {
@@ -560,11 +557,14 @@ void CitySimulation::runZoneGrowth() {
     int freeResidents = std::max(0, totalResidentialSupply - totalJobSupply);
 
     // ---- Compute RCI demand valves BEFORE the growth loop ----
-    // Uses the Micropolis-shaped employment/migration/births model with
-    // civic cap influence from Stadium/Palace/Airport/Starport.
+    // Population and demand valves are computed from the LOCAL PLAYER's
+    // structures only (for the budget UI and human-facing demand display).
+    // AI computes its own stats in QuantBot::build().
+    // Zone growth (below) runs for ALL players' structures.
     {
         int curRes = 0, curCom = 0, curInd = 0;
         for (const auto& n : nodes) {
+            if (pLocalHouse && n.pStruct->getOwner() != pLocalHouse) continue;
             const int itemID = n.pStruct->getItemID();
             const int pop = getZonePopulation(itemID, n.level);
             switch (n.role) {
@@ -874,8 +874,10 @@ void CitySimulation::runZoneGrowth() {
     // Recompute population totals. Palace is dual-role: its residential
     // portion comes from getZonePopulation(), its commercial portion from
     // getPalaceCommercialPopulation().
+    // Post-growth population (local player only — for UI display).
     int newRes = 0, newCom = 0, newInd = 0;
     for (const auto& n : nodes) {
+        if (pLocalHouse && n.pStruct->getOwner() != pLocalHouse) continue;
         const int itemID = n.pStruct->getItemID();
         const int pop = getZonePopulation(itemID, n.level);
         switch (n.role) {
