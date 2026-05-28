@@ -109,6 +109,7 @@ private:
     Coord findSlabPlaceLocation(Uint32 itemID);
     Coord findTurretPlaceLocation(Uint32 itemID);
     Coord findCityTurretPlaceLocation(Uint32 itemID);
+    Coord findEffectiveTurretPlaceLocation(Uint32 itemID);
     Coord findSquadCenter(int houseID);
     Coord findBaseCentre(int houseID);
     Coord findBestDeathHandTarget(int enemyHouseID);

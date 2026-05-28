@@ -1592,6 +1592,14 @@ Coord QuantBot::findCityTurretPlaceLocation(Uint32 itemID) {
 	return Coord::Invalid();
 }
 
+Coord QuantBot::findEffectiveTurretPlaceLocation(Uint32 itemID) {
+	if (currentGame && currentGame->isCitySimEnabled()) {
+		Coord loc = findCityTurretPlaceLocation(itemID);
+		if (loc.isValid()) return loc;
+	}
+	return findTurretPlaceLocation(itemID);
+}
+
 Coord QuantBot::findPlaceLocationSimple(Uint32 itemID) {
 	int newSizeX = getStructureSize(itemID).x;
 	int newSizeY = getStructureSize(itemID).y;
@@ -2434,7 +2442,7 @@ void QuantBot::build(int militaryValue) {
 							}
 							else if (money > 3000
 								&& pBuilder->isAvailableToBuild(Structure_RocketTurret)
-								&& findTurretPlaceLocation(Structure_RocketTurret).isValid()
+								&& findEffectiveTurretPlaceLocation(Structure_RocketTurret).isValid()
 								&& pBuilder->getProductionQueueSize() == 0
 								&& (itemCount[Structure_RocketTurret] <
 									(itemCount[Structure_Silo] + itemCount[Structure_Refinery]) * 2)) {
@@ -2555,7 +2563,7 @@ void QuantBot::build(int militaryValue) {
 											logDebug("COUNTER-ORNITHOPTER: Windtrap for turret power (excess: %d)", powerExcess);
 										}
 									} else if (pBuilder->isAvailableToBuild(Structure_RocketTurret)
-							&& findTurretPlaceLocation(Structure_RocketTurret).isValid()
+							&& findEffectiveTurretPlaceLocation(Structure_RocketTurret).isValid()
 										&& hasPowerBufferForTurret()) {
 							itemID = Structure_RocketTurret;
 										logDebug("COUNTER-ORNITHOPTER: Building rocket turret (enemy ornis: %d, target turrets: %d)", maxEnemyOrnithopters, requiredTurrets);
@@ -2895,7 +2903,7 @@ void QuantBot::build(int militaryValue) {
 					&& hasPowerBufferForTurret()
 					&& pBuilder->getCurrentUpgradeLevel() >= 2
 					&& pBuilder->isAvailableToBuild(Structure_RocketTurret)
-					&& findTurretPlaceLocation(Structure_RocketTurret).isValid()) {
+					&& findEffectiveTurretPlaceLocation(Structure_RocketTurret).isValid()) {
 					itemID = Structure_RocketTurret;
 					logDebug("INSURANCE: Building baseline rocket turret (%d/2) after repair yard", itemCount[Structure_RocketTurret] + 1);
 				}
@@ -2906,7 +2914,7 @@ void QuantBot::build(int militaryValue) {
 					&& hasPowerBufferForTurret()
 					&& pBuilder->getCurrentUpgradeLevel() >= 2
 					&& pBuilder->isAvailableToBuild(Structure_RocketTurret)
-					&& findTurretPlaceLocation(Structure_RocketTurret).isValid()
+					&& findEffectiveTurretPlaceLocation(Structure_RocketTurret).isValid()
 					&& [&]() {
 						int maxEnemyOrnithopters = 0;
 						if (currentGame) {
@@ -3362,13 +3370,9 @@ void QuantBot::build(int militaryValue) {
 						// For concrete slabs, use specialized slab placement method
 						location = findSlabPlaceLocation(itemToBePlaced);
 					} else if (itemToBePlaced == Structure_RocketTurret || itemToBePlaced == Structure_GunTurret) {
-						// For turrets, use city placement in city sim (near key buildings),
-						// otherwise use default placement (enemy-facing perimeter)
-						if (currentGame && currentGame->isCitySimEnabled()) {
-							location = findCityTurretPlaceLocation(itemToBePlaced);
-						} else {
-							location = findTurretPlaceLocation(itemToBePlaced);
-						}
+						// For turrets, try city placement first (near crime hotspots),
+						// falling back to normal perimeter placement
+						location = findEffectiveTurretPlaceLocation(itemToBePlaced);
 					} else {
 						// For other structures, use normal method that favors adjacency
 						location = findPlaceLocation(itemToBePlaced);
