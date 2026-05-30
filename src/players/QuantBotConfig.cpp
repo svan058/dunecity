@@ -154,11 +154,11 @@ QuantBotConfig::QuantBotConfig() {
     unitRatios.harkonnen.special = 0.16f;         // Devastator
     unitRatios.harkonnen.ornithopter = 0.00f;     // Can't build
     
-    // Ordos - Cannot build launchers, highest ornithopter ratio for air superiority
-    unitRatios.ordos.tank = 0.25f;
-    unitRatios.ordos.siegeTank = 0.25f;
-    unitRatios.ordos.launcher = 0.00f;            // Can't build
-    unitRatios.ordos.special = 0.25f;             // Deviator
+    // Ordos - Balanced with launchers, minimal deviators, strong air support
+    unitRatios.ordos.tank = 0.20f;
+    unitRatios.ordos.siegeTank = 0.20f;
+    unitRatios.ordos.launcher = 0.30f;
+    unitRatios.ordos.special = 0.05f;             // Deviator
     unitRatios.ordos.ornithopter = 0.25f;
     
     // Fremen - Balanced with light ornithopter support (capped tank at 50%)

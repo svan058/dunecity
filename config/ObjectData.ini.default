@@ -576,7 +576,6 @@ MaxSpeed = 3.8400
 BuildTime = 72
 InfSpawnProp = 25
 Builder = Heavy Factory
-Builder(O) = Invalid
 TechLevel = 5
 UpgradeLevel = 2
 
