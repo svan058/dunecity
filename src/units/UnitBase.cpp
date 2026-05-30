@@ -1302,17 +1302,23 @@ void UnitBase::setTarget(const ObjectBase* newTarget) {
     bFollow = false;
     targetAngle = INVALID;
 
-    if(goingToRepairYard && target && (target.getObjPointer()->getItemID() == Structure_RepairYard)) {
-        static_cast<RepairYard*>(target.getObjPointer())->unBook();
+    if(goingToRepairYard) {
+        ObjectBase* pOldTarget = target.getObjPointer();
+        if(pOldTarget != nullptr && pOldTarget->getItemID() == Structure_RepairYard) {
+            static_cast<RepairYard*>(pOldTarget)->unBook();
+        }
+        // Repair yard may have been destroyed while we were en route;
+        // clear the flag either way — we are no longer booked/headed there.
         goingToRepairYard = false;
     }
 
     ObjectBase::setTarget(newTarget);
 
-    if(target.getObjPointer() != nullptr
-        && (target.getObjPointer()->getOwner() == getOwner())
-        && (target.getObjPointer()->getItemID() == Structure_RepairYard)) {
-        static_cast<RepairYard*>(target.getObjPointer())->book();
+    ObjectBase* pNewTarget = target.getObjPointer();
+    if(pNewTarget != nullptr
+        && (pNewTarget->getOwner() == getOwner())
+        && (pNewTarget->getItemID() == Structure_RepairYard)) {
+        static_cast<RepairYard*>(pNewTarget)->book();
         goingToRepairYard = true;
     }
 }
