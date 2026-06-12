@@ -21,6 +21,7 @@
 #include <players/Player.h>
 #include <units/MCV.h>
 #include <players/QuantBotConfig.h>
+#include <players/QuantBotBuildContext.h>
 
 #include <DataTypes.h>
 #include <set>
@@ -131,6 +132,29 @@ private:
     void build(int militaryValue);
     void attack(int militaryValue);
     void manageCityBuilding();
+
+    // --- Mentat refactor: per-builder production handlers ---
+    void handleCYProduction(const BuilderBase* pBuilder, const StructureBase* pStructure, QuantBotBuildContext& ctx, bool emitStatsLog);
+    void handleHeavyFactory(const BuilderBase* pBuilder, QuantBotBuildContext& ctx, bool emitStatsLog,
+                            FixPoint tankPercent, FixPoint siegePercent, FixPoint specialPercent,
+                            FixPoint launcherPercent, FixPoint ornithopterPercent);
+    void handleHighTechFactory(const BuilderBase* pBuilder, QuantBotBuildContext& ctx,
+                               FixPoint ornithopterPercent);
+    void handleLightFactory(const BuilderBase* pBuilder, QuantBotBuildContext& ctx);
+    void handleStarPort(const BuilderBase* pBuilder, QuantBotBuildContext& ctx);
+    void handleRepairs(const StructureBase* pStructure, QuantBotBuildContext& ctx);
+    void handleSpecialWeapon(const StructureBase* pStructure, QuantBotBuildContext& ctx);
+    void handleStructurePlacement(const ConstructionYard* pConstYard, const BuilderBase* pBuilder, QuantBotBuildContext& ctx);
+
+    // Unit ratio calculation (extracted from build())
+    void calculateUnitRatios(QuantBotBuildContext& ctx,
+                             FixPoint& tankPercent, FixPoint& siegePercent,
+                             FixPoint& specialPercent, FixPoint& launcherPercent,
+                             FixPoint& ornithopterPercent,
+                             bool emitStatsLog);
+
+    // Build context snapshot
+    QuantBotBuildContext buildContextSnapshot(int militaryValue);
 
     Sint32 cityBuildTimer = 0;
 };
