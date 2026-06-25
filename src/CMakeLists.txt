@@ -672,10 +672,32 @@ elseif(APPLE)
         message(STATUS \"Installed dunecity.app signature verified.\")
     ")
 else()
-    # Linux: install to bin directory
+    # Linux: set rpath so the installed binary finds bundled .so files relative
+    # to itself rather than requiring system-installed or build-tree libraries.
+    # $ORIGIN expands to the directory containing the binary at runtime, so
+    # $ORIGIN/../lib/dunecity resolves to <prefix>/lib/dunecity.
+    set_target_properties(dunecity PROPERTIES
+        INSTALL_RPATH "$ORIGIN/../lib/dunecity"
+        BUILD_WITH_INSTALL_RPATH FALSE
+    )
+
     install(TARGETS dunecity
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
+
+    # Bundle all vcpkg-built shared libraries so the installed binary is
+    # self-contained and does not depend on system SDL2/mixer/ttf/curl/etc.
+    # VCPKG_INSTALLED_DIR and VCPKG_TARGET_TRIPLET are set by the vcpkg
+    # toolchain file; skip silently if building without vcpkg.
+    if(DEFINED VCPKG_INSTALLED_DIR AND DEFINED VCPKG_TARGET_TRIPLET)
+        install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/dunecity"
+            FILES_MATCHING
+                PATTERN "*.so"
+                PATTERN "*.so.*"
+            PATTERN "pkgconfig" EXCLUDE
+        )
+    endif()
 endif()
 
 # DUNELEGACY_DATADIR is set at the top of this file (before configure_file)

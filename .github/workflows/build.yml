@@ -184,6 +184,36 @@ jobs:
           cmake --install . --prefix install --config Release
           cpack -G "DEB;RPM;TGZ" -C Release
 
+      - name: Create AppImage
+        run: |
+          # Download linuxdeploy (fuse-less FUSE_APPIMAGE_EXTRACT_AND_RUN avoids
+          # "fuse: device not found" errors on GitHub-hosted runners)
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+
+          # Stage the AppDir from the cmake install tree
+          cd build
+          cmake --install . --prefix AppDir/usr --config Release
+
+          # Ensure icons and desktop file are in the right AppDir locations
+          mkdir -p AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/128x128/apps
+          cp ../dunecity.desktop AppDir/usr/share/applications/
+          cp ../dunecity-128x128.png AppDir/usr/share/icons/hicolor/128x128/apps/dunecity.png
+
+          # linuxdeploy bundles the binary's shared-library dependencies into the
+          # AppDir, generates AppRun, and creates the final .AppImage
+          ARCH=x86_64 FUSE_APPIMAGE_EXTRACT_AND_RUN=1 \
+            ../linuxdeploy-x86_64.AppImage \
+            --appdir AppDir \
+            --executable AppDir/usr/bin/dunecity \
+            --desktop-file AppDir/usr/share/applications/dunecity.desktop \
+            --icon-file AppDir/usr/share/icons/hicolor/128x128/apps/dunecity.png \
+            --output appimage
+
+          # Rename with version for clarity
+          VERSION=$(sed -n 's/^project(DuneCity VERSION \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' ../CMakeLists.txt)
+          mv DuneCity-*.AppImage "DuneCity-${VERSION}-Linux-x86_64.AppImage" 2>/dev/null || true
+
       - name: Upload Packages
         uses: actions/upload-artifact@v4
         with:
@@ -192,6 +222,7 @@ jobs:
             build/*.deb
             build/*.rpm
             build/*.tar.gz
+            build/*.AppImage
 
   # Rolling dev build: update a "latest-dev" pre-release on every main push
   # so builds are always downloadable from the releases page.
@@ -295,7 +326,7 @@ jobs:
             echo "**Downloads** (attached below):"
             echo "- Windows: \`DuneCity-*.zip\`"
             echo "- macOS: \`DuneCity-*.dmg\`"
-            echo "- Linux: \`.deb\` / \`.rpm\` / \`.tar.gz\`"
+            echo "- Linux: \`.AppImage\` (recommended) / \`.deb\` / \`.rpm\` / \`.tar.gz\`"
             echo
             echo "Upgrading from a previous Dune City install? Your built-in mod INI files are reseeded automatically on first launch."
           } > "$NOTES_FILE"

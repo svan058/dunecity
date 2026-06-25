@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project name and version
-project(DuneCity VERSION 1.0.88 LANGUAGES C CXX)
+project(DuneCity VERSION 1.0.89 LANGUAGES C CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -333,7 +333,10 @@ elseif(APPLE)
 else()
     set(CPACK_GENERATOR "DEB;RPM;TGZ")
     set(CPACK_DEBIAN_PACKAGE_SECTION "games")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0, libsdl2-mixer-2.0-0, libsdl2-ttf-2.0-0")
+    # SDL2, SDL2_mixer, SDL2_ttf, curl, miniupnpc, and discord-rpc are all
+    # bundled from vcpkg into lib/dunecity/ — do not declare them as system
+    # package dependencies. Only the baseline C/C++ runtime is required.
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.17), libstdc++6 (>= 6)")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Dune City Team")
     set(CPACK_RPM_PACKAGE_LICENSE "GPL-2.0+")
     set(CPACK_RPM_PACKAGE_GROUP "Amusements/Games")
