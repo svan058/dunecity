@@ -199,20 +199,24 @@ void Harvester::checkPos()
                         awaitingPickup = false;
                         setReturned();
                     } else {
-                        // the repair yard is already in use by some other unit => move out
+                        // the refinery is already in use => move out of the way without
+                        // clearing the refinery target (doMove2Pos calls setTarget(nullptr)
+                        // which would drop returningToRefinery, so use setDestination directly).
                         Coord newDestination = currentGameMap->findDeploySpot(this, target.getObjPointer()->getLocation(), currentGame->randomGen, getLocation(), pRefinery->getStructureSize());
-                        doMove2Pos(newDestination, true);
-                        requestCarryall();
+                        setDestination(newDestination);
+                        clearPath();
                     }
-                } else if(!awaitingPickup && owner->hasCarryalls() && pRefinery->isFree() && blockDistance(location, pRefinery->getClosestPoint(location)) >= MIN_CARRYALL_LIFT_DISTANCE) {
-                    requestCarryall();
+                } else if(!awaitingPickup && owner->hasCarryalls() && pRefinery->isFree() && blockDistance(location, pRefinery->getClosestPoint(location)) >= MIN_CARRYALL_LIFT_DISTANCE && carryallRequestCooldown <= 0) {
+                    if(requestCarryall()) {
+                        carryallRequestCooldown = MILLI2CYCLES(2000);
+                    }
                 }
                 
                 // Check if path to refinery is blocked - request carryall if stuck
                 if(!awaitingPickup && !moving && pathList.empty() && destination != location) {
                     // Not moving, no path, but has a destination - path is likely blocked
                     returnPathFailCounter++;
-                    if(returnPathFailCounter >= 3) {
+                    if(returnPathFailCounter >= 3 && carryallRequestCooldown <= 0) {
                         if(pRefinery->isFree() && owner->hasCarryalls()) {
                             // Refinery is free but path is blocked - request carryall
                             SDL_Log("HARVESTER %d: Path to refinery blocked, requesting carryall pickup", getObjectID());

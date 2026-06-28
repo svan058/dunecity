@@ -1582,6 +1582,7 @@ UnitBase::PathRequestStats UnitBase::resolvePendingPathRequest() {
             if(getOwner()->hasCarryalls()
                && this->isAGroundUnit()
                && !static_cast<GroundUnit*>(this)->hasBookedCarrier()
+               && carryallRequestCooldown <= 0
                && (currentGame->getGameInitSettings().getGameOptions().manualCarryallDrops || getOwner()->isAI())
                && blockDistance(location, destination) >= MIN_CARRYALL_LIFT_DISTANCE) {
                 static_cast<GroundUnit*>(this)->requestCarryall();

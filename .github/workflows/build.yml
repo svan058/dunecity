@@ -38,6 +38,33 @@ jobs:
           fi
           echo "OK — all source files agree on $SOURCE_VERSION, matches tag v${TAG_VERSION}"
 
+  test-linux:
+    runs-on: ubuntu-latest
+    needs: [verify-version]
+    if: always() && (needs.verify-version.result == 'success' || needs.verify-version.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+            libcurl4-openssl-dev \
+            catch2
+
+      - name: Configure CMake
+        run: cmake -B build -DDUNECITY_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build tests
+        run: cmake --build build --target dunelegacy_tests
+
+      - name: Run tests
+        run: |
+          DUNE_CITY_SOURCE_DIR=${{ github.workspace }} \
+          DUNECITY_DATADIR=${{ github.workspace }}/data \
+          ./build/bin/dunelegacy_tests
+
   build-windows:
     runs-on: windows-latest
     # Wait for version check on tag builds; run unconditionally otherwise

@@ -89,7 +89,9 @@ TEST_CASE("ZoneStructure: Destruction clears zone from tiles", "[zone][integrati
 
 static std::string readSourceFile(const std::string& relativePath) {
     const char* env = std::getenv("DUNE_CITY_SOURCE_DIR");
-    if (!env) return {};
+    if (!env) {
+        SKIP("DUNE_CITY_SOURCE_DIR not set — skipping source-scan test");
+    }
     std::ifstream f(std::string(env) + "/" + relativePath);
     return std::string((std::istreambuf_iterator<char>(f)),
                         std::istreambuf_iterator<char>());

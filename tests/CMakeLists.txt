@@ -29,6 +29,7 @@ target_sources(dunelegacy_tests
         ValueModelTestCase/ValueModelTestCase.cpp
         PoliceStationTestCase/PoliceStationTestCase.cpp
         SaveCompatTestCase/SaveCompatTestCase.cpp
+        NeutralHouseTestCase/NeutralHouseTestCase.cpp
         # DuneCity core sources (needed for CitySimulation tests)
         ${CMAKE_SOURCE_DIR}/src/dunecity/CitySimulation.cpp
         CityEffectsRuntime_test_stub.cpp

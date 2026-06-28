@@ -362,7 +362,21 @@ void ObjectBase::setVisible(int teamID, bool status) {
 
 void ObjectBase::setTarget(const ObjectBase* newTarget) {
     target.pointTo(const_cast<ObjectBase*>(newTarget));
-    targetFriendly = (target && (target.getObjPointer()->getOwner()->getTeamID() == owner->getTeamID()) && (getItemID() != Unit_Sandworm) && (target.getObjPointer()->getItemID() != Unit_Sandworm));
+
+    // NB: ObjectPointer::operator bool() only reports whether an ID is set, NOT
+    // whether the object still exists. Only getObjPointer() resolves the ID
+    // against the object manager (and returns nullptr, clearing the ID, when the
+    // object has already been destroyed). The old code dereferenced
+    // target.getObjPointer() while only guarding with operator bool(), so passing
+    // a target that was destroyed earlier this cycle — e.g. a harvester killed
+    // while a carryall booking is still in flight, or a unit a saboteur just blew
+    // up — dereferenced nullptr and crashed (SIGSEGV). Resolve the pointer once
+    // and null-check it.
+    const ObjectBase* pTarget = target.getObjPointer();
+    targetFriendly = (pTarget != nullptr)
+                     && (pTarget->getOwner()->getTeamID() == owner->getTeamID())
+                     && (getItemID() != Unit_Sandworm)
+                     && (pTarget->getItemID() != Unit_Sandworm);
 }
 
 void ObjectBase::unassignFromMap(const Coord& location) const {
