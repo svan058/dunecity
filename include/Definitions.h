@@ -30,7 +30,7 @@
 #define DEFAULT_METASERVER  "https://dunelegacy.com/metaserver/metaserver.php"
 
 #define SAVEMAGIC           8675309
-#define SAVEGAMEVERSION     9811  // 9811: ObjectData now writes item count before data table (fixes v1.0.7 backward compat).
+#define SAVEGAMEVERSION     9812  // 9812: Added Structure_AdvancedWindTrap (ID 52), Num_ItemID now 53.
 
 // v1.0.0–v1.0.7 shipped SAVEGAMEVERSION 9810 with Num_ItemID=48.
 // v1.0.8–v1.0.10 also used 9810 but with Num_ItemID=52 (4 items added

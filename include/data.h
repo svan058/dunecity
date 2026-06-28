@@ -117,7 +117,10 @@ typedef enum {
     Unit_AmbientHelicopter = 51,      ///< DuneCity: Ambient city helicopter (non-combat, spawned by Airport)
     Unit_ExtLastID = 51,
 
-    ItemID_LastID = 51,
+    // Additional extended structures after units (isStructure handles non-contiguous range)
+    Structure_AdvancedWindTrap = 52,  ///< DuneCity: Advanced Windtrap (500 credits, -300 power, 3x3)
+
+    ItemID_LastID = 52,
 
     Num_ItemID
 } ItemID_enum;
@@ -165,7 +168,7 @@ inline bool isUnit(int itemID) { return (itemID >= Unit_FirstID && itemID <= Uni
     \param itemID   the ID of the item (e.g. Structure_ConstructionYard)
     \return true if it is a structure, false otherwise
 */
-inline bool isStructure(int itemID) { return (itemID >= Structure_FirstID && itemID <= Structure_LastID) || (itemID >= Structure_Stadium && itemID <= Structure_ExtLastID); }
+inline bool isStructure(int itemID) { return (itemID >= Structure_FirstID && itemID <= Structure_LastID) || (itemID >= Structure_Stadium && itemID <= Structure_ExtLastID) || itemID == Structure_AdvancedWindTrap; }
 
 /**
     This function determines if the specified itemID is a DuneCity zone structure.

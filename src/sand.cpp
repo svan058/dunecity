@@ -72,6 +72,7 @@ SDL_Texture* resolveItemPicture(int itemID, HOUSETYPE house) {
         case Structure_PoliceStation:       newPicID = Picture_PoliceStation;       break;
         case Structure_Stadium:            newPicID = Picture_Stadium;             break;
         case Structure_Airport:            newPicID = Picture_Airport;             break;
+        case Structure_AdvancedWindTrap:   newPicID = Picture_WindTrap;            break;
         case Structure_ZoneResidential:    newPicID = Picture_ZoneResidential;    break;
         case Structure_ZoneCommercial:     newPicID = Picture_ZoneCommercial;     break;
         case Structure_ZoneIndustrial:     newPicID = Picture_ZoneIndustrial;     break;
@@ -217,6 +218,7 @@ Coord getStructureSize(int itemID) {
         case Structure_PowerLine:           return Coord(1,1); break;
         case Structure_Stadium:             return Coord(3,3); break;
         case Structure_Airport:             return Coord(3,3); break;
+        case Structure_AdvancedWindTrap:    return Coord(3,3); break;
         default:                            return Coord(0,0); break;
     }
 }
@@ -258,6 +260,7 @@ Uint32  getItemIDByName(const std::string& name) {
     else if((lowerName == "power line") || (lowerName == "powerline"))              return Structure_PowerLine;
     else if(lowerName == "stadium")                                                return Structure_Stadium;
     else if(lowerName == "airport")                                                return Structure_Airport;
+    else if((lowerName == "advanced windtrap") || (lowerName == "advanced wind trap")) return Structure_AdvancedWindTrap;
     else if((lowerName == "carryall") || (lowerName == "carry-all"))            return Unit_Carryall;
     else if((lowerName == "devastator") || (lowerName == "devistator"))         return Unit_Devastator;
     else if(lowerName == "deviator")                                            return Unit_Deviator;
@@ -322,6 +325,7 @@ std::string getItemNameByID(Uint32 itemID) {
         case Structure_PowerLine:           return "Power Line";        break;
         case Structure_Stadium:             return "Stadium";           break;
         case Structure_Airport:             return "Airport";           break;
+        case Structure_AdvancedWindTrap:    return "Advanced Windtrap"; break;
 
         case Unit_Carryall:                 return "Carryall";          break;
         case Unit_Devastator:               return "Devastator";        break;
@@ -389,6 +393,7 @@ std::string resolveItemName(int itemID) {
         case Structure_PowerLine:           return _("Power Line");                        break;
         case Structure_Stadium:             return _("Stadium");                           break;
         case Structure_Airport:             return _("Airport");                           break;
+        case Structure_AdvancedWindTrap:    return _("Advanced Windtrap");                 break;
 
         case Unit_Carryall:                 return _("@DUNE.ENG|195#Carryall");            break;
         case Unit_Devastator:               return _("@DUNE.ENG|217#Devastator");          break;

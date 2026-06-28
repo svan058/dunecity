@@ -422,6 +422,18 @@ Builder = Construction Yard
 TechLevel = 6
 Prerequisite = Windtrap
 
+[Advanced Windtrap]
+Enabled = true
+HitPoints = 500
+Price = 500
+Power = -300		# 3x WindTrap output
+ViewRange = 3
+BuildTime = 96
+InfSpawnProp = 25
+Builder = Construction Yard
+TechLevel = 6
+Prerequisite = Windtrap, Radar, Hightech Factory
+
 [Police Station]
 # DuneCity city-mode-only. Sole source of police coverage — Barracks/WOR
 # no longer count toward crime reduction. Price matches SimCity Classic's

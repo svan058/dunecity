@@ -253,6 +253,7 @@ target_sources(dunecity
         structures/StarPort.cpp
         structures/Wall.cpp
         structures/WindTrap.cpp
+        structures/AdvancedWindTrap.cpp
         structures/WOR.cpp
         structures/NuclearPlant.cpp
         structures/PoliceStation.cpp
