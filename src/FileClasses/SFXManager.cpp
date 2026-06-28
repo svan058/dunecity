@@ -225,8 +225,14 @@ void SFXManager::loadEnglishVoice() {
         // "House Ordos"
         lngVoice[HouseOrdos*NUM_HOUSES+VoiceNum] = getChunkFromFile("MORDOS.VOC");
 
-        // "House Neutral"
-        lngVoice[HouseNeutral*NUM_HOUSES+VoiceNum] = getChunkFromFile("MNEU.VOC", "MATRE.VOC");
+        // "House Neutral" — use house-specific voice if available
+        if (VoiceNum == HOUSE_HARKONNEN || VoiceNum == HOUSE_SARDAUKAR) {
+            lngVoice[HouseNeutral*NUM_HOUSES+VoiceNum] = getChunkFromFile("HNEU.VOC", "MNEU.VOC", "MATRE.VOC");
+        } else if (VoiceNum == HOUSE_ORDOS || VoiceNum == HOUSE_MERCENARY) {
+            lngVoice[HouseNeutral*NUM_HOUSES+VoiceNum] = getChunkFromFile("ONEU.VOC", "MNEU.VOC", "MATRE.VOC");
+        } else {
+            lngVoice[HouseNeutral*NUM_HOUSES+VoiceNum] = getChunkFromFile("MNEU.VOC", "MATRE.VOC");
+        }
     }
 
     const auto bad_voice = std::find(lngVoice.cbegin(), lngVoice.cend(), nullptr);
