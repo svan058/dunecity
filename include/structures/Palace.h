@@ -74,6 +74,7 @@ public:
 protected:
     bool callFremen();
     bool spawnSaboteur();
+    bool spawnNeutralUnits();
 
     /**
         Used for updating things that are specific to that particular structure. Is called from
