@@ -5,6 +5,8 @@
 #include <FileClasses/GFXManager.h>
 #include <House.h>
 #include <Game.h>
+#include <ScreenBorder.h>
+#include <mmath.h>
 
 #include <GUI/ObjectInterfaces/WindTrapInterface.h>
 
@@ -53,6 +55,42 @@ bool AdvancedWindTrap::update() {
     }
 
     return bResult;
+}
+
+void AdvancedWindTrap::blitToScreen() {
+    // Draw the building body (animated power-plant atlas) first.
+    StructureBase::blitToScreen();
+
+    // Like the Starport and Palace, the Advanced Windtrap flies two animated
+    // house-colored flags at the top corners of its 3x3 footprint. Reuse the
+    // ObjPic_CornerFlag sprite (3 frames) and the same ~8-cycle timing as the
+    // map corner flags in Game::drawCornerFlags().
+    if(fogged) {
+        return;
+    }
+
+    SDL_Texture* flagTex = pGFXManager->getZoomedObjPic(ObjPic_CornerFlag, getOwner()->getHouseID(), currentZoomlevel);
+    if(flagTex == nullptr) {
+        return;
+    }
+
+    const int zoomedTileSize = world2zoomedWorld(TILESIZE);
+    const int frame = (currentGame->getGameCycleCount() / 8) % 3;
+
+    const int screenX = screenborder->world2screenX(lround(realX));
+    const int screenY = screenborder->world2screenY(lround(realY));
+    const int buildingW = zoomedTileSize * structureSize.x;
+
+    SDL_Rect src = { frame * zoomedTileSize, 0, zoomedTileSize, zoomedTileSize };
+
+    // Raise both flags one tile above the roofline so the poles rise off the top.
+    const int flagY = screenY - zoomedTileSize;
+
+    SDL_Rect leftDst  = { screenX, flagY, zoomedTileSize, zoomedTileSize };
+    SDL_RenderCopy(renderer, flagTex, &src, &leftDst);
+
+    SDL_Rect rightDst = { screenX + buildingW - zoomedTileSize, flagY, zoomedTileSize, zoomedTileSize };
+    SDL_RenderCopy(renderer, flagTex, &src, &rightDst);
 }
 
 void AdvancedWindTrap::setHealth(FixPoint newHealth) {
