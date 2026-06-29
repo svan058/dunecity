@@ -113,6 +113,10 @@ protected:
                     picID = Picture_Saboteur;
                 } break;
 
+                case HOUSE_NEUTRAL: {
+                    picID = Picture_Quad;
+                } break;
+
                 default: {
                     picID = Picture_Fremen;
                 } break;
