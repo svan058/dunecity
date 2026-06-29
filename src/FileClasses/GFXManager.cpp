@@ -1230,6 +1230,36 @@ GFXManager::GFXManager() {
                         }
                     }
                 }
+
+                // Per-house corner flag: blit 2×2 Tornie_AdvHouseFlag.png at (0,0)
+                // with palette index 147 (PALCOLOR_HARKONNEN+3) recoloured to each
+                // house's own accent colour (houseToPaletteIndex[h]+3).
+                if (pFileManager->exists("Tornie_AdvHouseFlag.png")) {
+                    auto flagSrc = LoadPNG_RW(pFileManager->openFile("Tornie_AdvHouseFlag.png").get());
+                    if (flagSrc && flagSrc->format->BitsPerPixel == 8) {
+                        for (int h = 0; h < NUM_HOUSES; h++) {
+                            if (!objPic[ObjPic_AdvancedWindTrap][h][0]) continue;
+                            // Clone flag surface and substitute palette entries for this house
+                            sdl2::surface_ptr flagCopy{ SDL_ConvertSurface(flagSrc.get(), flagSrc->format, 0) };
+                            if (flagCopy && flagCopy->format->palette) {
+                                // Remap dark Harkonnen slot (index 147 = PALCOLOR_HARKONNEN+3)
+                                flagCopy->format->palette->colors[147] = palette[houseToPaletteIndex[h] + 3];
+                                // Remap highlight slot (index 51) to lighter house tone (+1)
+                                flagCopy->format->palette->colors[51] = palette[houseToPaletteIndex[h] + 1];
+                            }
+                            sdl2::surface_ptr flagRGBA{ SDL_ConvertSurfaceFormat(flagCopy.get(), SDL_PIXELFORMAT_RGBA32, 0) };
+                            if (flagRGBA) {
+                                SDL_SetSurfaceBlendMode(flagRGBA.get(), SDL_BLENDMODE_BLEND);
+                                for (int z = 0; z < NUM_ZOOMLEVEL; z++) {
+                                    if (objPic[ObjPic_AdvancedWindTrap][h][z]) {
+                                        SDL_Rect dst{0, 0, 2, 2};
+                                        SDL_BlitSurface(flagRGBA.get(), nullptr, objPic[ObjPic_AdvancedWindTrap][h][z].get(), &dst);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 SDL_Log("Super power plant sprite not found; AdvancedWindTrap will fall back to Windtrap art");
                 SDL_Surface* fallback = objPic[ObjPic_Windtrap][HOUSE_HARKONNEN][0].get();
@@ -1759,6 +1789,9 @@ GFXManager::GFXManager() {
     if (!smallDetailPicTex[Picture_RocketTrike]) {
         smallDetailPicTex[Picture_RocketTrike] = extractSmallDetailPic("TRIKE.WSA");
     }
+    if (pFileManager->exists("RocketTrikeIconMask.png")) {
+        SDL_Log("RocketTrikeIconMask.png found — mask companion for RocketTrikeIcon is available");
+    }
 
     // unused: FARTR.WSA, FHARK.WSA, FORDOS.WSA
 
@@ -1964,9 +1997,9 @@ GFXManager::GFXManager() {
     uiGraphic[UI_MentatBackground][HOUSE_FREMEN] = PictureFactory::mapMentatSurfaceToFremen(uiGraphic[UI_MentatBackground][HOUSE_ATREIDES].get());
     uiGraphic[UI_MentatBackground][HOUSE_SARDAUKAR] = PictureFactory::mapMentatSurfaceToSardaukar(uiGraphic[UI_MentatBackground][HOUSE_HARKONNEN].get());
     uiGraphic[UI_MentatBackground][HOUSE_MERCENARY] = PictureFactory::mapMentatSurfaceToMercenary(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
-    // House Neutral uses the Atreides (Cyril, male) mentat shape with all blue
-    // tones recoloured to white/grey appropriate for House Neutral.
-    uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ATREIDES].get());
+    // House Neutral uses the Ordos (girl) mentat with green robes recoloured to
+    // grey/neutral tones and hair remapped to match house neutral palette.
+    uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
 
     uiGraphic[UI_MentatBackgroundBene][HOUSE_HARKONNEN] = Scaler::defaultDoubleSurface(LoadCPS_RW(pFileManager->openFile("MENTATM.CPS").get()).get());
     if(uiGraphic[UI_MentatBackgroundBene][HOUSE_HARKONNEN] != nullptr) {

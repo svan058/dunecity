@@ -1099,23 +1099,21 @@ std::unique_ptr<Animation> PictureFactory::mapMentatAnimationToMercenary(Animati
 }
 
 sdl2::surface_ptr PictureFactory::mapMentatSurfaceToNeutral(SDL_Surface* pSurface) {
-    // Neutral mentat is based on the Atreides mentat (Cyril, the male advisor
-    // with blue robes). Remap the Atreides house-colour range (160-175, blue)
-    // to the Neutral grey range (128-135).  Do NOT touch skin/face colours.
-    auto mappedSurface = mapSurfaceColorRange(pSurface, PALCOLOR_ATREIDES, PALCOLOR_NEUTRAL);
+    // Neutral mentat is based on the Ordos (girl) mentat with green robes.
+    // Remap the Ordos house-colour range (176-182, green) to the Neutral grey
+    // range (128-134). Indices 179-182 are already covered by mapSurfaceColorRange.
+    auto mappedSurface = mapSurfaceColorRange(pSurface, PALCOLOR_ORDOS, PALCOLOR_NEUTRAL);
 
     Uint8 colorMap[256];
     for(int i = 0; i < 256; i++) {
         colorMap[i] = i;
     }
 
-    // Map Atreides accent blue indices outside the 7-colour house range
-    // (same indices adjusted in mapMentatSurfaceToFremen for Fremen).
-    // These are specific CPS-palette blue shadow/highlight pixels on Cyril.
-    colorMap[179] = PALCOLOR_NEUTRAL + 5;
-    colorMap[180] = PALCOLOR_NEUTRAL + 5;
-    colorMap[181] = PALCOLOR_NEUTRAL + 6;
-    colorMap[182] = PALCOLOR_NEUTRAL + 6;
+    // Best-effort remap of brownish/reddish hair tones (Dune 2 palette ~224-231)
+    // to neutral grey so the girl's hair reads as grey rather than warm brown.
+    for(int i = 224; i <= 231; i++) {
+        colorMap[i] = PALCOLOR_NEUTRAL + 4;
+    }
 
     mapColor(mappedSurface.get(), colorMap);
 
