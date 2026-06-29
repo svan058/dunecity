@@ -247,15 +247,48 @@ GFXManager::GFXManager() {
     objPic[ObjPic_Quad][HOUSE_HARKONNEN][0] = units->getPictureArray(8,1,GROUNDUNIT_ROW(0));
     objPic[ObjPic_Trike][HOUSE_HARKONNEN][0] = units->getPictureArray(8,1,GROUNDUNIT_ROW(5));
 
-    // DuneCity: the Rocket Trike reuses the standard Trike body art but with a
-    // red tint instead of the stock blue-grey.  Load a *second*, independent
-    // copy of the Trike sprite (getPictureArray allocates a fresh surface with
-    // its own palette, so this does not touch the regular Trike or the Raider
-    // Trike) and tint its cool/neutral body palette entries toward red.  We
-    // only rewrite palette RGB values, never pixel indices, so the per-house
-    // colour remap in getZoomedObjPic (PALCOLOR_HARKONNEN -> house) still works.
+    // DuneCity: the Rocket Trike in-world sprite.  By default it reuses the
+    // stock, *untinted* Trike body art (the old runtime red tint has been
+    // removed — see git history for tintSurfaceRed).  As an override, Tornie's
+    // standalone art at data/RocketTrike.png is used when present: an 8-frame
+    // horizontal strip (RGBA) matching this sprite's {8,1} ObjPic layout,
+    // regenerable with scripts/extract-unit-sprite.py.  The PNG path is a
+    // truecolor RGBA sprite, so we pre-build every zoom level and house slot
+    // here (mirroring the zone sprites) and let getZoomedObjPic skip the 8-bit
+    // palette remap; the SHP fallback keeps the normal per-house remap.
     objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][0] = units->getPictureArray(8,1,GROUNDUNIT_ROW(5));
-    tintSurfaceRed(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][0].get());
+    if(pFileManager->exists("RocketTrike.png")) {
+        auto rtRaw = LoadPNG_RW(pFileManager->openFile("RocketTrike.png").get());
+        if(rtRaw) {
+            sdl2::surface_ptr rtSurf{ SDL_ConvertSurfaceFormat(rtRaw.get(), SCREEN_FORMAT, 0) };
+            if(rtSurf) {
+                // integer nearest-neighbour upscale of a 32-bit surface
+                auto scaleRT = [](SDL_Surface* src, int factor) -> sdl2::surface_ptr {
+                    sdl2::surface_ptr dst{ SDL_CreateRGBSurface(0,
+                        src->w * factor, src->h * factor,
+                        src->format->BitsPerPixel,
+                        src->format->Rmask, src->format->Gmask,
+                        src->format->Bmask, src->format->Amask) };
+                    if(dst) SDL_BlitScaled(src, nullptr, dst.get(), nullptr);
+                    return dst;
+                };
+                objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][0] = std::move(rtSurf);
+                objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][1] = scaleRT(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][0].get(), 2);
+                objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][2] = scaleRT(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][0].get(), 3);
+                // house-independent — copy every house slot so getZoomedObjPic
+                // never palette-remaps RGBA data.
+                for(int h = 1; h < (int)NUM_HOUSES; h++) {
+                    for(int z = 0; z < NUM_ZOOMLEVEL; z++) {
+                        if(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][z]) {
+                            objPic[ObjPic_RocketTrike][h][z] = sdl2::surface_ptr{
+                                SDL_ConvertSurface(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][z].get(),
+                                                   objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][z]->format, 0) };
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     // DuneCity: the Neutral Launcher reuses the standard Launcher body (tank
     // base) and rocket turret art, but red-tinted instead of blue-grey.  Load
@@ -1583,7 +1616,13 @@ GFXManager::GFXManager() {
                                      || id == ObjPic_Airport
                                      || id == ObjPic_AdvancedWindTrap
                                      || id == ObjPic_CornerFlag
-                                     || id == ObjPic_Star);
+                                     || id == ObjPic_Star
+                                     // RocketTrike is truecolor only when the
+                                     // data/RocketTrike.png override is loaded
+                                     // (32-bit); the SHP fallback stays 8-bit.
+                                     || (id == ObjPic_RocketTrike
+                                         && objPic[id][HOUSE_HARKONNEN][0] != nullptr
+                                         && objPic[id][HOUSE_HARKONNEN][0]->format->BytesPerPixel >= 3));
 
         for(int h = 0; h < (int) NUM_HOUSES; h++) {
             if(objPic[id][h][0] != nullptr) {
@@ -2502,7 +2541,9 @@ SDL_Texture* GFXManager::getZoomedObjPic(unsigned int id, int house, unsigned in
            || id == ObjPic_Stadium || id == ObjPic_Airport
            || id == ObjPic_Hospital || id == ObjPic_Church
            || id == ObjPic_Star || id == ObjPic_AdvancedWindTrap
-           || id == ObjPic_CornerFlag) {
+           || id == ObjPic_CornerFlag
+           || (id == ObjPic_RocketTrike && objPic[id][house][z] != nullptr
+               && objPic[id][house][z]->format->BytesPerPixel >= 3)) {
             if(objPicTex[id][house][z]) {
                 SDL_SetTextureBlendMode(objPicTex[id][house][z].get(), SDL_BLENDMODE_BLEND);
             }
