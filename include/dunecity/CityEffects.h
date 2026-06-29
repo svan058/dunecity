@@ -765,8 +765,16 @@ inline ValveOutputs computeDemandValves(const ValveInputs& in) {
     const double projectedResPop = normResPop + migration + births;
 
     // Labour base uses previous-tick values (SC: resHist[1] / (comHist[1]+indHist[1]))
+    // Guard: only compute the real ratio when BOTH previous residential AND previous
+    // jobs are nonzero. SC Classic initialises resHist[1]=1 and comHist[1]+indHist[1]=1
+    // so laborBase always starts at 1.0. DuneCity zero-initialises prevXxxPop, so on
+    // any map with pre-placed industrial but no residential (e.g. Map 2 campaign start)
+    // prevJobs>0 but prevResPop==0 → laborBase=0 → projectedComPop and projectedIndPop
+    // both collapse to 0 → comDelta and indDelta hit -600/tick → C/I valves floor in
+    // 2-3 ticks, blocking all zone growth. Fix: fall back to equilibrium (1.0) whenever
+    // there is no established residential history from the previous tick.
     double laborBase;
-    if (prevJobs > 0.0) {
+    if (prevJobs > 0.0 && in.prevResPop > 0) {
         laborBase = static_cast<double>(in.prevResPop) / prevJobs;
     } else {
         laborBase = 1.0;

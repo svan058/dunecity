@@ -652,8 +652,8 @@ TechLevel = 3
 TechLevel(H) = 1
 TechLevel(N) = 4
 UpgradeLevel = 1
-UpgradeLevel(H) = 0
-UpgradeLevel(N) = 0
+UpgradeLevel(H) = 1
+UpgradeLevel(N) = 1
 
 [Raider Trike]
 Enabled = true
@@ -674,7 +674,7 @@ Builder(N) = Invalid
 [Rocket Trike]
 Enabled = true
 HitPoints = 80
-Price = 225
+Price = 200
 ViewRange = 2
 WeaponDamage = 5
 WeaponRange = 5
@@ -682,7 +682,8 @@ WeaponReloadTime = 150
 MaxSpeed = 9.25
 BuildTime = 40
 InfSpawnProp = 25
-Builder = Invalid
+Builder = Light Factory
+UpgradeLevel = 0
 Builder(N) = Light Factory
 TechLevel(N) = 3
 
