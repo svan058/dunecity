@@ -617,6 +617,19 @@ MapEditorInterface::MapEditorInterface(MapEditor* pMapEditor)
 
     editorModeUnits_VBox.addWidget(VSpacer::create(2));
 
+    editorModeUnits_VBox.addWidget(&editorModeUnits_HBoxRocketTrike, 2*D2_TILESIZE);
+
+    editorModeUnits_RocketTrike.setToggleButton(true);
+    editorModeUnits_RocketTrike.setTooltipText(resolveItemName(Unit_RocketTrike));
+    editorModeUnits_RocketTrike.setOnClick(std::bind(&MapEditorInterface::onUnitButton, this, Unit_RocketTrike));
+    editorModeUnits_HBoxRocketTrike.addWidget(&editorModeUnits_RocketTrike);
+
+    editorModeUnits_HBoxRocketTrike.addWidget(HSpacer::create(2));
+
+    editorModeUnits_HBoxRocketTrike.addWidget(Spacer::create());
+
+    editorModeUnits_VBox.addWidget(VSpacer::create(2));
+
     editorModeUnits_VBox.addWidget(&editorModeUnits_HBox4, 2*D2_TILESIZE);
 
     editorModeUnits_Tank.setToggleButton(true);
@@ -1144,6 +1157,7 @@ void MapEditorInterface::onUnitButton(int unitType) {
     editorModeUnits_MCV.setToggleState( (unitType == Unit_MCV) );
     editorModeUnits_Trike.setToggleState( (unitType == Unit_Trike) );
     editorModeUnits_Raider.setToggleState( (unitType == Unit_RaiderTrike) );
+    editorModeUnits_RocketTrike.setToggleState( (unitType == Unit_RocketTrike) );
     editorModeUnits_Quad.setToggleState( (unitType == Unit_Quad) );
     editorModeUnits_Tank.setToggleState( (unitType == Unit_Tank) );
     editorModeUnits_SiegeTank.setToggleState( (unitType == Unit_SiegeTank) );
@@ -1384,6 +1398,8 @@ void MapEditorInterface::changeInterfaceColor(HOUSETYPE newHouse) {
     editorModeUnits_MCV.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_MCV, newHouse));
     editorModeUnits_Trike.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Trike, newHouse));
     editorModeUnits_Raider.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Raider, newHouse));
+    // No dedicated UI_MapEditor_RocketTrike graphic exists; reuse the plain Trike icon.
+    editorModeUnits_RocketTrike.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Trike, newHouse));
     editorModeUnits_Quad.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Quad, newHouse));
     editorModeUnits_Tank.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Tank, newHouse));
     editorModeUnits_SiegeTank.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_SiegeTank, newHouse));

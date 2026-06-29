@@ -1761,6 +1761,7 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
             case Unit_Tank:             objectPicBase = ObjPic_Tank_Base;       objectPicGun = ObjPic_Tank_Gun;         gunOffset = tankTurretOffset;           break;
             case Unit_Trike:            objectPicBase = ObjPic_Trike;                                                                                           break;
             case Unit_RaiderTrike:      objectPicBase = ObjPic_Trike;                                                                                           break;
+            case Unit_RocketTrike:      objectPicBase = ObjPic_RocketTrike;                                                                                     break;
             case Unit_Trooper:          objectPicBase = ObjPic_Trooper;         framesX = 4;    framesY = 3;                                                    break;
             case Unit_Special:          objectPicBase = ObjPic_Devastator_Base; objectPicGun = ObjPic_Devastator_Gun;   gunOffset = devastatorTurretOffset;     break;
             case Unit_Infantry:         objectPicBase = ObjPic_Infantry;         framesX = 4;    framesY = 4;                                                   break;

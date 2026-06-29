@@ -258,6 +258,8 @@ private:
     SymbolButton        editorModeUnits_Trike;
     SymbolButton        editorModeUnits_Raider;
     SymbolButton        editorModeUnits_Quad;
+    HBox                editorModeUnits_HBoxRocketTrike;
+    SymbolButton        editorModeUnits_RocketTrike;
     HBox                editorModeUnits_HBox4;
     SymbolButton        editorModeUnits_Tank;
     SymbolButton        editorModeUnits_SiegeTank;
