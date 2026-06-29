@@ -128,6 +128,9 @@ void MapEditor::setMirrorMode(MirrorMode newMirrorMode) {
 }
 
 void MapEditor::RunEditor() {
+    // Restore cursor in case a game or cutscene left it hidden
+    SDL_ShowCursor(SDL_ENABLE);
+
     while(!bQuitEditor) {
 
         int frameStart = SDL_GetTicks();

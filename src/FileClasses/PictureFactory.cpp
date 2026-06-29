@@ -1091,7 +1091,20 @@ std::unique_ptr<Animation> PictureFactory::mapMentatAnimationToMercenary(Animati
 }
 
 sdl2::surface_ptr PictureFactory::mapMentatSurfaceToNeutral(SDL_Surface* pSurface) {
-    return mapSurfaceColorRange(pSurface, PALCOLOR_ORDOS, PALCOLOR_NEUTRAL);
+    auto mappedSurface = mapSurfaceColorRange(pSurface, PALCOLOR_ORDOS, PALCOLOR_NEUTRAL);
+
+    Uint8 colorMap[256];
+    for(int i = 0; i < 256; i++) {
+        colorMap[i] = i;
+    }
+
+    // Map Ordos accent colors (outside the 7-range) to neutral grey equivalents
+    colorMap[186] = PALCOLOR_NEUTRAL + 10;
+    colorMap[187] = PALCOLOR_NEUTRAL + 11;
+
+    mapColor(mappedSurface.get(), colorMap);
+
+    return mappedSurface;
 }
 
 std::unique_ptr<Animation> PictureFactory::mapMentatAnimationToNeutral(Animation* pAnimation) {
