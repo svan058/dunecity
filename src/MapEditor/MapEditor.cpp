@@ -210,6 +210,7 @@ void MapEditor::setMap(const MapData& mapdata, const MapInfo& newMapInfo) {
     choam[Unit_SiegeTank] = 6;
     choam[Unit_Tank] = 6;
     choam[Unit_Trike] = 5;
+    choam[Unit_RocketTrike] = 5;
 
     if(pInterface != nullptr) {
         pInterface->onNewMap();

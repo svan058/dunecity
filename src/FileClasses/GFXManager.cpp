@@ -1698,6 +1698,18 @@ GFXManager::GFXManager() {
     smallDetailPicTex[Picture_MCV] = extractSmallDetailPic("MCV.WSA");
     smallDetailPicTex[Picture_Ornithopter] = extractSmallDetailPic("ORNI.WSA");
     smallDetailPicTex[Picture_Palace] = extractSmallDetailPic("PALACE.WSA");
+    // DuneCity: Neutral Palace ability icon (Trike & Quad combo)
+    if (pFileManager->exists("PalaceTrikeAndQuadIcon.png")) {
+        auto iconSurf = LoadPNG_RW(pFileManager->openFile("PalaceTrikeAndQuadIcon.png").get());
+        if (iconSurf) {
+            auto tex = convertSurfaceToTexture(iconSurf.get());
+            if (tex) {
+                SDL_SetTextureBlendMode(tex.get(), SDL_BLENDMODE_BLEND);
+                smallDetailPicTex[Picture_Palace] = std::move(tex);
+                SDL_Log("Loaded Neutral Palace icon from PalaceTrikeAndQuadIcon.png");
+            }
+        }
+    }
     // Quad: the neutral Palace activation ability (PalaceInterface) uses
     // Picture_Quad. Prefer the standalone QuadIcon.png in data/ — it ships at
     // the exact 91×55 sidebar-slot size, so load it straight to a texture.
@@ -2119,9 +2131,19 @@ GFXManager::GFXManager() {
     uiGraphic[UI_MentatBackground][HOUSE_FREMEN] = PictureFactory::mapMentatSurfaceToFremen(uiGraphic[UI_MentatBackground][HOUSE_ATREIDES].get());
     uiGraphic[UI_MentatBackground][HOUSE_SARDAUKAR] = PictureFactory::mapMentatSurfaceToSardaukar(uiGraphic[UI_MentatBackground][HOUSE_HARKONNEN].get());
     uiGraphic[UI_MentatBackground][HOUSE_MERCENARY] = PictureFactory::mapMentatSurfaceToMercenary(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
-    // House Neutral uses the Ordos (girl) mentat with green robes recoloured to
-    // grey/neutral tones and hair remapped to match house neutral palette.
-    uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
+    // DuneCity: Neutral mentat portrait — use HeraldNeu.png (Chani / neutral herald)
+    // if present, otherwise fall back to Ordos mentat recoloured to neutral palette.
+    // TODO: Investigate Dune II house-selection intro CPS for canonical Chani portrait.
+    if (pFileManager->exists("HeraldNeu.png")) {
+        auto heraldSurf = LoadPNG_RW(pFileManager->openFile("HeraldNeu.png").get());
+        if (heraldSurf) {
+            uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = Scaler::defaultDoubleSurface(heraldSurf.get());
+            SDL_Log("Loaded Neutral mentat background from HeraldNeu.png");
+        }
+    }
+    if (!uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL]) {
+        uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
+    }
 
     uiGraphic[UI_MentatBackgroundBene][HOUSE_HARKONNEN] = Scaler::defaultDoubleSurface(LoadCPS_RW(pFileManager->openFile("MENTATM.CPS").get()).get());
     if(uiGraphic[UI_MentatBackgroundBene][HOUSE_HARKONNEN] != nullptr) {

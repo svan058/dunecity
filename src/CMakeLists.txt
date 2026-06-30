@@ -626,6 +626,13 @@ if(WIN32)
         FILES "${DATA_DIR}/Tornie_AdvancedWindtrap_gfx.png"
         DESTINATION .
     )
+    # Install Tornie.PAK (bundled Neutral-house art assets)
+    if(EXISTS "${DATA_DIR}/Tornie.PAK")
+        install(
+            FILES "${DATA_DIR}/Tornie.PAK"
+            DESTINATION .
+        )
+    endif()
 elseif(NOT APPLE)
     # Linux: use FHS structure
     install(

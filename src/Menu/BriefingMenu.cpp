@@ -137,13 +137,14 @@ int BriefingMenu::showMenu()
                 } break;
 
                 case HOUSE_ATREIDES:
-                case HOUSE_FREMEN: {
+                case HOUSE_FREMEN:
+                case HOUSE_NEUTRAL: {
+                    // DuneCity: Neutral mentat music = Atreides
                     musicPlayer->changeMusic(MUSIC_BRIEFING_A);
                 } break;
 
                 case HOUSE_ORDOS:
-                case HOUSE_MERCENARY:
-                case HOUSE_NEUTRAL: {
+                case HOUSE_MERCENARY: {
                     musicPlayer->changeMusic(MUSIC_BRIEFING_O);
                 } break;
             }

@@ -1329,6 +1329,7 @@ void CustomGamePlayers::extractMapInfo(INIFile* pMap)
     if(pMap->hasSection("Player4"))   numHouses++;
     if(pMap->hasSection("Player5"))   numHouses++;
     if(pMap->hasSection("Player6"))   numHouses++;
+    if(pMap->hasSection("Player7"))   numHouses++;  // DuneCity: 7-team support (Neutral as Team7)
 
     mapPropertyPlayers.setText(std::to_string(numHouses));
 

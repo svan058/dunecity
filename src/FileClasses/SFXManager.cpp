@@ -253,8 +253,8 @@ void SFXManager::loadEnglishVoice() {
             lngVoice[UnitLaunched*NUM_HOUSES      + n] = concat3Chunks(neuName.get(), Unit.get(),      Launched.get());
         }
 
-        // Fallback to MNEU.VOC ("Neutral") rather than Atreides ACONST.VOC when MCONST.VOC is absent
-        lngVoice[ConstructionComplete*NUM_HOUSES + n] = getChunkFromFile("MCONST.VOC", "MNEU.VOC", "ANEU.VOC");
+        // DuneCity: Neutral construction complete uses Atreides voice (ACONST.VOC)
+        lngVoice[ConstructionComplete*NUM_HOUSES + n] = getChunkFromFile("ACONST.VOC", "MCONST.VOC");
 
         { // VehicleRepaired
             auto Vehicle  = getChunkFromFile("MVEHICLE.VOC", "AVEHICLE.VOC");
