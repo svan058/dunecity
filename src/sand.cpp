@@ -56,7 +56,7 @@ SDL_Texture* resolveItemPicture(int itemID, HOUSETYPE house) {
         case Structure_HighTechFactory:     newPicID = Picture_HighTechFactory;     break;
         case Structure_IX:                  newPicID = Picture_IX;                  break;
         case Structure_LightFactory:        newPicID = Picture_LightFactory;        break;
-        case Structure_Palace:              newPicID = Picture_Palace;              break;
+        case Structure_Palace:              newPicID = Picture_Palace;             break;
         case Structure_Radar:               newPicID = Picture_Radar;               break;
         case Structure_Refinery:            newPicID = Picture_Refinery;            break;
         case Structure_RepairYard:          newPicID = Picture_RepairYard;          break;
