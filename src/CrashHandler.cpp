@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <exception>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -33,6 +34,15 @@ static const char* getTimeStamp() {
     struct tm* timeinfo = localtime(&now);
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
     return buffer;
+}
+
+/**
+ * Write raw string to a file (no formatting)
+ */
+static void writeCrashLogRaw(FILE* f, const char* str) {
+    if(!f) return;
+    fputs(str, f);
+    fflush(f);
 }
 
 /**
@@ -208,6 +218,25 @@ static void signalHandler(int sig) {
     raise(sig);
 }
 
+static std::terminate_handler prevTerminate = nullptr;
+
+static void terminateHandler() noexcept {
+    FILE* f = (crashLogFile != nullptr) ? crashLogFile : stderr;
+    writeCrashLogRaw(f, "\n========================================\n");
+    writeCrashLogRaw(f, "UNCAUGHT EXCEPTION (std::terminate)\n");
+    writeCrashLogRaw(f, "========================================\n");
+    writeCrashLogRaw(f, "An uncaught C++ exception triggered std::terminate.\n");
+    writeCrashLogRaw(f, "This is likely an allocation failure (std::bad_alloc)\n");
+    writeCrashLogRaw(f, "or an exception escaping a noexcept function.\n");
+    writeCrashLogRaw(f, "\n");
+    if(crashLogFile && crashLogFile != stderr) {
+        fflush(crashLogFile);
+        fclose(crashLogFile);
+        crashLogFile = nullptr;
+    }
+    std::abort();
+}
+
 /**
  * Install crash handlers for all common crash signals
  */
@@ -240,6 +269,8 @@ void installCrashHandlers(const char* logPath) {
     signal(SIGTERM, signalHandler);  // Termination request (Windows)
 #endif
     
+    prevTerminate = std::set_terminate(terminateHandler);
+
     SDL_Log("Crash handlers installed (log: %s)", logPath);
 }
 

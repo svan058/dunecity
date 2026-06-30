@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <cstring>
 
+#include <SDL_log.h>
+
 std::array<AStarSearch::TilePoolEntry, AStarSearch::TilePoolSize> AStarSearch::tilePool = {};
 static size_t gPoolReuseHits = 0;
 static size_t gPoolBufferExpansions = 0;
@@ -59,7 +61,8 @@ AStarSearch::TileData* AStarSearch::acquireTileBuffer(size_t requiredCount) {
             std::free(entry.buffer);
             entry.buffer = static_cast<TileData*>(std::calloc(requiredCount, sizeof(TileData)));
             if(entry.buffer == nullptr) {
-                throw std::bad_alloc();
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "AStarSearch: tile buffer allocation failed (%zu tiles)", requiredCount);
+                return nullptr;
             }
             entry.capacity = requiredCount;
             ++gPoolBufferExpansions;
@@ -74,7 +77,8 @@ AStarSearch::TileData* AStarSearch::acquireTileBuffer(size_t requiredCount) {
     // Fallback: allocate without pooling (should be rare)
     TileData* buffer = static_cast<TileData*>(std::calloc(requiredCount, sizeof(TileData)));
     if(buffer == nullptr) {
-        throw std::bad_alloc();
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "AStarSearch: fallback tile buffer allocation failed (%zu tiles)", requiredCount);
+        return nullptr;
     }
     ++gPoolFallbackAllocs;
     return buffer;
@@ -122,6 +126,9 @@ AStarSearch::AStarSearch(Map* pMap, UnitBase* pUnit, Coord start, Coord destinat
 
     const size_t tileCount = static_cast<size_t>(sizeX) * static_cast<size_t>(sizeY);
     mapData = acquireTileBuffer(tileCount);
+    if(mapData == nullptr) {
+        return;
+    }
 
     FixPoint heuristic = blockDistance(start, destination);
     FixPoint smallestHeuristic = FixPt_MAX;
