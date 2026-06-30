@@ -2528,9 +2528,39 @@ GFXManager::GFXManager() {
     animation[Anim_MercenaryMouth] = PictureFactory::mapMentatAnimationToMercenary(animation[Anim_OrdosMouth].get());
     animation[Anim_MercenaryShoulder] = PictureFactory::mapMentatAnimationToMercenary(animation[Anim_OrdosShoulder].get());
     animation[Anim_MercenaryRing] = PictureFactory::mapMentatAnimationToMercenary(animation[Anim_OrdosRing].get());
-    // DuneCity: Neutral mentat — Ordos animations with neutral palette remap
-    animation[Anim_NeutralEyes] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosEyes].get());
-    animation[Anim_NeutralMouth] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosMouth].get());
+    // DuneCity: Neutral mentat — load Chani animation frames from Tornie.PAK if present
+    {
+        auto loadChaniAnim = [&](const std::string& prefix, int nFrames, bool bPingPong) -> std::unique_ptr<Animation> {
+            auto anim = std::make_unique<Animation>();
+            bool ok = true;
+            for (int fi = 0; fi < nFrames; fi++) {
+                std::string name = prefix + "_" + std::to_string(fi) + ".png";
+                if (!pFileManager->exists(name)) { ok = false; break; }
+                auto surf = LoadPNG_RW(pFileManager->openFile(name).get());
+                if (!surf) { ok = false; break; }
+                anim->addFrame(std::move(surf), true, false); // bDoublePic=true
+            }
+            if (!ok) return nullptr;
+            if (bPingPong) {
+                // mirror frames back: 3,2,1 (skip 0 and last to avoid stutter)
+                const auto& frames = anim->getFrames();
+                for (int fi = (int)frames.size()-2; fi >= 1; fi--) {
+                    sdl2::surface_ptr copy = copySurface(frames[fi].get());
+                    anim->addFrame(std::move(copy), false, false);
+                }
+            }
+            anim->setFrameDurationTime(125);
+            return anim;
+        };
+
+        auto chaniEyes  = loadChaniAnim("ChaniEyes",  5, true);
+        auto chaniMouth = loadChaniAnim("ChaniMouth", 5, true);
+
+        animation[Anim_NeutralEyes]  = chaniEyes  ? std::move(chaniEyes)
+            : PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosEyes].get());
+        animation[Anim_NeutralMouth] = chaniMouth ? std::move(chaniMouth)
+            : PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosMouth].get());
+    }
     animation[Anim_NeutralShoulder] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosShoulder].get());
     animation[Anim_NeutralRing] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosRing].get());
 
