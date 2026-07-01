@@ -38,14 +38,15 @@ const int BuilderBase::itemOrder[] = {    Structure_Slab4, Structure_Slab1, Stru
                                            Structure_RepairYard, Structure_GunTurret, Structure_WOR,
                                            Structure_Barracks, Structure_Wall, Structure_LightFactory,
                                            Structure_Silo, Structure_Radar, Structure_Refinery, Structure_WindTrap,
-                                           Structure_NuclearPlant, Structure_PoliceStation, Structure_Palace,
-                                           Structure_AdvancedWindTrap,
+                                           Structure_NuclearPlant, Structure_AdvancedWindTrap,
+                                           Structure_PoliceStation, Structure_Palace,
                                            Structure_Stadium, Structure_Airport,
                                            Structure_ZoneResidential, Structure_ZoneCommercial, Structure_ZoneIndustrial,
+                                           Unit_EliteLauncher, Unit_EliteSiegeTank, Unit_FlameTank,
                                            Unit_SonicTank, Unit_Devastator, Unit_Deviator, Unit_Special,
                                            Unit_Launcher, Unit_SiegeTank, Unit_Tank, Unit_MCV, Unit_Harvester,
                                            Unit_Ornithopter, Unit_Carryall, Unit_Quad, Unit_RaiderTrike,
-                                           Unit_RocketTrike, Unit_EliteLauncher, Unit_EliteSiegeTank,
+                                           Unit_RocketTrike,
                                            Unit_Trike, Unit_Troopers, Unit_Trooper, Unit_Infantry, Unit_Soldier,
                                            Unit_Frigate, Unit_Sandworm, Unit_Saboteur, ItemID_Invalid };
 
@@ -329,8 +330,8 @@ void BuilderBase::updateBuildList()
             continue;
         }
 
-        // AdvancedWindTrap is exclusive to the Tornie mod.
-        if (itemID2Add == Structure_AdvancedWindTrap
+        // AdvancedWindTrap and Flame Tank are exclusive to the Tornie mod.
+        if ((itemID2Add == Structure_AdvancedWindTrap || itemID2Add == Unit_FlameTank)
             && ModManager::instance().getActiveModName() != "Tornie") {
             removeItem(buildList, iter, itemID2Add);
             continue;
