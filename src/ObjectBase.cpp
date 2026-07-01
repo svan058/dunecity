@@ -886,13 +886,33 @@ ObjectBase* ObjectBase::createObject(int itemID, House* Owner, bool byScenario) 
                         newObject = new Devastator(Owner);
                     }
                     break;
-                case HOUSE_FREMEN:
+                case HOUSE_FREMEN: {
+                    if (ModManager::instance().getActiveModName() == "Tornie") {
+                        // Tornie mod: Fremen special = random Deviator or Devastator
+                        if(currentGame->randomGen.randBool()) {
+                            newObject = new Deviator(Owner);
+                        } else {
+                            newObject = new Devastator(Owner);
+                        }
+                    } else {
+                        // Default: random SonicTank or Devastator
+                        if(currentGame->randomGen.randBool()) {
+                            newObject = new SonicTank(Owner);
+                        } else {
+                            newObject = new Devastator(Owner);
+                        }
+                    }
+                } break;
                 case HOUSE_MERCENARY: {
                     if (ModManager::instance().getActiveModName() == "Tornie") {
-                        // Tornie mod: Fremen and Mercenary specials use Deviator
-                        newObject = new Deviator(Owner);
+                        // Tornie mod: Mercenary special = random Deviator or SonicTank
+                        if(currentGame->randomGen.randBool()) {
+                            newObject = new Deviator(Owner);
+                        } else {
+                            newObject = new SonicTank(Owner);
+                        }
                     } else {
-                        // Default: random SonicTank or Devastator (original behaviour)
+                        // Default: random SonicTank or Devastator
                         if(currentGame->randomGen.randBool()) {
                             newObject = new SonicTank(Owner);
                         } else {
