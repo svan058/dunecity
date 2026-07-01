@@ -134,7 +134,7 @@ ReinforcementsWindow::ReinforcementsWindow(MapEditor* pMapEditor, HOUSETYPE curr
     }
     // DuneCity extended units (RocketTrike, EliteLauncher — skip ambient aircraft)
     for(int itemID = Unit_AmbientAirplane; itemID <= Unit_ExtLastID; ++itemID) {
-        if(isAmbientUnit(itemID)) {
+        if(isAmbientUnit(itemID) || itemID == Structure_AdvancedWindTrap) {
             continue;
         }
         unitDropDownBox.addEntry(resolveItemName(itemID), itemID);

@@ -135,17 +135,13 @@ MentatMenu::MentatMenu(int newHouse)
         } break;
 
         case HOUSE_NEUTRAL: {
-            anim = pGFXManager->getAnimation(Anim_NeutralEyes);
-            if (anim) {
-                eyesAnim.setAnimation(anim);
-                windowWidget.addWidget(&eyesAnim,Point(288,230),eyesAnim.getMinimumSize());
-            }
+            anim = pGFXManager->getAnimation(Anim_AtreidesEyes);
+            eyesAnim.setAnimation(anim);
+            windowWidget.addWidget(&eyesAnim, Point(80, 160), eyesAnim.getMinimumSize());
 
-            anim = pGFXManager->getAnimation(Anim_NeutralMouth);
-            if (anim) {
-                mouthAnim.setAnimation(anim);
-                windowWidget.addWidget(&mouthAnim,Point(288,262),mouthAnim.getMinimumSize());
-            }
+            anim = pGFXManager->getAnimation(Anim_AtreidesMouth);
+            mouthAnim.setAnimation(anim);
+            windowWidget.addWidget(&mouthAnim, Point(80, 192), mouthAnim.getMinimumSize());
 
             anim = pGFXManager->getAnimation(Anim_NeutralRing);
             if (anim) {

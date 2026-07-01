@@ -2230,31 +2230,22 @@ GFXManager::GFXManager() {
     uiGraphic[UI_MentatBackground][HOUSE_FREMEN] = PictureFactory::mapMentatSurfaceToFremen(uiGraphic[UI_MentatBackground][HOUSE_ATREIDES].get());
     uiGraphic[UI_MentatBackground][HOUSE_SARDAUKAR] = PictureFactory::mapMentatSurfaceToSardaukar(uiGraphic[UI_MentatBackground][HOUSE_HARKONNEN].get());
     uiGraphic[UI_MentatBackground][HOUSE_MERCENARY] = PictureFactory::mapMentatSurfaceToMercenary(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
-    // DuneCity: Neutral mentat background — prefer D2X_MENTATF.png (Chani portrait), then fallbacks
-    if (pFileManager->exists("D2X_MENTATF.png")) {
-        auto surf = LoadPNG_RW(pFileManager->openFile("D2X_MENTATF.png").get());
-        if (surf) {
-            uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = Scaler::doubleSurfaceNN(surf.get());
-            SDL_Log("Loaded Neutral mentat background from D2X_MENTATF.png");
+    // DuneCity: Neutral mentat background — Mentat Cyrit: load Atreides portrait
+    // and remap Atreides blue palette to neutral grey palette.
+    {
+        auto atreidesSurf = LoadCPS_RW(pFileManager->openFile("MENTATA.CPS").get());
+        if (atreidesSurf) {
+            auto doubled = Scaler::defaultDoubleSurface(atreidesSurf.get());
+            if (doubled) {
+                uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] =
+                    mapSurfaceColorRange(doubled.get(), PALCOLOR_ATREIDES, PALCOLOR_NEUTRAL);
+            }
         }
-    }
-    if (!uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] && pFileManager->exists("D2X_MENTATM.png")) {
-        auto surf = LoadPNG_RW(pFileManager->openFile("D2X_MENTATM.png").get());
-        if (surf) {
-            uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = Scaler::doubleSurfaceNN(surf.get());
-            SDL_Log("Loaded Neutral mentat background from D2X_MENTATM.png");
+        // Final fallback
+        if (!uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL]) {
+            uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] =
+                PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
         }
-    }
-    if (!uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] && pFileManager->exists("MentatNeutral.png")) {
-        auto surf = LoadPNG_RW(pFileManager->openFile("MentatNeutral.png").get());
-        if (surf) {
-            uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] = Scaler::doubleSurfaceNN(surf.get());
-            SDL_Log("Loaded Neutral mentat background from MentatNeutral.png");
-        }
-    }
-    if (!uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL]) {
-        uiGraphic[UI_MentatBackground][HOUSE_NEUTRAL] =
-            PictureFactory::mapMentatSurfaceToNeutral(uiGraphic[UI_MentatBackground][HOUSE_ORDOS].get());
     }
 
     uiGraphic[UI_MentatBackgroundBene][HOUSE_HARKONNEN] = Scaler::defaultDoubleSurface(LoadCPS_RW(pFileManager->openFile("MENTATM.CPS").get()).get());
