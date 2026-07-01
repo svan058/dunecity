@@ -34,6 +34,7 @@
 
 
 #include <globals.h>
+#include <mod/ModManager.h>
 #include <mmath.h>
 #include <sand.h>
 #include <main.h>
@@ -1627,6 +1628,23 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
 
             SDL_RenderCopy(renderer, ObjectSprite, &source, &dest);
 
+            // Tornie mod: draw AWT corner flags (static, frame 0) in map editor
+            if (structure.itemID == Structure_AdvancedWindTrap
+                && ModManager::instance().getActiveModName() == "Tornie") {
+                SDL_Texture* flagTex = pGFXManager->getZoomedObjPic(ObjPic_CornerFlag, structure.house, currentZoomlevel);
+                if (flagTex) {
+                    const int flagPx = 7 * (currentZoomlevel + 1);
+                    // frame 0 only (static)
+                    SDL_Rect flagSrc = { 0, 0, flagPx, flagPx };
+                    // top-left corner
+                    SDL_Rect tlDst = { dest.x, dest.y, flagPx, flagPx };
+                    SDL_RenderCopy(renderer, flagTex, &flagSrc, &tlDst);
+                    // bottom-right corner
+                    SDL_Rect brDst = { dest.x + dest.w - flagPx, dest.y + dest.h - flagPx, flagPx, flagPx };
+                    SDL_RenderCopy(renderer, flagTex, &flagSrc, &brDst);
+                }
+            }
+
             selectionDest = dest;
         }
 
@@ -1660,8 +1678,6 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
         }
 
     }
-
-    // Corner flags removed (Tornie mod: cleaner map editor view)
 
     for(const Unit& unit : units) {
 

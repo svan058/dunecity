@@ -27,6 +27,8 @@
 #include <sand.h>
 #include <globals.h>
 
+#include <mod/ModManager.h>
+
 #include <algorithm>
 
 INIMapLoader::INIMapLoader(Game* pGame, const std::string& mapname, const std::string& mapdata)
@@ -575,6 +577,13 @@ void INIMapLoader::loadUnits()
             if((itemID == ItemID_Invalid) || !isUnit(itemID)) {
                 logWarning(key.getLineNumber(), "Invalid unit string: '" + UnitStr + "'!");
                 continue;
+            }
+
+            // Tornie mod: Neutral Trike → Rocket Trike (map-placed units only, not reinforcements)
+            if (ModManager::instance().getActiveModName() == "Tornie"
+                && houseID == HOUSE_NEUTRAL
+                && itemID == Unit_Trike) {
+                itemID = Unit_RocketTrike;
             }
 
             if(itemID == Unit_Infantry) {
