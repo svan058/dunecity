@@ -29,8 +29,9 @@ static const char* crashLogPath = nullptr;
 static void* registeredGame = nullptr;
 
 #ifdef _WIN32
-// Forward declaration - defined at end of file
+// Forward declarations - defined later in this file
 static void WriteMiniDump(EXCEPTION_POINTERS* ExceptionInfo);
+static LONG WINAPI DuneCityUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo);
 #endif
 
 /**
