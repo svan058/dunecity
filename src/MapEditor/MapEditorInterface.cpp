@@ -1510,8 +1510,7 @@ void MapEditorInterface::changeInterfaceColor(HOUSETYPE newHouse) {
         SDL_Color hc = palette[houseToPaletteIndex[newHouse] + 3];
         editorModeUnits_EliteSiegeTank.setSymbol(makeStarredSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_SiegeTank, newHouse), hc));
     }
-    // FlameTank: use Tank icon as editor symbol (no dedicated UI graphic)
-    editorModeUnits_FlameTank.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Tank, newHouse));
+    editorModeUnits_FlameTank.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_FlameTank, newHouse));
     editorModeUnits_Devastator.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Devastator, newHouse));
     editorModeUnits_SonicTank.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_SonicTank, newHouse));
     editorModeUnits_Deviator.setSymbol(pGFXManager->getUIGraphicSurface(UI_MapEditor_Deviator, newHouse));

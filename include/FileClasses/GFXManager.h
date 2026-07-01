@@ -447,6 +447,7 @@ typedef enum {
     UI_MapEditor_Launcher,
     UI_MapEditor_Devastator,
     UI_MapEditor_SonicTank,
+    UI_MapEditor_FlameTank,
     UI_MapEditor_Deviator,
     UI_MapEditor_Saboteur,
     UI_MapEditor_Sandworm,

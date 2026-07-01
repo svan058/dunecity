@@ -1515,6 +1515,28 @@ GFXManager::GFXManager() {
                                 }
                             }
                         }
+                    } else if (flagSrc) {
+                        // RGBA flag PNG — blit directly with blend mode, no palette remapping
+                        sdl2::surface_ptr flagRGBA{ SDL_ConvertSurfaceFormat(flagSrc.get(), SDL_PIXELFORMAT_RGBA32, 0) };
+                        if (flagRGBA) {
+                            SDL_SetSurfaceBlendMode(flagRGBA.get(), SDL_BLENDMODE_BLEND);
+                            for (int h = 0; h < NUM_HOUSES; h++) {
+                                for (int z = 0; z < NUM_ZOOMLEVEL; z++) {
+                                    if (objPic[ObjPic_AdvancedWindTrap][h][z]) {
+                                        int flagSize = (z + 1) * 2;
+                                        sdl2::surface_ptr flagScaled{ SDL_CreateRGBSurfaceWithFormat(0, flagSize, flagSize,
+                                            32, SDL_PIXELFORMAT_RGBA32) };
+                                        if (flagScaled) {
+                                            SDL_SetSurfaceBlendMode(flagScaled.get(), SDL_BLENDMODE_NONE);
+                                            SDL_BlitScaled(flagRGBA.get(), nullptr, flagScaled.get(), nullptr);
+                                            SDL_SetSurfaceBlendMode(flagScaled.get(), SDL_BLENDMODE_BLEND);
+                                            SDL_Rect dst{0, 0, flagSize, flagSize};
+                                            SDL_BlitSurface(flagScaled.get(), nullptr, objPic[ObjPic_AdvancedWindTrap][h][z].get(), &dst);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -2577,6 +2599,15 @@ GFXManager::GFXManager() {
                                                                   uiGraphic[UI_MapEditor_SpecialUnit][HOUSE_HARKONNEN]->h - objPic[ObjPic_Star][HOUSE_HARKONNEN][1]->h);
     uiGraphic[UI_MapEditor_Carryall][HOUSE_HARKONNEN] = getSubFrame(objPic[ObjPic_Carryall][HOUSE_HARKONNEN][0].get(),0,0,8,2);
     uiGraphic[UI_MapEditor_Ornithopter][HOUSE_HARKONNEN] = getSubFrame(objPic[ObjPic_Ornithopter][HOUSE_HARKONNEN][0].get(),0,0,8,3);
+
+    // DuneCity/Tornie: FlameTank editor icon — built per-house from the RGBA
+    // ObjPic (which already has per-house colour variants), so we bypass the
+    // palette-remap path in getUIGraphicSurface().
+    for(int h = 0; h < (int) NUM_HOUSES; h++) {
+        if(objPic[ObjPic_FlameTank][h][0] != nullptr) {
+            uiGraphic[UI_MapEditor_FlameTank][h] = getSubFrame(objPic[ObjPic_FlameTank][h][0].get(),0,0,8,1);
+        }
+    }
 
     uiGraphic[UI_MapEditor_Pen1x1][HOUSE_HARKONNEN] = LoadPNG_RW(pFileManager->openFile("MapEditorPen1x1.png").get());
     SDL_SetColorKey(uiGraphic[UI_MapEditor_Pen1x1][HOUSE_HARKONNEN].get(), SDL_TRUE, 0);
