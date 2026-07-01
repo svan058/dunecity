@@ -1362,10 +1362,9 @@ GFXManager::GFXManager() {
                     }
                 }
 
-                // Draw a house-colour cross/star at top-left of each house's
-                // AdvancedWindTrap sprite so it's identifiable in-game.
+                // Draw house-colour cross/stars at top-left AND top-right of each
+                // house's AdvancedWindTrap sprite so it's identifiable in-game.
                 {
-                    // House RGB values matching the existing palette mapping.
                     const SDL_Color houseStarColor[NUM_HOUSES] = {
                         {180,  20,  20, 255},   // HOUSE_HARKONNEN
                         { 20,  80, 180, 255},   // HOUSE_ATREIDES
@@ -1386,16 +1385,23 @@ GFXManager::GFXManager() {
 
                             const int sz = starSize[z];
                             const int mid = sz / 2;
+                            const int frameW = surf->w / NUM_WINDTRAP_ANIMATIONS_PER_ROW;
                             const Uint32 col = SDL_MapRGBA(surf->format,
                                 houseStarColor[h].r, houseStarColor[h].g,
                                 houseStarColor[h].b, 255);
 
-                            // Horizontal bar
+                            // Top-left star
                             SDL_Rect hBar = {inset, inset + mid, sz, 1};
                             SDL_FillRect(surf, &hBar, col);
-                            // Vertical bar
                             SDL_Rect vBar = {inset + mid, inset, 1, sz};
                             SDL_FillRect(surf, &vBar, col);
+
+                            // Top-right star (mirrored at right edge of first frame)
+                            int rightX = frameW - inset - sz;
+                            SDL_Rect hBar2 = {rightX, inset + mid, sz, 1};
+                            SDL_FillRect(surf, &hBar2, col);
+                            SDL_Rect vBar2 = {rightX + mid, inset, 1, sz};
+                            SDL_FillRect(surf, &vBar2, col);
                         }
                     }
                 }
@@ -3101,81 +3107,68 @@ sdl2::surface_ptr GFXManager::generateAdvancedWindtrapAnimationFrames(SDL_Surfac
     sdl2::surface_ptr returnPic{ SDL_CreateRGBSurface(0, sizeX, sizeY, SCREEN_BPP, RMASK, GMASK, BMASK, AMASK) };
     if (!returnPic) return {};
     SDL_FillRect(returnPic.get(), nullptr, 0);
-    SDL_SetSurfaceBlendMode(basePic, SDL_BLENDMODE_NONE);
 
-    // Frame 0+1: building phase — blit basePic twice
-    for (int b = 0; b < 2; b++) {
-        SDL_Rect dst = { b * fw, 0, fw, fh };
-        SDL_BlitSurface(basePic, nullptr, returnPic.get(), &dst);
+    // First 2 frames: copy base unmodified (for static display)
+    for (int i = 0; i < 2; i++) {
+        int destX = (i % NUM_WINDTRAP_ANIMATIONS_PER_ROW) * fw;
+        int destY = (i / NUM_WINDTRAP_ANIMATIONS_PER_ROW) * fh;
+        SDL_Rect destRect = { destX, destY, fw, fh };
+        SDL_BlitSurface(basePic, nullptr, returnPic.get(), &destRect);
     }
 
-    // Detect the "gem pixel": find the darkest non-transparent pixel (smallest R+G+B sum)
-    int lightX = -1, lightY = -1;
-    {
-        SDL_LockSurface(basePic);
-        int minBrightness = 999;
-        for (int y = 0; y < fh; y++) {
-            for (int x = 0; x < fw; x++) {
-                Uint8* p = (Uint8*)basePic->pixels + y * basePic->pitch + x * basePic->format->BytesPerPixel;
-                Uint8 r, g, b, a;
-                SDL_GetRGBA(*(Uint32*)p, basePic->format, &r, &g, &b, &a);
-                if (a > 128) {
-                    int brightness = (int)r + (int)g + (int)b;
-                    if (brightness < minBrightness) {
-                        minBrightness = brightness;
-                        lightX = x;
-                        lightY = y;
-                    }
-                }
-            }
-        }
-        SDL_UnlockSurface(basePic);
-        if (lightX < 0) { lightX = fw / 2; lightY = fh / 2; }
-    }
+    // Artist-approved pixel coordinates for the light animation zones
+    // (derived from annotated reference image, 48x48 sprite)
+    static const std::pair<int,int> lightPixels[] = {
+        {18,4}, {19,4}, {37,4}, {38,4}, {17,5}, {18,5}, {19,5}, {36,5},
+        {37,5}, {38,5}, {16,6}, {17,6}, {18,6}, {19,6}, {35,6}, {36,6},
+        {37,6}, {38,6}, {18,7}, {19,7}, {37,7}, {38,7}, {20,8}, {39,8},
+        {19,9}, {38,9}, {18,10}, {37,10}, {17,11}, {36,11}, {16,12}, {35,12},
+        {15,13}, {34,13}, {9,20}, {10,20}, {26,20}, {27,20}, {43,20}, {44,20},
+        {8,21}, {9,21}, {10,21}, {25,21}, {26,21}, {27,21}, {42,21}, {43,21},
+        {44,21}, {7,22}, {8,22}, {9,22}, {10,22}, {24,22}, {25,22}, {26,22},
+        {27,22}, {41,22}, {42,22}, {43,22}, {44,22}, {9,23}, {10,23}, {26,23},
+        {27,23}, {43,23}, {44,23}, {11,24}, {28,24}, {45,24}, {10,25}, {27,25},
+        {44,25}, {9,26}, {26,26}, {43,26}, {8,27}, {25,27}, {42,27}, {7,28},
+        {24,28}, {41,28}, {6,29}, {23,29}, {40,29}, {18,36}, {19,36}, {37,36},
+        {38,36}, {17,37}, {18,37}, {19,37}, {36,37}, {37,37}, {38,37}, {16,38},
+        {17,38}, {18,38}, {19,38}, {35,38}, {36,38}, {37,38}, {38,38}, {18,39},
+        {19,39}, {37,39}, {38,39}, {20,40}, {39,40}, {19,41}, {38,41}, {18,42},
+        {37,42}, {17,43}, {36,43}, {16,44}, {35,44}, {15,45}, {34,45}
+    };
+    static const int NUM_LIGHT_PIXELS = sizeof(lightPixels) / sizeof(lightPixels[0]);
 
-    // Animation frames
-    SDL_Rect dest = { 2 * fw, 0, fw, fh };
-
+    // Animation frames 2..2+NUM_WINDTRAP_ANIMATIONS
     for (int i = 0; i < NUM_WINDTRAP_ANIMATIONS; i++) {
-        SDL_BlitSurface(basePic, nullptr, returnPic.get(), &dest);
+        int frameIdx = 2 + i;
+        int destX = (frameIdx % NUM_WINDTRAP_ANIMATIONS_PER_ROW) * fw;
+        int destY = (frameIdx / NUM_WINDTRAP_ANIMATIONS_PER_ROW) * fh;
+        SDL_Rect destRect = { destX, destY, fw, fh };
+        SDL_BlitSurface(basePic, nullptr, returnPic.get(), &destRect);
 
-        // Compute pink/magenta pulse color
-        SDL_Color wc;
-        float pulse;
+        // Darker blue color cycle (artist approved: peak R=15, G=40, B=220)
+        float t;
         if (i < NUM_WINDTRAP_ANIMATIONS / 2) {
-            pulse = (float)i / (NUM_WINDTRAP_ANIMATIONS / 2);  // 0→1
+            t = (float)i / (NUM_WINDTRAP_ANIMATIONS / 2);
         } else {
-            pulse = 1.0f - (float)(i - NUM_WINDTRAP_ANIMATIONS / 2) / (NUM_WINDTRAP_ANIMATIONS / 2);  // 1→0
+            t = 1.0f - (float)(i - NUM_WINDTRAP_ANIMATIONS / 2) / (NUM_WINDTRAP_ANIMATIONS / 2);
         }
-        // Pink: R=200..255, G=0..80, B=160..220
-        wc = {
-            (Uint8)(200 + (int)(55 * pulse)),
-            (Uint8)(int)(80 * pulse),
-            (Uint8)(160 + (int)(60 * pulse)),
-            255
-        };
+        Uint8 wr = (Uint8)(15.0f * t);
+        Uint8 wg = (Uint8)(40.0f * t);
+        Uint8 wb = (Uint8)(40.0f + 180.0f * t);
 
-        // Overdraw the light pixel (3×3 block) with cycle color
-        Uint32 lightCol = SDL_MapRGBA(returnPic->format, wc.r, wc.g, wc.b, 255);
         SDL_LockSurface(returnPic.get());
-        for (int dy = -1; dy <= 1; dy++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                int px = dest.x + lightX + dx;
-                int py = dest.y + lightY + dy;
-                if (px >= 0 && py >= 0 && px < returnPic->w && py < returnPic->h) {
-                    Uint32* pp = (Uint32*)((Uint8*)returnPic->pixels + py * returnPic->pitch) + px;
-                    *pp = lightCol;
-                }
+        for (int p = 0; p < NUM_LIGHT_PIXELS; p++) {
+            int px = destX + lightPixels[p].first;
+            int py = destY + lightPixels[p].second;
+            if (px >= 0 && px < sizeX && py >= 0 && py < sizeY) {
+                Uint8* pixel = (Uint8*)returnPic->pixels + py * returnPic->pitch + px * returnPic->format->BytesPerPixel;
+                *pixel++ = wr;
+                *pixel++ = wg;
+                *pixel++ = wb;
+                *pixel   = 255;
             }
         }
         SDL_UnlockSurface(returnPic.get());
-
-        dest.x += fw;
-        if (dest.x >= sizeX) { dest.x = 0; dest.y += fh; }
-    }
-
-    if ((returnPic->w > 2048) || (returnPic->h > 2048)) {
-        SDL_Log("Warning: Size of sprite sheet for advanced windtrap is %dx%d; may exceed hardware limits on older GPUs!", returnPic->w, returnPic->h);
     }
 
     return returnPic;
