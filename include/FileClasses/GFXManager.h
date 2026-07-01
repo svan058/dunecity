@@ -131,6 +131,8 @@ typedef enum {
     ObjPic_FlameTank,         ///< DuneCity: Flame Tank sprite (Tornie mod, 8-dir palette-indexed strip from Tornie.PAK)
     ObjPic_DeviatorCustom,       ///< DuneCity: Tornie Deviator sprite (8-bit indexed strip from Tornie.PAK)
     ObjPic_EliteSiegeTankCustom, ///< DuneCity: Tornie Elite Siege Tank sprite (8-bit indexed strip from Tornie.PAK)
+    ObjPic_TerrainRedSpice,     ///< Tornie: 17×2 palette-indexed tile strip for red spice terrain
+    ObjPic_TerrainGreenSpice,   ///< Tornie: 17×2 palette-indexed tile strip for green spice terrain
     NUM_OBJPICS
 } ObjPic_enum;
 
@@ -145,7 +147,7 @@ static const std::array<std::string, NUM_OBJPICS> ObjPicNames =  { { "Tank_Base"
     "DeadInfantry", "DeadAirUnit", "Smoke", "SandwormShimmerMask", "SandwormShimmerTemp", "Terrain", "DestroyedStructure", "RockDamage",
     "SandDamage", "Terrain_Hidden", "Terrain_HiddenFog", "Terrain_Tracks", "Star",
     "ZoneResidential", "ZoneCommercial", "ZoneIndustrial", "CityRoad", "NuclearPlant", "PoliceStation",
-    "Stadium", "Airport", "Hospital", "Church", "AdvancedWindTrap", "CornerFlag", "FlameTank", "DeviatorCustom", "EliteSiegeTankCustom" } };
+    "Stadium", "Airport", "Hospital", "Church", "AdvancedWindTrap", "CornerFlag", "FlameTank", "DeviatorCustom", "EliteSiegeTankCustom", "TerrainRedSpice", "TerrainGreenSpice" } };
 
 #define GROUNDUNIT_ROW(i) (i+2)|TILE_NORMAL,(i+1)|TILE_NORMAL,i|TILE_NORMAL,(i+1)|TILE_FLIPV,(i+2)|TILE_FLIPV,(i+3)|TILE_FLIPV, (i+4)|TILE_NORMAL,(i+3)|TILE_NORMAL
 #define AIRUNIT_ROW(i) (i+2)|TILE_NORMAL,(i+1)|TILE_NORMAL,i|TILE_NORMAL,(i+1)|TILE_FLIPV,(i+2)|TILE_FLIPV,(i+1)|TILE_ROTATE, i|TILE_FLIPH,(i+1)|TILE_FLIPH

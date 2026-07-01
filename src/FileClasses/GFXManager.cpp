@@ -182,6 +182,8 @@ static const Coord objPicTiles[] {
     { 8, 1 },   // ObjPic_FlameTank (8-dir palette-indexed strip from Tornie.PAK)
     { 8, 1 },   // ObjPic_DeviatorCustom (8-dir palette-indexed strip from Tornie.PAK)
     { 8, 1 },   // ObjPic_EliteSiegeTankCustom (8-dir palette-indexed strip from Tornie.PAK)
+    { 17, 2 },  // ObjPic_TerrainRedSpice (17 cols × 2 rows: thin spice + thick/bloom)
+    { 17, 2 },  // ObjPic_TerrainGreenSpice (17 cols × 2 rows: thin spice + thick/bloom)
 };
 
 
@@ -385,7 +387,8 @@ GFXManager::GFXManager() {
     // DuneCity: Tornie Deviator custom sprite — palette-indexed 8-frame strip.
     // Loaded into HOUSE_HARKONNEN only; the house-tinting loop at the end of
     // getZoomedObjPic() remaps palette indices 144-150 for all other houses.
-    if(pFileManager->exists("Tornie_Deviator.png")) {
+    if(ModManager::instance().getActiveModName() == "Tornie"
+       && pFileManager->exists("Tornie_Deviator.png")) {
         auto devRaw = LoadPNG_RW(pFileManager->openFile("Tornie_Deviator.png").get());
         if(devRaw && devRaw->format->BitsPerPixel == 8) {
             benePalette.applyToSurface(devRaw.get());
@@ -401,6 +404,37 @@ GFXManager::GFXManager() {
             benePalette.applyToSurface(estRaw.get());
             objPic[ObjPic_EliteSiegeTankCustom][HOUSE_HARKONNEN][0] = std::move(estRaw);
             SDL_Log("GFXManager: Loaded Tornie_EliteSiegeTank.png (palette-indexed)");
+        }
+    }
+
+    // DuneCity: Tornie custom spice terrain strips — palette-indexed 17×2 tile grids.
+    // Terrain is not house-tinted, so copy to all houses to prevent mapSurfaceColorRange.
+    if(pFileManager->exists("Tornie_SpiceRed.png")) {
+        auto surf = LoadPNG_RW(pFileManager->openFile("Tornie_SpiceRed.png").get());
+        if(surf && surf->format->BitsPerPixel == 8) {
+            benePalette.applyToSurface(surf.get());
+            objPic[ObjPic_TerrainRedSpice][HOUSE_HARKONNEN][0] = std::move(surf);
+            for (int h = 1; h < NUM_HOUSES; h++) {
+                objPic[ObjPic_TerrainRedSpice][h][0] = sdl2::surface_ptr{
+                    SDL_ConvertSurface(objPic[ObjPic_TerrainRedSpice][HOUSE_HARKONNEN][0].get(),
+                                       objPic[ObjPic_TerrainRedSpice][HOUSE_HARKONNEN][0]->format, 0)
+                };
+            }
+            SDL_Log("GFXManager: Loaded Tornie_SpiceRed.png (palette-indexed)");
+        }
+    }
+    if(pFileManager->exists("Tornie_SpiceGreen.png")) {
+        auto surf = LoadPNG_RW(pFileManager->openFile("Tornie_SpiceGreen.png").get());
+        if(surf && surf->format->BitsPerPixel == 8) {
+            benePalette.applyToSurface(surf.get());
+            objPic[ObjPic_TerrainGreenSpice][HOUSE_HARKONNEN][0] = std::move(surf);
+            for (int h = 1; h < NUM_HOUSES; h++) {
+                objPic[ObjPic_TerrainGreenSpice][h][0] = sdl2::surface_ptr{
+                    SDL_ConvertSurface(objPic[ObjPic_TerrainGreenSpice][HOUSE_HARKONNEN][0].get(),
+                                       objPic[ObjPic_TerrainGreenSpice][HOUSE_HARKONNEN][0]->format, 0)
+                };
+            }
+            SDL_Log("GFXManager: Loaded Tornie_SpiceGreen.png (palette-indexed)");
         }
     }
 
@@ -1467,8 +1501,16 @@ GFXManager::GFXManager() {
                                 SDL_SetSurfaceBlendMode(flagRGBA.get(), SDL_BLENDMODE_BLEND);
                                 for (int z = 0; z < NUM_ZOOMLEVEL; z++) {
                                     if (objPic[ObjPic_AdvancedWindTrap][h][z]) {
-                                        SDL_Rect dst{0, 0, 2, 2};
-                                        SDL_BlitSurface(flagRGBA.get(), nullptr, objPic[ObjPic_AdvancedWindTrap][h][z].get(), &dst);
+                                        int flagSize = (z + 1) * 2; // z=0→2px, z=1→4px, z=2→6px
+                                        sdl2::surface_ptr flagScaled{ SDL_CreateRGBSurfaceWithFormat(0, flagSize, flagSize,
+                                            32, SDL_PIXELFORMAT_RGBA32) };
+                                        if (flagScaled) {
+                                            SDL_SetSurfaceBlendMode(flagScaled.get(), SDL_BLENDMODE_NONE);
+                                            SDL_BlitScaled(flagRGBA.get(), nullptr, flagScaled.get(), nullptr);
+                                            SDL_SetSurfaceBlendMode(flagScaled.get(), SDL_BLENDMODE_BLEND);
+                                            SDL_Rect dst{0, 0, flagSize, flagSize};
+                                            SDL_BlitSurface(flagScaled.get(), nullptr, objPic[ObjPic_AdvancedWindTrap][h][z].get(), &dst);
+                                        }
                                     }
                                 }
                             }
