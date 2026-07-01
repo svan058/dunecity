@@ -291,6 +291,7 @@ target_sources(dunecity
         units/AmbientAirplane.cpp
         units/AmbientHelicopter.cpp
         units/RocketTrike.cpp
+        units/FlameTank.cpp
 
         # CutScenes
         CutScenes/CutScene.cpp

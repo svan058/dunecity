@@ -179,6 +179,7 @@ static const Coord objPicTiles[] {
     { 1, 1 },   // ObjPic_Church   (single cell, 2x2 footprint, auto-placed on residential)
     { NUM_WINDTRAP_ANIMATIONS_PER_ROW, (2+NUM_WINDTRAP_ANIMATIONS+NUM_WINDTRAP_ANIMATIONS_PER_ROW-1)/NUM_WINDTRAP_ANIMATIONS_PER_ROW },   // ObjPic_AdvancedWindTrap (windtrap-style animation atlas)
     { 2, 1 },   // ObjPic_CornerFlag (2 animation frames from Tornie_CornerFlagNew.png; 7x7 each)
+    { 8, 1 },   // ObjPic_FlameTank (8-dir palette-indexed strip from Tornie.PAK)
 };
 
 
@@ -285,6 +286,68 @@ GFXManager::GFXManager() {
                             objPic[ObjPic_RocketTrike][h][z] = sdl2::surface_ptr{
                                 SDL_ConvertSurface(objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][z].get(),
                                                    objPic[ObjPic_RocketTrike][HOUSE_HARKONNEN][z]->format, 0) };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // DuneCity: Flame Tank (Tornie mod) — palette-indexed 8-frame strip from Tornie.PAK.
+    // House tinting uses luminance-based remap: each red palette index is remapped to
+    // the house anchor colour scaled by relative luminance.
+    if(ModManager::instance().getActiveModName() == "Tornie" && pFileManager->exists("FlameTank.png")) {
+        auto ftRaw = LoadPNG_RW(pFileManager->openFile("FlameTank.png").get());
+        if(ftRaw) {
+            SDL_Surface* raw = ftRaw.get();
+            if(raw->format->palette) {
+                // Red palette indices in the source asset (Harkonnen base colour)
+                static const int redIdx[] = {58,121,139,140,141,144,145,146,147,148,199,200,201,202,203,231,243,244,245,246,247};
+                static const int numRedIdx = 21;
+                // Per-house bright anchor RGB (H=red, A=blue, O=green, F=orange, S=purple, M=gold)
+                static const int houseAnchor[NUM_HOUSES][3] = {
+                    {212,  0,  0}, {  0, 80,212}, {  0,180,  0},
+                    {212,140,  0}, {120,  0,200}, {200,160,  0}, {128,128,128}
+                };
+
+                SDL_Palette* srcPal = raw->format->palette;
+                float redLum[21], minLum = 1e9f, maxLum = 0.f;
+                for(int i = 0; i < numRedIdx; i++) {
+                    if(redIdx[i] < srcPal->ncolors) {
+                        SDL_Color& c = srcPal->colors[redIdx[i]];
+                        redLum[i] = c.r*0.299f + c.g*0.587f + c.b*0.114f;
+                        if(redLum[i] < minLum) minLum = redLum[i];
+                        if(redLum[i] > maxLum) maxLum = redLum[i];
+                    }
+                }
+                float lumRange = (maxLum - minLum) > 0.f ? (maxLum - minLum) : 1.f;
+
+                for(int h = 0; h < (int)NUM_HOUSES; h++) {
+                    sdl2::surface_ptr copy{SDL_ConvertSurface(raw, raw->format, 0)};
+                    if(!copy) continue;
+                    SDL_Palette* pal = copy->format->palette;
+                    if(!pal) continue;
+
+                    float hr = houseAnchor[h][0], hg = houseAnchor[h][1], hb = houseAnchor[h][2];
+                    for(int i = 0; i < numRedIdx; i++) {
+                        if(redIdx[i] >= pal->ncolors) continue;
+                        float t = 0.25f + 0.75f * (redLum[i] - minLum) / lumRange;
+                        SDL_Color& col = pal->colors[redIdx[i]];
+                        col.r = (Uint8)std::min(255, (int)(hr * t));
+                        col.g = (Uint8)std::min(255, (int)(hg * t));
+                        col.b = (Uint8)std::min(255, (int)(hb * t));
+                    }
+
+                    objPic[ObjPic_FlameTank][h][0] = std::move(copy);
+                    for(int z = 1; z < NUM_ZOOMLEVEL; z++) {
+                        SDL_Surface* src0 = objPic[ObjPic_FlameTank][h][0].get();
+                        if(!src0) continue;
+                        sdl2::surface_ptr zs{SDL_CreateRGBSurface(0, src0->w*(z+1), src0->h*(z+1),
+                            src0->format->BitsPerPixel, 0,0,0,0)};
+                        if(zs && src0->format->palette) {
+                            SDL_SetPaletteColors(zs->format->palette, src0->format->palette->colors, 0, src0->format->palette->ncolors);
+                            SDL_BlitScaled(src0, nullptr, zs.get(), nullptr);
+                            objPic[ObjPic_FlameTank][h][z] = std::move(zs);
                         }
                     }
                 }
@@ -1943,6 +2006,21 @@ GFXManager::GFXManager() {
         // Try Tornie.PAK custom WSA first, fall back to Siege Tank WSA
         const char* estWsa = pFileManager->exists("EliteSiegeTank.WSA") ? "EliteSiegeTank.WSA" : "HTANK.WSA";
         smallDetailPicTex[Picture_EliteSiegeTank] = extractSmallDetailPic(estWsa);
+    }
+
+    // Flame Tank: prefer FlameTankIcon.png (sidebar slot), fall back to Sonic Tank portrait.
+    if (pFileManager->exists("FlameTankIcon.png")) {
+        auto iconSurf = LoadPNG_RW(pFileManager->openFile("FlameTankIcon.png").get());
+        if (iconSurf) {
+            auto tex = convertSurfaceToTexture(iconSurf.get());
+            if (tex) {
+                SDL_SetTextureBlendMode(tex.get(), SDL_BLENDMODE_BLEND);
+                smallDetailPicTex[Picture_FlameTank] = std::move(tex);
+            }
+        }
+    }
+    if (!smallDetailPicTex[Picture_FlameTank]) {
+        smallDetailPicTex[Picture_FlameTank] = extractSmallDetailPic("STANK.WSA");
     }
 
     // unused: FARTR.WSA, FHARK.WSA, FORDOS.WSA

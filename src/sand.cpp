@@ -93,6 +93,9 @@ SDL_Texture* resolveItemPicture(int itemID, HOUSETYPE house) {
         case Unit_EliteSiegeTank:
             newPicID = Picture_EliteSiegeTank;
             break;
+        case Unit_FlameTank:
+            newPicID = Picture_FlameTank;
+            break;
         case Unit_MCV:                      newPicID = Picture_MCV;                 break;
         case Unit_Ornithopter:              newPicID = Picture_Ornithopter;         break;
         case Unit_Quad:                     newPicID = Picture_Quad;                break;
@@ -298,6 +301,7 @@ Uint32  getItemIDByName(const std::string& name) {
     else if((lowerName == "rocket trike") || (lowerName == "rockettrike"))      return Unit_RocketTrike;
     else if((lowerName == "elite launcher") || (lowerName == "elitelauncher"))   return Unit_EliteLauncher;
     else if((lowerName == "elite siege tank") || (lowerName == "elitesiegetank"))   return Unit_EliteSiegeTank;
+    else if((lowerName == "flame tank") || (lowerName == "flametank"))          return Unit_FlameTank;
     else                                                                        return ItemID_Invalid;
 }
 
@@ -365,6 +369,7 @@ std::string getItemNameByID(Uint32 itemID) {
         case Unit_RocketTrike:              return "Rocket Trike";      break;
         case Unit_EliteLauncher:            return "Elite Launcher";    break;
         case Unit_EliteSiegeTank:           return "Elite Siege Tank";  break;
+        case Unit_FlameTank:               return "Flame Tank";        break;
 
         default:
             THROW(std::invalid_argument, "getItemNameByID(): Invalid item ID!");
@@ -436,6 +441,7 @@ std::string resolveItemName(int itemID) {
         case Unit_RocketTrike:              return _("Rocket Trike");                      break;
         case Unit_EliteLauncher:            return _("Elite Launcher");                    break;
         case Unit_EliteSiegeTank:           return _("Elite Siege Tank");                  break;
+        case Unit_FlameTank:               return _("Flame Tank");                         break;
 
         default:
             THROW(std::invalid_argument, "resolveItemName(): Invalid item ID!");

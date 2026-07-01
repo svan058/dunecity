@@ -34,7 +34,7 @@ static const ItemID_enum choamUnits[] = { Unit_Carryall,  Unit_Ornithopter,
                                            Unit_RocketTrike, Unit_Quad,
                                            Unit_Tank,
                                            Unit_Launcher,  Unit_EliteLauncher,
-                                           Unit_SiegeTank, Unit_EliteSiegeTank,
+                                           Unit_SiegeTank, Unit_EliteSiegeTank, Unit_FlameTank,
                                            Unit_Devastator,Unit_Deviator,
                                            Unit_SonicTank, ItemID_Invalid
                                           };

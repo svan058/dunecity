@@ -14,12 +14,14 @@ DATA = os.path.join(REPO, "data")
 OUT  = os.path.join(DATA, "Tornie.PAK")
 
 ENTRIES = [
+    "FlameTank.png",
+    "FlameTankIcon.png",
+    "HeraldNeu.png",
+    "HeraldNeuMask.png",
     "NeutralLauncherIcon.png",
     "PalaceTrikeAndQuadIcon.png",
     "RocketTrikeIcon.png",
     "RocketTrikeMask.png",
-    "HeraldNeu.png",
-    "HeraldNeuMask.png",
     "Tornie_AdvancedWindtrap_gfx.png",
     "Tornie_AdvancedWindtrap_icon.png",
 ]

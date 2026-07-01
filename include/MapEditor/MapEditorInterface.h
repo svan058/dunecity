@@ -262,6 +262,7 @@ private:
     SymbolButton        editorModeUnits_RocketTrike;
     SymbolButton        editorModeUnits_EliteLauncher;
     SymbolButton        editorModeUnits_EliteSiegeTank;
+    SymbolButton        editorModeUnits_FlameTank;
     HBox                editorModeUnits_HBox4;
     SymbolButton        editorModeUnits_Tank;
     SymbolButton        editorModeUnits_SiegeTank;

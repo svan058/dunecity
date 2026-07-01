@@ -30,7 +30,8 @@ typedef enum {
     Bullet_ShellTurret = 7,
     Bullet_SmallRocket = 8,
     Bullet_Sonic = 9,
-    Bullet_Sandworm = 10
+    Bullet_Sandworm = 10,
+    Bullet_Flame = 11          ///< DuneCity: Flame Tank line attack (Tornie mod, sonic-style flame propagation)
 } BulletID_enum;
 
 typedef enum {
@@ -118,12 +119,13 @@ typedef enum {
     Unit_RocketTrike = 52,            ///< DuneCity: Rocket Trike (Neutral only, trooper rockets, light factory)
     Unit_EliteLauncher = 53,           ///< DuneCity: Elite Launcher (Neutral only, Heavy Factory, House IX prereq)
     Unit_EliteSiegeTank = 55,          ///< DuneCity: Elite Siege Tank (Atreides/Harkonnen/Ordos via Tornie mod, Heavy Factory, House IX prereq)
-    Unit_ExtLastID = 55,
+    Unit_FlameTank = 56,               ///< DuneCity: Flame Tank (Tornie mod, Heavy Factory, sonic-style flame line attack)
+    Unit_ExtLastID = 56,
 
     // Additional extended structures after units (isStructure handles non-contiguous range)
     Structure_AdvancedWindTrap = 54,  ///< DuneCity: Advanced Windtrap (500 credits, -300 power, 3x3)
 
-    ItemID_LastID = 55,
+    ItemID_LastID = 56,
 
     Num_ItemID
 } ItemID_enum;

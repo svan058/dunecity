@@ -1763,6 +1763,7 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
             case Unit_RocketTrike:      objectPicBase = ObjPic_RocketTrike;                                                                                     break;
             case Unit_EliteLauncher:    objectPicBase = ObjPic_Tank_Base;       objectPicGun = ObjPic_Launcher_Gun;     gunOffset = launcherTurretOffset;       break;
             case Unit_EliteSiegeTank:   objectPicBase = ObjPic_Siegetank_Base;  objectPicGun = ObjPic_Siegetank_Gun;    gunOffset = siegeTankTurretOffset;      break;
+            case Unit_FlameTank:        objectPicBase = ObjPic_FlameTank;                                                                                      break;
             case Unit_Trooper:          objectPicBase = ObjPic_Trooper;         framesX = 4;    framesY = 3;                                                    break;
             case Unit_Special:          objectPicBase = ObjPic_Devastator_Base; objectPicGun = ObjPic_Devastator_Gun;   gunOffset = devastatorTurretOffset;     break;
             case Unit_Infantry:         objectPicBase = ObjPic_Infantry;         framesX = 4;    framesY = 4;                                                   break;
@@ -1798,13 +1799,15 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
         }
 
         if(unit.itemID == Unit_RaiderTrike || unit.itemID == Unit_Deviator || unit.itemID == Unit_Special
-           || unit.itemID == Unit_RocketTrike || unit.itemID == Unit_EliteLauncher || unit.itemID == Unit_EliteSiegeTank) {
+           || unit.itemID == Unit_RocketTrike || unit.itemID == Unit_EliteLauncher || unit.itemID == Unit_EliteSiegeTank
+           || unit.itemID == Unit_FlameTank) {
             SDL_Texture* pStarSprite = pGFXManager->getZoomedObjPic(ObjPic_Star, currentZoomlevel);
 
             // Tornie mod units get a purple star; vanilla specials keep the default yellow
             bool isTornieMod = (unit.itemID == Unit_RocketTrike
                              || unit.itemID == Unit_EliteLauncher
-                             || unit.itemID == Unit_EliteSiegeTank);
+                             || unit.itemID == Unit_EliteSiegeTank
+                             || unit.itemID == Unit_FlameTank);
             if (isTornieMod) {
                 SDL_SetTextureColorMod(pStarSprite, 180, 0, 255);  // purple
             }

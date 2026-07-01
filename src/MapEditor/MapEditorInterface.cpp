@@ -638,6 +638,13 @@ MapEditorInterface::MapEditorInterface(MapEditor* pMapEditor)
     editorModeUnits_EliteSiegeTank.setOnClick(std::bind(&MapEditorInterface::onUnitButton, this, Unit_EliteSiegeTank));
     editorModeUnits_HBoxRocketTrike.addWidget(&editorModeUnits_EliteSiegeTank);
 
+    editorModeUnits_HBoxRocketTrike.addWidget(HSpacer::create(2));
+
+    editorModeUnits_FlameTank.setToggleButton(true);
+    editorModeUnits_FlameTank.setTooltipText(resolveItemName(Unit_FlameTank));
+    editorModeUnits_FlameTank.setOnClick(std::bind(&MapEditorInterface::onUnitButton, this, Unit_FlameTank));
+    editorModeUnits_HBoxRocketTrike.addWidget(&editorModeUnits_FlameTank);
+
     editorModeUnits_HBoxRocketTrike.addWidget(Spacer::create());
 
     editorModeUnits_VBox.addWidget(VSpacer::create(2));
@@ -1172,6 +1179,7 @@ void MapEditorInterface::onUnitButton(int unitType) {
     editorModeUnits_RocketTrike.setToggleState( (unitType == Unit_RocketTrike) );
     editorModeUnits_EliteLauncher.setToggleState( (unitType == Unit_EliteLauncher) );
     editorModeUnits_EliteSiegeTank.setToggleState( (unitType == Unit_EliteSiegeTank) );
+    editorModeUnits_FlameTank.setToggleState( (unitType == Unit_FlameTank) );
     editorModeUnits_Quad.setToggleState( (unitType == Unit_Quad) );
     editorModeUnits_Tank.setToggleState( (unitType == Unit_Tank) );
     editorModeUnits_SiegeTank.setToggleState( (unitType == Unit_SiegeTank) );
