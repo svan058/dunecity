@@ -214,6 +214,44 @@ void INIMapLoader::loadMap() {
 
         }
 
+        std::string RedBloomString = inifile->getStringValue("MAP","RedBloom");
+        if(RedBloomString != "") {
+            std::vector<std::string> RedBloomPositions = splitStringToStringVector(RedBloomString);
+            for(unsigned int i=0; i < RedBloomPositions.size(); i++) {
+                int BloomPos;
+                if(parseString(RedBloomPositions[i], BloomPos)) {
+                    int xpos = getXPos(BloomPos);
+                    int ypos = getYPos(BloomPos);
+                    if(currentGameMap->tileExists(xpos, ypos)) {
+                        currentGameMap->getTile(xpos,ypos)->setType(Terrain_RedSpiceBloom);
+                    } else {
+                        logWarning(inifile->getKey("MAP", "RedBloom")->getLineNumber(), "Red spice bloom position '" + RedBloomPositions[i] + "' outside map!");
+                    }
+                } else {
+                    logWarning(inifile->getKey("MAP", "RedBloom")->getLineNumber(), "Invalid red spice bloom position: '" + RedBloomPositions[i] + "'");
+                }
+            }
+        }
+
+        std::string GreenBloomString = inifile->getStringValue("MAP","GreenBloom");
+        if(GreenBloomString != "") {
+            std::vector<std::string> GreenBloomPositions = splitStringToStringVector(GreenBloomString);
+            for(unsigned int i=0; i < GreenBloomPositions.size(); i++) {
+                int BloomPos;
+                if(parseString(GreenBloomPositions[i], BloomPos)) {
+                    int xpos = getXPos(BloomPos);
+                    int ypos = getYPos(BloomPos);
+                    if(currentGameMap->tileExists(xpos, ypos)) {
+                        currentGameMap->getTile(xpos,ypos)->setType(Terrain_GreenSpiceBloom);
+                    } else {
+                        logWarning(inifile->getKey("MAP", "GreenBloom")->getLineNumber(), "Green spice bloom position '" + GreenBloomPositions[i] + "' outside map!");
+                    }
+                } else {
+                    logWarning(inifile->getKey("MAP", "GreenBloom")->getLineNumber(), "Invalid green spice bloom position: '" + GreenBloomPositions[i] + "'");
+                }
+            }
+        }
+
         std::string FieldString = inifile->getStringValue("MAP","Field");
         if(FieldString != "") {
             std::vector<std::string> FieldPositions  = splitStringToStringVector(FieldString);
