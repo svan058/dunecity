@@ -316,27 +316,19 @@ void Tile::blitGround(int xPos, int yPos) {
 
     //draw terrain
     if (destroyedStructureTile == DestroyedStructure_None || destroyedStructureTile == DestroyedStructure_Wall) {
-        // Tornie: red/green spice uses a custom sprite strip instead of the vanilla terrain atlas
+        // Tornie: red/green spice field tiles use a custom sprite strip;
+        // red/green bloom tiles fall through to the vanilla terrain atlas (SpiceBloom frame)
         bool drewCustomSpice = false;
-        if (type == Terrain_RedSpice || type == Terrain_RedSpiceBloom
-            || type == Terrain_GreenSpice || type == Terrain_GreenSpiceBloom) {
-            int customObjPic = (type == Terrain_RedSpice || type == Terrain_RedSpiceBloom)
+        if (type == Terrain_RedSpice || type == Terrain_GreenSpice) {
+            int customObjPic = (type == Terrain_RedSpice)
                 ? ObjPic_TerrainRedSpice : ObjPic_TerrainGreenSpice;
             SDL_Texture* customTex = pGFXManager->getZoomedObjPic(customObjPic, currentZoomlevel);
             if (customTex) {
                 // Strip layout: 17 cols × 2 rows
-                // Row 0: thin spice (16 connectivity variants) + pad
-                // Row 1: thick spice (16 variants) + bloom
-                int tileIndex = getTerrainTile();
-                int col, row;
-                if (type == Terrain_RedSpiceBloom || type == Terrain_GreenSpiceBloom) {
-                    col = 16; row = 1; // bloom is at col 16, row 1
-                } else {
-                    // Thin spice: row 0, col = connectivity bits (0-15)
-                    int base = (type == Terrain_RedSpice) ? TerrainTile_RedSpice : TerrainTile_GreenSpice;
-                    col = tileIndex - base;
-                    row = 0;
-                }
+                // Row 0: thin spice (16 connectivity variants)
+                int base = (type == Terrain_RedSpice) ? TerrainTile_RedSpice : TerrainTile_GreenSpice;
+                int col = getTerrainTile() - base;
+                int row = 0;
                 SDL_Rect customSrc = { col * zoomed_tilesize, row * zoomed_tilesize, zoomed_tilesize, zoomed_tilesize };
                 // Draw sand base first, then overlay spice
                 SDL_Rect sandSrc = { TerrainTile_Sand * zoomed_tilesize, 0, zoomed_tilesize, zoomed_tilesize };
@@ -346,7 +338,15 @@ void Tile::blitGround(int xPos, int yPos) {
             }
         }
         if (!drewCustomSpice) {
-            SDL_RenderCopy(renderer, sprite[currentZoomlevel], &source, &drawLocation);
+            // Red/green bloom types render as vanilla SpiceBloom (0x54) in the terrain atlas
+            if (type == Terrain_RedSpiceBloom || type == Terrain_GreenSpiceBloom) {
+                const auto bloomIndexX = TerrainTile_SpiceBloom % NUM_TERRAIN_TILES_X;
+                const auto bloomIndexY = TerrainTile_SpiceBloom / NUM_TERRAIN_TILES_X;
+                SDL_Rect bloomSrc = { bloomIndexX*zoomed_tilesize, bloomIndexY*zoomed_tilesize, zoomed_tilesize, zoomed_tilesize };
+                SDL_RenderCopy(renderer, sprite[currentZoomlevel], &bloomSrc, &drawLocation);
+            } else {
+                SDL_RenderCopy(renderer, sprite[currentZoomlevel], &source, &drawLocation);
+            }
         }
     }
 

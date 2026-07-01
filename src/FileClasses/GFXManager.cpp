@@ -2685,17 +2685,16 @@ GFXManager::GFXManager() {
         }
     }
 
-    // Tornie: red/green spice bloom editor icons — extract bloom tile (col 16,
-    // row 1) from the custom terrain strips. Terrain is house-agnostic so we
-    // fill every house slot directly, bypassing the palette remap.
+    // Tornie: red/green spice field + bloom editor icons from custom terrain strips.
+    // Spice field = col 0, row 0 (thin spice); bloom icons use vanilla SpiceBloom.
     for (int h = 0; h < (int)NUM_HOUSES; h++) {
         if (objPic[ObjPic_TerrainRedSpice][h][0] != nullptr) {
-            uiGraphic[UI_MapEditor_RedSpiceBloom][h] = getSubFrame(
-                objPic[ObjPic_TerrainRedSpice][h][0].get(), 16, 1, 17, 2);
+            uiGraphic[UI_MapEditor_RedSpice][h] = getSubFrame(
+                objPic[ObjPic_TerrainRedSpice][h][0].get(), 0, 0, 17, 2);
         }
         if (objPic[ObjPic_TerrainGreenSpice][h][0] != nullptr) {
-            uiGraphic[UI_MapEditor_GreenSpiceBloom][h] = getSubFrame(
-                objPic[ObjPic_TerrainGreenSpice][h][0].get(), 16, 1, 17, 2);
+            uiGraphic[UI_MapEditor_GreenSpice][h] = getSubFrame(
+                objPic[ObjPic_TerrainGreenSpice][h][0].get(), 0, 0, 17, 2);
         }
     }
 
@@ -2810,107 +2809,9 @@ GFXManager::GFXManager() {
     animation[Anim_MercenaryShoulder] = PictureFactory::mapMentatAnimationToMercenary(animation[Anim_OrdosShoulder].get());
     animation[Anim_MercenaryRing] = PictureFactory::mapMentatAnimationToMercenary(animation[Anim_OrdosRing].get());
     SDL_Log("GFX INIT: mentat remap animations done");
-    // DuneCity: Neutral mentat — load Chani animation frames from Tornie.PAK if present
-    {
-        // Double an RGBA surface using SDL_BlitScaled (avoids the legacy
-        // 8-bit palette scaler path that crashes on 32-bit surfaces).
-        auto doubleRGBASurface = [](SDL_Surface* src) -> sdl2::surface_ptr {
-            if (!src) return nullptr;
-            sdl2::surface_ptr dst{ SDL_CreateRGBSurface(0, src->w * 2, src->h * 2,
-                src->format->BitsPerPixel,
-                src->format->Rmask, src->format->Gmask,
-                src->format->Bmask, src->format->Amask) };
-            if (!dst) return nullptr;
-            SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_NONE);
-            SDL_BlitScaled(src, nullptr, dst.get(), nullptr);
-            return dst;
-        };
-
-        auto loadChaniAnim = [&](const std::string& prefix, int nFrames, bool bPingPong) -> std::unique_ptr<Animation> {
-            auto anim = std::make_unique<Animation>();
-            bool ok = true;
-            for (int fi = 0; fi < nFrames; fi++) {
-                std::string name = prefix + "_" + std::to_string(fi) + ".png";
-                if (!pFileManager->exists(name)) { ok = false; break; }
-                auto surf = LoadPNG_RW(pFileManager->openFile(name).get());
-                if (!surf) { ok = false; break; }
-                // Chani PNGs are 32-bit RGBA — the legacy Scaler path assumes
-                // 8-bit paletted surfaces and crashes on src->format->palette->colors
-                // (null for RGBA). Use SDL_BlitScaled to double RGBA frames instead.
-                if (surf->format->BitsPerPixel >= 24) {
-                    auto doubled = doubleRGBASurface(surf.get());
-                    if (!doubled) { ok = false; break; }
-                    anim->addFrame(std::move(doubled), false, false);
-                } else {
-                    // 8-bit with custom quantized palette — force NN to avoid
-                    // Scale2x palette-index comparison producing tiling garbage
-                    auto doubled = Scaler::doubleSurfaceNN(surf.get());
-                    if (!doubled) { ok = false; break; }
-                    anim->addFrame(std::move(doubled), false, false);
-                }
-            }
-            if (!ok) return nullptr;
-            if (bPingPong) {
-                // mirror frames back: 3,2,1 (skip 0 and last to avoid stutter)
-                // Snapshot raw pointers first — addFrame may reallocate the vector
-                // which would invalidate a reference/iterator held across the loop.
-                std::vector<SDL_Surface*> snapshot;
-                for (const auto& f : anim->getFrames()) snapshot.push_back(f.get());
-                for (int fi = (int)snapshot.size()-2; fi >= 1; fi--) {
-                    sdl2::surface_ptr copy = copySurface(snapshot[fi]);
-                    anim->addFrame(std::move(copy), false, false);
-                }
-            }
-            anim->setFrameDurationTime(125);
-            return anim;
-        };
-
-        auto chaniEyes  = loadChaniAnim("ChaniEyes",  5, true);
-        auto chaniMouth = loadChaniAnim("ChaniMouth", 5, true);
-
-        animation[Anim_NeutralEyes]  = chaniEyes  ? std::move(chaniEyes)
-            : PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosEyes].get());
-        animation[Anim_NeutralMouth] = chaniMouth ? std::move(chaniMouth)
-            : PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosMouth].get());
-
-        // Paul Atreides mentat (Tornie Mod — Atreides override)
-        if (ModManager::instance().getActiveModName() == "Tornie"
-            && pFileManager->exists("PaulAtreidesMentat.png")) {
-            // Background
-            auto paulBg = LoadPNG_RW(pFileManager->openFile("PaulAtreidesMentat.png").get());
-            if (paulBg) {
-                auto paulBgDoubled = doubleRGBASurface(paulBg.get());
-                if (paulBgDoubled)
-                    uiGraphic[UI_MentatBackground][HOUSE_ATREIDES] = std::move(paulBgDoubled);
-            }
-            // Eye animation (9 frames)
-            auto loadPaulAnim = [&](const std::string& prefix, int nFrames) -> std::unique_ptr<Animation> {
-                auto anim = std::make_unique<Animation>();
-                for (int fi = 0; fi < nFrames; fi++) {
-                    std::string name = prefix + "_" + std::to_string(fi) + ".png";
-                    if (!pFileManager->exists(name)) return nullptr;
-                    auto surf = LoadPNG_RW(pFileManager->openFile(name).get());
-                    if (!surf) return nullptr;
-                    if (surf->format->BitsPerPixel >= 24) {
-                        auto doubled = doubleRGBASurface(surf.get());
-                        if (!doubled) return nullptr;
-                        anim->addFrame(std::move(doubled), false, false);
-                    } else {
-                        auto doubled = Scaler::doubleSurfaceNN(surf.get());
-                        if (!doubled) return nullptr;
-                        anim->addFrame(std::move(doubled), false, false);
-                    }
-                }
-                anim->setFrameDurationTime(125);
-                return anim;
-            };
-            auto paulEyes = loadPaulAnim("PaulAtreidesMentatEyes", 9);
-            if (paulEyes) animation[Anim_AtreidesEyes] = std::move(paulEyes);
-            auto paulMouth = loadPaulAnim("PaulAtreidesMentatMouth", 9);
-            if (paulMouth) animation[Anim_AtreidesMouth] = std::move(paulMouth);
-            SDL_Log("GFX INIT: Paul Atreides mentat loaded from Tornie.PAK");
-        }
-    }
+    // Neutral mentat — always use vanilla palette-mapped Ordos frames
+    animation[Anim_NeutralEyes]  = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosEyes].get());
+    animation[Anim_NeutralMouth] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosMouth].get());
     animation[Anim_NeutralShoulder] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosShoulder].get());
     animation[Anim_NeutralRing] = PictureFactory::mapMentatAnimationToNeutral(animation[Anim_OrdosRing].get());
     SDL_Log("GFX INIT: Neutral mentat animations done");
