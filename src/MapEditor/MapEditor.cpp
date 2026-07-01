@@ -32,6 +32,8 @@
 #include <misc/format.h>
 #include <misc/DiscordManager.h>
 
+#include <mod/ModManager.h>
+
 #include <globals.h>
 #include <mmath.h>
 #include <sand.h>
@@ -1783,14 +1785,23 @@ void MapEditor::drawMap(ScreenBorder* pScreenborder, bool bCompleteMap) {
             SDL_RenderCopy(renderer, pGunSprite, &source2, &drawLocation2);
         }
 
-        if(unit.itemID == Unit_RaiderTrike || unit.itemID == Unit_Deviator || unit.itemID == Unit_Special
-           || unit.itemID == Unit_RocketTrike || unit.itemID == Unit_EliteLauncher || unit.itemID == Unit_EliteSiegeTank) {
+        bool isTornieModActive = ModManager::instance().getActiveModName() == "Tornie";
+        bool isSpecialUnit = (unit.itemID == Unit_RaiderTrike || unit.itemID == Unit_Deviator
+            || unit.itemID == Unit_Special || unit.itemID == Unit_Launcher
+            || unit.itemID == Unit_RocketTrike || unit.itemID == Unit_EliteLauncher
+            || unit.itemID == Unit_EliteSiegeTank
+            // Tornie mod: Mercenary Devastator and Fremen SonicTank function as Deviators
+            || (isTornieModActive && unit.itemID == Unit_Devastator && unit.house == HOUSE_MERCENARY)
+            || (isTornieModActive && unit.itemID == Unit_SonicTank && unit.house == HOUSE_FREMEN));
+        if(isSpecialUnit) {
             SDL_Texture* pStarSprite = pGFXManager->getZoomedObjPic(ObjPic_Star, currentZoomlevel);
 
             // Tornie mod units get a purple star; vanilla specials keep the default yellow
             bool isTornieMod = (unit.itemID == Unit_RocketTrike
                              || unit.itemID == Unit_EliteLauncher
-                             || unit.itemID == Unit_EliteSiegeTank);
+                             || unit.itemID == Unit_EliteSiegeTank
+                             || (isTornieModActive && unit.itemID == Unit_Devastator && unit.house == HOUSE_MERCENARY)
+                             || (isTornieModActive && unit.itemID == Unit_SonicTank && unit.house == HOUSE_FREMEN));
             if (isTornieMod) {
                 SDL_SetTextureColorMod(pStarSprite, 180, 0, 255);  // purple
             }

@@ -56,6 +56,8 @@
 #include <structures/WOR.h>
 #include <structures/ZoneStructure.h>
 
+#include <mod/ModManager.h>
+
 //units
 #include <units/Carryall.h>
 #include <units/Devastator.h>
@@ -879,10 +881,16 @@ ObjectBase* ObjectBase::createObject(int itemID, House* Owner, bool byScenario) 
                 case HOUSE_FREMEN:
                 case HOUSE_SARDAUKAR:
                 case HOUSE_MERCENARY: {
-                    if(currentGame->randomGen.randBool()) {
-                         newObject = new SonicTank(Owner);
+                    if (ModManager::instance().getActiveModName() == "Tornie") {
+                        // Tornie mod: Mercenary Devastator and Fremen SonicTank both replaced by Deviator
+                        newObject = new Deviator(Owner);
                     } else {
-                        newObject = new Devastator(Owner);
+                        // Default: randomly Deviator OR Launcher
+                        if (currentGame->randomGen.randBool()) {
+                            newObject = new Deviator(Owner);
+                        } else {
+                            newObject = new Launcher(Owner);
+                        }
                     }
                 } break;
                 default:    /* should never be reached */  break;

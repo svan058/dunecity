@@ -428,7 +428,7 @@ std::string resolveItemName(int itemID) {
         case Unit_Sandworm:                 return _("@DUNE.ENG|231#Sandworm");            break;
         case Unit_Soldier:                  return _("@DUNE.ENG|203#Soldier");             break;
         case Unit_Trooper:                  return _("@DUNE.ENG|205#Trooper");             break;
-        case Unit_Special:                  return _("Sonic/Devast./Devia.");              break;
+        case Unit_Special:                  return _("Devia./Launcher");              break;
         case Unit_Infantry:                 return _("@DUNE.ENG|199#Infantry");            break;
         case Unit_Troopers:                 return _("@DUNE.ENG|201#Troopers");            break;
         case Unit_AmbientAirplane:          return _("City Airplane");                     break;
