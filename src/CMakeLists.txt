@@ -623,16 +623,8 @@ if(WIN32)
         DESTINATION .
     )
 
-    # Install Neutral campaign scenario and region files
-    install(
-        DIRECTORY ${DATA_DIR}/
-        DESTINATION .
-        FILES_MATCHING PATTERN "scenn*.ini"
-    )
-    install(
-        FILES "${DATA_DIR}/REGIONN.INI"
-        DESTINATION .
-    )
+    # Neutral campaign scenario and region files (REGIONN.INI, scenn001-022.ini)
+    # are now packed inside Tornie.PAK and loaded via pFileManager->openFile().
     # Install Neutral house voice VOC files (not in VOC.PAK, loaded as loose files)
     install(
         FILES
